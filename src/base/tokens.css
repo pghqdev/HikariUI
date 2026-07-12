@@ -1,0 +1,78 @@
+/* Two-tier theming.
+   Tier 1: the ~20 tokens that ARE a theme. Set per-theme below.
+   Tier 2: derived component tokens, computed once on every theme root so a
+           nested [data-theme] re-derives from its own Tier-1 — including the
+           accent-tinted shadows. Never authored by users. */
+
+@layer hikari {
+  /* --- Tier 1: light (also the default for a bare, theme-less page) --- */
+  :root,
+  [data-theme="light"] {
+    color-scheme: light;
+
+    --bg: oklch(99% 0.004 250);
+    --fg: oklch(24% 0.02 260);
+    --surface: oklch(97% 0.006 250);
+    --muted: oklch(52% 0.02 260);
+    --border: oklch(90% 0.008 260);
+
+    --accent: oklch(54% 0.2 258);
+    --accent-content: oklch(99% 0.01 258);
+
+    --radius: 0.875rem;
+    --space: 0.5rem;
+    --ease-hikari: cubic-bezier(0.2, 0, 0, 1);
+    --dur: 0.16s;
+    --font: system-ui, -apple-system, "Segoe UI", sans-serif;
+    --mono: ui-monospace, "SF Mono", "Cascadia Code", monospace;
+  }
+
+  /* --- Tier 1: dark. Auto via OS preference, unless a [data-theme] forces it.
+     The :not([data-theme]) guard is load-bearing: without it this rule ties
+     `[data-theme="light"]` on :root and, being later in source order, wins. --- */
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme]) {
+      color-scheme: dark;
+
+      --bg: oklch(20% 0.015 260);
+      --fg: oklch(93% 0.01 260);
+      --surface: oklch(24% 0.018 260);
+      --muted: oklch(66% 0.02 260);
+      --border: oklch(32% 0.02 260);
+
+      --accent: oklch(72% 0.16 255);
+      --accent-content: oklch(20% 0.03 260);
+    }
+  }
+
+  [data-theme="dark"] {
+    color-scheme: dark;
+
+    --bg: oklch(20% 0.015 260);
+    --fg: oklch(93% 0.01 260);
+    --surface: oklch(24% 0.018 260);
+    --muted: oklch(66% 0.02 260);
+    --border: oklch(32% 0.02 260);
+
+    --accent: oklch(72% 0.16 255);
+    --accent-content: oklch(20% 0.03 260);
+  }
+
+  /* --- Tier 2: derived. Declared on every theme root (`:root` and any
+     `[data-theme]`) so switching or nesting a theme recomputes these from the
+     local Tier-1 accent — shadows and glow recolor for free. --- */
+  :root,
+  [data-theme] {
+    --surface-2: color-mix(in oklch, var(--surface), var(--fg) 5%);
+    --hover: color-mix(in oklch, var(--surface), var(--fg) 5%);
+    --accent-hover: color-mix(in oklch, var(--accent), black 14%);
+    /* Hairline that leans on the surface, not a hard gray line. */
+    --line: color-mix(in oklch, var(--border) 65%, transparent);
+
+    /* Crisp, neutral depth — no coloured glow. Shadows read as a flat lift, not
+       a halo. */
+    --shadow-sm: 0 1px 2px oklch(0% 0 0 / 0.05);
+    --shadow: 0 1px 3px oklch(0% 0 0 / 0.06), 0 1px 2px -1px oklch(0% 0 0 / 0.05);
+    --shadow-lg: 0 8px 30px -10px oklch(0% 0 0 / 0.12);
+  }
+}

@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Hikari UI — kitchen sink</title>
+  <link rel="stylesheet" href="dist/hikari.css">
+  <style>
+    /* Page-local layout & showcase choreography — NOT part of Hikari. */
+    main { max-width: 58rem; margin-inline: auto; }
+    .grid { display: grid; gap: calc(var(--space) * 2); grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr)); }
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: calc(var(--radius) + 0.125rem);
+      padding: calc(var(--space) * 3.5);
+      box-shadow: var(--shadow);
+    }
+    header.top { display: flex; justify-content: space-between; align-items: center; gap: var(--space); flex-wrap: wrap; margin-block-end: calc(var(--space) * 5); }
+    .row { display: flex; gap: calc(var(--space) * 1.5); flex-wrap: wrap; align-items: center; }
+
+    /* Segmented theme switch with a sliding thumb — the delight moment. */
+    .seg { position: relative; display: inline-flex; padding: 3px; background: var(--surface-2); border: 1px solid var(--line); border-radius: calc(var(--radius) + 2px); }
+    .seg button {
+      position: relative; z-index: 1; flex: 1 0 auto;
+      background: transparent; border: none; box-shadow: none;
+      color: var(--muted); padding: 0.35rem 0.95rem;
+      transition: color var(--dur) var(--ease-hikari);
+    }
+    .seg button:hover { color: var(--fg); background: transparent; box-shadow: none; transform: none; }
+    .seg button[aria-pressed="true"] { color: var(--fg); }
+    .seg .thumb {
+      position: absolute; z-index: 0; inset-block: 3px; inset-inline-start: 0; left: 0;
+      border-radius: var(--radius); background: var(--surface); box-shadow: var(--shadow-sm);
+      transition: transform var(--dur) var(--ease-hikari), width var(--dur) var(--ease-hikari);
+    }
+
+    /* Primary button — previews Hikari's future data-variant="solid". The one
+       rationed electric-accent anchor. Flat and crisp, no glow. */
+    button[data-variant="solid"] {
+      background: var(--accent); color: var(--accent-content);
+      border-color: transparent; box-shadow: none;
+    }
+    button[data-variant="solid"]:hover { background: var(--accent-hover); border-color: transparent; }
+    button[data-variant="solid"]:active { background: var(--accent-hover); }
+
+    /* Nested demo cards lift subtly on hover. */
+    .card.demo { transition: transform var(--dur) var(--ease-hikari), box-shadow var(--dur) var(--ease-hikari); }
+    .card.demo:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); }
+
+    /* Proof that an unlayered author rule beats Hikari with no !important. */
+    button.overridden { background: rebeccapurple; color: white; border-color: rebeccapurple; }
+
+    /* Theme swap crossfades the whole page via a View Transition (see script) —
+       one smooth dissolve, no per-property snapping. */
+    ::view-transition-old(root), ::view-transition-new(root) {
+      animation-duration: 0.28s;
+      animation-timing-function: var(--ease-hikari);
+    }
+
+    /* Staggered entrance — first impression. Skipped under reduced-motion. */
+    @media (prefers-reduced-motion: no-preference) {
+      main > * { animation: rise .55s var(--ease-hikari) backwards; }
+      main > :nth-child(1) { animation-delay: .02s }
+      main > :nth-child(2) { animation-delay: .06s }
+      main > :nth-child(3) { animation-delay: .10s }
+      main > :nth-child(4) { animation-delay: .14s }
+      main > :nth-child(5) { animation-delay: .18s }
+      main > :nth-child(6) { animation-delay: .22s }
+      main > :nth-child(n+7) { animation-delay: .26s }
+    }
+    @keyframes rise { from { opacity: 0; transform: translateY(10px); } }
+  </style>
+</head>
+<body>
+  <main>
+    <header class="top">
+      <h1 style="margin:0">Hikari UI</h1>
+      <div class="seg" role="group" aria-label="Theme">
+        <span class="thumb" aria-hidden="true"></span>
+        <button aria-pressed="true" onclick="setTheme(this, null)">Auto</button>
+        <button aria-pressed="false" onclick="setTheme(this, 'light')">Light</button>
+        <button aria-pressed="false" onclick="setTheme(this, 'dark')">Dark</button>
+      </div>
+    </header>
+
+    <p>Bare semantic HTML, zero classes. Switch the theme above — the whole page
+      re-lights from ~20 tokens, <strong>including the shadows</strong>, which
+      are tinted from <code>--accent</code>.</p>
+
+    <h2>Typography</h2>
+    <p>Body text with a <a href="#">tasteful link</a>, some <strong>strong</strong>
+      emphasis, inline <code>code</code>, and a <kbd>⌘K</kbd> key. Press
+      <a href="#">Tab</a> to see the accent focus ring ignite.</p>
+    <blockquote>Semantic HTML is the API. Taste is the default; the palette is yours.</blockquote>
+
+    <h3>Nested themes</h3>
+    <div class="grid">
+      <div class="card demo" data-theme="light">
+        <h4>Forced light</h4>
+        <p><small>This card is <code>data-theme="light"</code></small></p>
+        <button>Its shadow is light-lit</button>
+      </div>
+      <div class="card demo" data-theme="dark">
+        <h4>Forced dark</h4>
+        <p><small>This card is <code>data-theme="dark"</code></small></p>
+        <button>Its shadow is dark-lit</button>
+      </div>
+    </div>
+
+    <h2>Buttons</h2>
+    <div class="row">
+      <button>Default</button>
+      <button disabled>Disabled</button>
+      <button class="overridden">Author override wins</button>
+    </div>
+
+    <h2>Form</h2>
+    <div class="card">
+      <form onsubmit="return false" class="grid">
+        <p>
+          <label for="name">Name</label>
+          <input id="name" type="text" placeholder="Hikari">
+        </p>
+        <p>
+          <label for="email">Email</label>
+          <input id="email" type="email" placeholder="you@example.com">
+        </p>
+        <p>
+          <label for="role">Role</label>
+          <select id="role"><option>Developer</option><option>Agent</option></select>
+        </p>
+        <p>
+          <label for="bio">Bio</label>
+          <textarea id="bio" placeholder="Tell us something"></textarea>
+        </p>
+      </form>
+      <div class="row" style="margin-top: var(--space)">
+        <button type="submit" data-variant="solid">Submit</button>
+        <button type="reset">Reset</button>
+      </div>
+    </div>
+
+    <h2>Table</h2>
+    <table>
+      <thead>
+        <tr><th>Token</th><th>Tier</th><th>Role</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><code>--accent</code></td><td>1</td><td>The one electric hue</td></tr>
+        <tr><td><code>--surface</code></td><td>1</td><td>Quiet raised surface</td></tr>
+        <tr><td><code>--shadow</code></td><td>2</td><td>Depth, tinted from accent</td></tr>
+        <tr><td><code>--ease-hikari</code></td><td>1</td><td>The one easing curve</td></tr>
+      </tbody>
+    </table>
+
+    <h2>Code</h2>
+    <p>Hover a code block for the copy button (from <code>hikari.js</code>).</p>
+    <pre><code>&lt;link rel="stylesheet" href="https://cdn/hikari.min.css"&gt;
+&lt;script src="https://cdn/hikari.js" defer&gt;&lt;/script&gt;
+
+&lt;button&gt;Just works&lt;/button&gt;
+&lt;section data-theme="dark"&gt;
+  &lt;h2&gt;Themed region&lt;/h2&gt;
+&lt;/section&gt;</code></pre>
+  </main>
+
+  <script src="dist/hikari.js" defer></script>
+  <script>
+    const seg = document.querySelector(".seg");
+    const thumb = seg.querySelector(".thumb");
+    const reduce = matchMedia("(prefers-reduced-motion: reduce)");
+
+    function moveThumb(btn) {
+      thumb.style.width = btn.offsetWidth + "px";
+      thumb.style.transform = `translateX(${btn.offsetLeft - thumb.offsetLeft}px)`;
+    }
+
+    function setTheme(btn, theme) {
+      const root = document.documentElement;
+      const apply = () => {
+        if (theme) root.dataset.theme = theme;
+        else delete root.dataset.theme;
+        for (const b of seg.querySelectorAll("button"))
+          b.setAttribute("aria-pressed", String(b === btn));
+        moveThumb(btn);
+      };
+      // Crossfade the whole page in one dissolve instead of snapping each colour.
+      if (!reduce.matches && document.startViewTransition) {
+        document.startViewTransition(apply);
+      } else {
+        apply();
+      }
+    }
+
+    // Position the thumb under the active option on load and on resize.
+    const active = () => seg.querySelector('[aria-pressed="true"]');
+    addEventListener("resize", () => moveThumb(active()));
+    moveThumb(active());
+  </script>
+</body>
+</html>

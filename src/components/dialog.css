@@ -15,11 +15,12 @@
     border-radius: var(--radius);
     box-shadow: var(--shadow-lg);
 
-    /* Resting (closed) state — the enter transition lands here. A subtle
-       scale-pop, not a vertical drift: a large surface sliding in on the
-       settle-tail easing reads as sluggish, a quick scale reads as instant.
-       ponytail: 0.11s beats --dur (0.16s) here — big surfaces feel slower at
-       the same duration; bump toward --dur if it ever reads as abrupt. */
+    /* A subtle scale-pop, not a vertical drift: a large surface sliding in on
+       the settle-tail easing reads as sluggish. Timing is asymmetric — the
+       transition an element animates with is the one on the state it moves
+       INTO, so this base rule drives the CLOSE and `dialog:modal` the OPEN.
+       ponytail: 0.11s beats --dur (0.16s) — big surfaces feel slower at the
+       same duration; bump toward --dur if it ever reads as abrupt. */
     opacity: 0;
     scale: 0.97;
     transition: opacity 0.11s var(--ease-hikari),
@@ -28,9 +29,16 @@
                 display 0.11s allow-discrete;
   }
 
+  /* Open: a fast-start decelerate. --ease-hikari's precise-settle tail also has
+     a slow START (zero initial velocity), which reads as lag on an entrance;
+     an overlay appearing wants to move immediately. Close keeps the tail. */
   dialog:modal {
     opacity: 1;
     scale: 1;
+    transition: opacity 0.13s cubic-bezier(0, 0, 0.2, 1),
+                scale 0.13s cubic-bezier(0, 0, 0.2, 1),
+                overlay 0.13s allow-discrete,
+                display 0.13s allow-discrete;
   }
 
   @starting-style {
@@ -46,7 +54,12 @@
                 overlay 0.11s allow-discrete,
                 display 0.11s allow-discrete;
   }
-  dialog:modal::backdrop { opacity: 1; }
+  dialog:modal::backdrop {
+    opacity: 1;
+    transition: opacity 0.13s cubic-bezier(0, 0, 0.2, 1),
+                overlay 0.13s allow-discrete,
+                display 0.13s allow-discrete;
+  }
   @starting-style {
     dialog:modal::backdrop { opacity: 0; }
   }

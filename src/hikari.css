@@ -1,0 +1,7 @@
+/* Hikari UI — core. Everything lives in @layer hikari so unlayered author
+   CSS always wins without !important. */
+@layer hikari;
+
+@import "base/tokens.css";
+@import "base/reset.css";
+@import "base/elements.css";

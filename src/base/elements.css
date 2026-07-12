@@ -1,0 +1,338 @@
+/* Bare semantic elements. Zero classes; taste by default. */
+
+@layer hikari {
+  body {
+    background: var(--bg);
+    color: var(--fg);
+    font-family: var(--font);
+    font-size: 1rem;
+    letter-spacing: -0.006em;
+    padding: calc(var(--space) * 4);
+    transition: background var(--dur) var(--ease-hikari),
+                color var(--dur) var(--ease-hikari);
+  }
+
+  ::selection {
+    background: color-mix(in oklch, var(--accent) 22%, transparent);
+  }
+
+  /* A data-theme container swaps the whole palette: re-assert colour and
+     background so the subtree re-resolves from the local tokens instead of
+     inheriting the outer theme's already-computed colour. :where keeps it at
+     zero specificity so author overrides win. */
+  :where([data-theme]) {
+    color: var(--fg);
+    background-color: var(--bg);
+  }
+
+  /* Crisp focus: one clean accent ring, offset to follow the radius. No soft
+     translucent halo, no border-colour change stacked on top. */
+  :focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+
+  /* --- Typography --- */
+  h1 { font-size: 2.5rem; font-weight: 680; letter-spacing: -0.03em; }
+  h2 { font-size: 1.75rem; font-weight: 640; letter-spacing: -0.022em; }
+  h3 { font-size: 1.3125rem; font-weight: 620; letter-spacing: -0.015em; }
+  h4 { font-size: 1.0625rem; font-weight: 600; letter-spacing: -0.01em; }
+
+  h1, h2, h3, h4 {
+    margin-block: calc(var(--space) * 3.5) var(--space);
+  }
+  :is(h1, h2, h3, h4):first-child {
+    margin-block-start: 0;
+  }
+
+  p, ul, ol, blockquote, table, pre {
+    margin-block: calc(var(--space) * 1.5);
+  }
+
+  a {
+    color: var(--accent);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.18em;
+    text-decoration-color: color-mix(in oklch, var(--accent) 35%, transparent);
+    transition: text-decoration-color var(--dur) var(--ease-hikari);
+  }
+  a:hover {
+    text-decoration-color: currentColor;
+  }
+
+  strong { font-weight: 620; }
+  small { font-size: 0.875em; color: var(--muted); }
+
+  hr {
+    border: none;
+    border-top: 1px solid var(--line);
+    margin-block: calc(var(--space) * 4);
+  }
+
+  ul, ol {
+    padding-inline-start: calc(var(--space) * 3);
+  }
+  li {
+    margin-block: calc(var(--space) * 0.5);
+  }
+  li::marker { color: var(--muted); }
+
+  blockquote {
+    padding-inline-start: calc(var(--space) * 2.5);
+    border-inline-start: 2px solid color-mix(in oklch, var(--accent) 55%, var(--line));
+    color: var(--muted);
+  }
+
+  /* --- Code --- */
+  code, kbd, samp {
+    font-family: var(--mono);
+    font-size: 0.9em;
+  }
+  :not(pre) > code {
+    background: var(--surface-2);
+    padding: 0.15em 0.4em;
+    border-radius: calc(var(--radius) * 0.45);
+  }
+  kbd {
+    background: var(--surface-2);
+    border: 1px solid var(--line);
+    border-radius: calc(var(--radius) * 0.45);
+    padding: 0.1em 0.45em;
+    font-size: 0.8em;
+    box-shadow: 0 1px 0 var(--line);
+  }
+  pre {
+    position: relative;
+    background: var(--surface-2);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: calc(var(--space) * 2.5);
+    overflow-x: auto;
+    font-size: 0.9375rem;
+    line-height: 1.5;
+  }
+  pre code {
+    background: none;
+    padding: 0;
+    font-size: 1em;
+  }
+
+  /* Copy button injected by hikari.js. Quiet until the block is hovered. */
+  pre .hk-copy {
+    position: absolute;
+    inset-block-start: calc(var(--space) * 1.25);
+    inset-inline-end: calc(var(--space) * 1.25);
+    padding: 0.3rem 0.6rem;
+    font-family: var(--font);
+    font-size: 0.75rem;
+    font-weight: 550;
+    line-height: 1;
+    color: var(--muted);
+    background: color-mix(in oklch, var(--surface) 85%, transparent);
+    border: 1px solid var(--line);
+    border-radius: calc(var(--radius) * 0.6);
+    backdrop-filter: blur(4px);
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity var(--dur) var(--ease-hikari),
+                color var(--dur) var(--ease-hikari),
+                border-color var(--dur) var(--ease-hikari);
+  }
+  pre:hover .hk-copy,
+  pre .hk-copy:focus-visible,
+  pre .hk-copy[data-copied] {
+    opacity: 1;
+  }
+  pre .hk-copy:hover {
+    color: var(--fg);
+    border-color: color-mix(in oklch, var(--accent) 40%, var(--line));
+  }
+  pre .hk-copy[data-copied] {
+    color: var(--accent);
+    border-color: color-mix(in oklch, var(--accent) 45%, var(--line));
+  }
+
+  /* --- Buttons --- */
+  button,
+  input[type="button"],
+  input[type="submit"],
+  input[type="reset"] {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: calc(var(--space) * 0.75);
+    font-size: 0.9375rem;
+    font-weight: 550;
+    line-height: 1.2;
+    letter-spacing: -0.006em;
+    padding: 0.5rem 0.95rem;
+    color: var(--fg);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: calc(var(--radius) - 0.25rem);
+    box-shadow: var(--shadow-sm);
+    cursor: pointer;
+    transition: background var(--dur) var(--ease-hikari),
+                border-color var(--dur) var(--ease-hikari),
+                box-shadow var(--dur) var(--ease-hikari),
+                transform var(--dur) var(--ease-hikari);
+  }
+  button:hover,
+  input[type="button"]:hover,
+  input[type="submit"]:hover,
+  input[type="reset"]:hover {
+    background: var(--hover);
+    border-color: color-mix(in oklch, var(--fg) 22%, var(--border));
+  }
+  button:active,
+  input[type="button"]:active,
+  input[type="submit"]:active,
+  input[type="reset"]:active {
+    background: var(--surface-2);
+    box-shadow: none;
+    transform: scale(0.985);
+    transition-duration: 0.04s;
+  }
+  button:disabled,
+  input:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  /* --- Form fields --- */
+  input:not([type="button"]):not([type="submit"]):not([type="reset"]):not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]):not([type="file"]),
+  textarea,
+  select {
+    width: 100%;
+    max-width: 100%;
+    padding: 0.6rem 0.85rem;
+    color: var(--fg);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: calc(var(--radius) - 0.25rem);
+    transition: border-color var(--dur) var(--ease-hikari);
+  }
+  textarea { min-height: 6rem; resize: vertical; line-height: 1.5; }
+  /* The native resize grip clashes with the rounded corner — hide it; the
+     bottom edge still drags. */
+  textarea::-webkit-resizer { display: none; }
+
+  /* Own the select's chrome so its text centres like an input and the chevron
+     is ours, not the OS default. */
+  select {
+    appearance: none;
+    padding-inline-end: 2.25rem;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16' fill='none' stroke='%23888' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 6l4 4 4-4'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.85rem center;
+  }
+
+  /* Where the browser supports the customizable select, style the picker itself
+     so the drawer is page-anchored (aligned to the field) and matches the
+     surface. Elsewhere the native popup above is used, unchanged. */
+  @supports (appearance: base-select) {
+    select,
+    ::picker(select) {
+      appearance: base-select;
+    }
+    select {
+      background-image: none;
+      padding-inline-end: 0.85rem;
+      gap: var(--space);
+    }
+    select::picker-icon {
+      color: var(--muted);
+      transition: transform var(--dur) var(--ease-hikari);
+    }
+    select:open::picker-icon {
+      transform: rotate(180deg);
+    }
+    ::picker(select) {
+      position-area: block-end span-inline-end;
+      display: flex;
+      flex-direction: column;
+      gap: 0.125rem;
+      border: 1px solid var(--line);
+      border-radius: calc(var(--radius) - 0.125rem);
+      background: var(--surface);
+      box-shadow: var(--shadow-lg);
+      padding: 0.25rem;
+      margin-block-start: 0.35rem;
+    }
+    /* Horizontal padding = field padding (0.85rem) − picker padding (0.25rem)
+       so an open option's text lines up with the closed value. */
+    option {
+      padding: 0.45rem 0.6rem;
+      border-radius: calc(var(--radius) - 0.375rem);
+    }
+    /* Highlight the active option with a fill, not the accent focus ring. */
+    option:hover,
+    option:focus,
+    option:focus-visible {
+      background: var(--hover);
+      outline: none;
+    }
+    option::checkmark {
+      display: none;
+    }
+    option:checked {
+      color: var(--accent);
+      font-weight: 550;
+    }
+  }
+
+  /* Fields get a single crisp accent edge (border + flush inset, same colour →
+     reads as one 2px accent border). No outer ring, no gap, no glow. */
+  :is(input, textarea, select):focus-visible {
+    border-color: var(--accent);
+    box-shadow: inset 0 0 0 1px var(--accent);
+    outline: 2px solid transparent; /* keeps a focus indicator under forced-colors */
+    outline-offset: 0;
+  }
+
+  label {
+    display: inline-block;
+    margin-block-end: calc(var(--space) * 0.9);
+    font-size: 0.8125rem;
+    font-weight: 550;
+    letter-spacing: 0.005em;
+    color: var(--muted);
+  }
+
+  ::placeholder { color: color-mix(in oklch, var(--muted) 75%, transparent); }
+
+  fieldset {
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: calc(var(--space) * 2.5);
+  }
+  legend { padding-inline: var(--space); font-weight: 600; }
+
+  /* --- Tables --- */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-variant-numeric: tabular-nums;
+    font-size: 0.9375rem;
+  }
+  th, td {
+    padding: calc(var(--space) * 1.4) calc(var(--space) * 1.5);
+    text-align: start;
+    border-block-end: 1px solid var(--line);
+  }
+  thead th {
+    font-weight: 550;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--muted);
+  }
+  tbody tr {
+    transition: background var(--dur) var(--ease-hikari);
+  }
+  tbody tr:hover {
+    background: color-mix(in oklch, var(--surface) 55%, transparent);
+  }
+  tbody tr:last-child td { border-block-end: none; }
+}

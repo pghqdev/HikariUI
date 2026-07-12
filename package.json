@@ -1,0 +1,19 @@
+{
+  "name": "hikariui",
+  "version": "0.0.0",
+  "description": "Class-light CSS framework for semantic HTML. Bare tags look great; ~20 tokens are a theme.",
+  "type": "module",
+  "license": "MIT",
+  "files": ["dist"],
+  "exports": {
+    ".": "./dist/hikari.css",
+    "./min": "./dist/hikari.min.css",
+    "./js": "./dist/hikari.js"
+  },
+  "scripts": {
+    "build": "lightningcss --bundle src/hikari.css -o dist/hikari.css && lightningcss --bundle --minify src/hikari.css -o dist/hikari.min.css && cp src/hikari.js dist/hikari.js"
+  },
+  "devDependencies": {
+    "lightningcss-cli": "^1.30.1"
+  }
+}

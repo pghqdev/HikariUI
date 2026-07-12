@@ -29,20 +29,20 @@
                 display 0.11s allow-discrete;
   }
 
-  /* Open: a fast-start decelerate. --ease-hikari's precise-settle tail also has
-     a slow START (zero initial velocity), which reads as lag on an entrance;
-     an overlay appearing wants to move immediately. Close keeps the tail. */
+  /* Open: the box snaps to full opacity — fading in from invisible always
+     reads as lag, however fast. Only a quick scale-pop animates, so it appears
+     at once with a hint of motion. Close keeps the fade (starts visible, so it
+     reads as instant either way). */
   dialog:modal {
     opacity: 1;
     scale: 1;
-    transition: opacity 0.13s cubic-bezier(0, 0, 0.2, 1),
-                scale 0.13s cubic-bezier(0, 0, 0.2, 1),
+    transition: scale 0.13s cubic-bezier(0, 0, 0.2, 1),
                 overlay 0.13s allow-discrete,
                 display 0.13s allow-discrete;
   }
 
   @starting-style {
-    dialog:modal { opacity: 0; scale: 0.97; }
+    dialog:modal { scale: 0.96; }
   }
 
   /* Neutral scrim — a flat dim, never an accent glow. Same in both themes. */

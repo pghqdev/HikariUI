@@ -1,0 +1,45 @@
+/* Tabs. Markup is minimal semantic HTML — a [data-tab-list] of <button>s and
+   sibling [data-tab-panel]s inside [data-tabs]; hikari.js wires the ARIA roles,
+   roving arrow-key nav, and panel visibility. Progressive enhancement: with no
+   JS every panel stays visible (stacked), so content is never hidden. */
+
+@layer hikari {
+  [data-tab-list] {
+    display: flex;
+    flex-wrap: wrap;
+    gap: calc(var(--space) * 0.5);
+    border-block-end: 1px solid var(--line);
+  }
+
+  /* Restyle the bare <button> into an underline tab — strip the boxed chrome. */
+  [data-tab-list] button {
+    background: transparent;
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
+    color: var(--muted);
+    padding: 0.55rem 0.85rem;
+    margin-block-end: -1px; /* overlap the list's bottom rule */
+    border-block-end: 2px solid transparent;
+    transition: color var(--dur) var(--ease-hikari),
+                border-color var(--dur) var(--ease-hikari);
+  }
+  [data-tab-list] button:hover {
+    color: var(--fg);
+    background: transparent;
+    border-color: transparent;
+  }
+  [data-tab-list] button:active {
+    background: transparent;
+    box-shadow: none;
+    transform: none;
+  }
+  [data-tab-list] button[aria-selected="true"] {
+    color: var(--fg);
+    border-block-end-color: var(--accent);
+  }
+
+  [data-tab-panel] {
+    padding-block-start: calc(var(--space) * 2.5);
+  }
+}

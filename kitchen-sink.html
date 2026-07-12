@@ -115,6 +115,44 @@
       <button class="overridden">Author override wins</button>
     </div>
 
+    <h2>Dialog</h2>
+    <p>Native <code>&lt;dialog&gt;</code>, opened as a modal. Open/close ride the
+      native <code>command</code> invoker — no JS unless the browser lacks it.</p>
+    <div class="row">
+      <button command="show-modal" commandfor="demo-dialog" data-variant="solid">Open dialog</button>
+    </div>
+    <dialog id="demo-dialog">
+      <h3>Ship it?</h3>
+      <p>A modal on bare <code>&lt;dialog&gt;</code>. Scrim is a flat neutral dim;
+        the box enters and leaves on <code>--ease-hikari</code>. Press
+        <kbd>Esc</kbd> or a button to close.</p>
+      <div class="row" style="justify-content: flex-end">
+        <button command="close" commandfor="demo-dialog">Cancel</button>
+        <button command="close" commandfor="demo-dialog" data-variant="solid">Confirm</button>
+      </div>
+    </dialog>
+
+    <h2>Tabs</h2>
+    <div class="card">
+      <div data-tabs>
+        <div data-tab-list>
+          <button>Overview</button>
+          <button>Tokens</button>
+          <button>Motion</button>
+        </div>
+        <div data-tab-panel>
+          <p>Bare buttons become an underline tablist. Arrow keys move between
+            tabs; the selected edge is the one rationed accent.</p>
+        </div>
+        <div data-tab-panel>
+          <p>~20 Tier-1 tokens <em>are</em> a theme. Tier-2 derives the rest.</p>
+        </div>
+        <div data-tab-panel>
+          <p>One easing curve, gated by <code>prefers-reduced-motion</code>.</p>
+        </div>
+      </div>
+    </div>
+
     <h2>Form</h2>
     <div class="card">
       <form onsubmit="return false" class="grid">

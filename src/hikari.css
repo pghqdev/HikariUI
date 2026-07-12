@@ -5,3 +5,6 @@
 @import "base/tokens.css";
 @import "base/reset.css";
 @import "base/elements.css";
+
+@import "components/dialog.css";
+@import "components/tabs.css";

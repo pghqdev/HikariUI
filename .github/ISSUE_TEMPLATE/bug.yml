@@ -1,0 +1,34 @@
+name: Bug report
+description: Something in Hikarion CSS, JS, or docs is wrong
+title: "[bug] "
+labels: ["needs-triage"]
+body:
+  - type: textarea
+    id: summary
+    attributes:
+      label: What happened?
+      description: Expected vs actual behavior.
+    validations:
+      required: true
+  - type: textarea
+    id: repro
+    attributes:
+      label: Minimal reproduction
+      description: HTML markup (prefer kitchen-sink–style bare tags + data-* hooks).
+      render: html
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: hikarion-ui version
+      placeholder: "0.1.0"
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: Browser, OS, and whether hikarion.js is loaded.
+    validations:
+      required: false

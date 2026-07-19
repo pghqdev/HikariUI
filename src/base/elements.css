@@ -61,21 +61,6 @@
     margin-block-start: var(--space-8);
   }
 
-  /* Navigation — bare links get a muted, underline-free run; hover and the
-     page-level a:hover rules restore the accent. :where keeps it at zero
-     specificity so the tone resolver and author overrides win. */
-  :where(nav) :where(a) {
-    color: var(--muted);
-    text-decoration-thickness: 0;
-    transition: color var(--dur) var(--ease-hikarion),
-                text-decoration-color var(--dur) var(--ease-hikarion);
-  }
-  :where(nav) :where(a:hover) {
-    color: var(--fg);
-    text-decoration-thickness: 1px;
-    text-decoration-color: currentColor;
-  }
-
   /* --- Typography --- */
   h1 { font-size: 2.5rem; font-weight: 680; letter-spacing: -0.03em; }
   h2 { font-size: 1.75rem; font-weight: 640; letter-spacing: -0.022em; }
@@ -102,6 +87,20 @@
     transition: text-decoration-color var(--dur) var(--ease-hikarion);
   }
   a:hover {
+    text-decoration-color: currentColor;
+  }
+
+  /* Navigation — muted, underline-free run. After `a` so it wins the cascade
+     (a prior :where(nav) a lost to `a` because :where zeroes specificity). */
+  nav a {
+    color: var(--muted);
+    text-decoration-thickness: 0;
+    transition: color var(--dur) var(--ease-hikarion),
+                text-decoration-color var(--dur) var(--ease-hikarion);
+  }
+  nav a:hover {
+    color: var(--fg);
+    text-decoration-thickness: 1px;
     text-decoration-color: currentColor;
   }
 

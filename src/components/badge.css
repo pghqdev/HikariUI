@@ -22,9 +22,10 @@
     border-radius: var(--radius-pill);
     white-space: nowrap;
   }
-  /* Soft — tone-coloured text on the shared tint. */
+  /* Soft — readable ink on the shared tint (not raw tone, which fails AA on
+     light warning/success). */
   [data-badge][data-variant] {
-    color: var(--_tone);
+    color: var(--_tone-ink);
     background: var(--_tint-bg);
     border-color: var(--_tint-border);
   }

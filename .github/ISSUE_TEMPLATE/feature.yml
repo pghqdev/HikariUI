@@ -1,0 +1,28 @@
+name: Feature request
+description: Propose a capability that does not expand the public vocabulary (or say if it must)
+title: "[feature] "
+labels: ["needs-triage"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: What can you not do today with semantic HTML + the existing hooks?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposal
+      description: Preferred approach. Prefer zero new data-* hooks.
+    validations:
+      required: true
+  - type: dropdown
+    id: vocabulary
+    attributes:
+      label: Does this need a new public data-* hook or Tier-1 token?
+      options:
+        - "No — existing surface is enough"
+        - "Yes — I will follow docs/rfc.md"
+    validations:
+      required: true

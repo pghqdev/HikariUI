@@ -103,6 +103,7 @@
   // --- Theme: set/persist the palette and reflect the active control. "auto"
   // (or null) clears the override and falls back to the OS preference. The swap
   // crossfades via a View Transition where supported, off under reduced-motion.
+  /** @param {string} theme */
   function setTheme(theme) {
     const root = document.documentElement;
     const apply = () => {
@@ -155,6 +156,11 @@
     return region;
   }
 
+  /**
+   * @param {string} message
+   * @param {{ duration?: number, closable?: boolean, variant?: "accent" | "success" | "warning" | "danger" }} [options]
+   * @returns {() => void}
+   */
   function toast(message, { duration = 4000, closable = true, variant } = {}) {
     const region = toastRegion();
     const el = document.createElement("div");
@@ -258,6 +264,7 @@
 
   // --- Init: wire the per-element helpers inside `root`. Idempotent, so call
   // it again on any container you've injected markup into. ---
+  /** @param {ParentNode} [root] */
   function init(root = document) {
     const q = (sel) => [...(root.matches?.(sel) ? [root] : []), ...root.querySelectorAll(sel)];
     q("pre").forEach(decorate);

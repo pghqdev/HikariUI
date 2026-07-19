@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Agent rules / vocabulary
+    url: https://github.com/pghqdev/HikarionUI/blob/main/rules/hikarion-rules.md
+    about: Canonical closed vocabulary before inventing new data-* hooks

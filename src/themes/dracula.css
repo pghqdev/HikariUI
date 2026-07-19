@@ -8,7 +8,9 @@
     --bg: oklch(28.8% 0.022 277.5);
     --fg: oklch(97.7% 0.008 106.5);
     --surface: oklch(34.0% 0.027 276.0);
-    --muted: oklch(56.0% 0.080 270.1);
+    /* Comment-purple deepened toward Comment (#6272A4) lightness so muted
+       text clears 4.5:1 on --bg and --surface. */
+    --muted: oklch(78.0% 0.055 270.1);
     --border: oklch(40.3% 0.032 277.8);
 
     --accent: oklch(74.2% 0.149 301.9);

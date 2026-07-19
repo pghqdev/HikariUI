@@ -26,18 +26,23 @@
   "style": "dist/hikarion.css",
   "jsdelivr": "dist/hikarion.min.css",
   "unpkg": "dist/hikarion.min.css",
+  "types": "src/hikarion.d.ts",
   "sideEffects": [
     "*.css"
   ],
   "files": [
     "dist",
     "rules",
-    "skills.sh"
+    "skills.sh",
+    "src/hikarion.d.ts"
   ],
   "exports": {
     ".": "./dist/hikarion.css",
     "./min": "./dist/hikarion.min.css",
-    "./js": "./dist/hikarion.js",
+    "./js": {
+      "types": "./src/hikarion.d.ts",
+      "default": "./dist/hikarion.js"
+    },
     "./themes/*": "./dist/themes/*.css",
     "./rules": "./rules/hikarion-rules.md",
     "./package.json": "./package.json"
@@ -47,12 +52,24 @@
     "build:rules": "bun scripts/build-rules.mjs",
     "build:themes": "bun scripts/build-themes.mjs",
     "check": "bun scripts/contrast-check.mjs",
-    "prepublishOnly": "bun run check && bun run build"
+    "check:size": "bun scripts/bundle-size.mjs",
+    "check:a11y": "bun scripts/a11y-check.mjs",
+    "lint:css": "stylelint \"src/**/*.css\"",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "test": "bun test",
+    "ci": "bun run typecheck && bun test && bun run check && bun run lint:css && bun run build && bun run check:size && bun run check:a11y",
+    "prepublishOnly": "bun run ci"
   },
   "publishConfig": {
     "access": "public"
   },
   "devDependencies": {
-    "lightningcss-cli": "^1.30.1"
+    "@axe-core/playwright": "^4.10.2",
+    "@types/node": "^22.15.21",
+    "lightningcss-cli": "^1.30.1",
+    "playwright": "^1.52.0",
+    "stylelint": "^16.20.0",
+    "stylelint-config-standard": "^38.0.0",
+    "typescript": "^5.8.3"
   }
 }

@@ -25,9 +25,12 @@
   }
   button[data-chip]:hover { background: var(--hover); }
   button[data-chip][aria-pressed="true"] {
-    color: var(--accent);
-    background: color-mix(in oklch, var(--accent) 10%, transparent);
-    border-color: color-mix(in oklch, var(--accent) 45%, var(--border));
+    /* Consume the tone seam (accent default); ink/tint clear AA on soft fill. */
+    --_tone: var(--accent);
+    --_tone-content: var(--accent-content);
+    color: var(--_tone-ink);
+    background: var(--_tint-bg);
+    border-color: var(--_tint-border);
   }
 
   /* Remove control: a bare <button data-chip-remove> as a quiet ✕. Chrome is

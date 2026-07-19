@@ -1,0 +1,43 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Install
+        run: bun install
+
+      - name: Install Playwright Chromium
+        run: bunx playwright install --with-deps chromium
+
+      - name: Typecheck JS surface
+        run: bun run typecheck
+
+      - name: Unit tests
+        run: bun test
+
+      - name: Contrast gate
+        run: bun run check
+
+      - name: Stylelint
+        run: bun run lint:css
+
+      - name: Build
+        run: bun run build
+
+      - name: Bundle size budget
+        run: bun run check:size
+
+      - name: Accessibility (axe-core kitchen-sink)
+        run: bun run check:a11y

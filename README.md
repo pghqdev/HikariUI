@@ -127,13 +127,22 @@ native popover and `<dialog>` — no legacy fallbacks, by design.
 
 ```sh
 bun install
-bun run build     # bundle CSS + themes, generate agent surfaces (Lightning CSS)
-bun run check     # contrast gate: every tone/-content pair ≥ 4.5:1, every theme
+bun run build       # bundle CSS + themes, generate agent surfaces (Lightning CSS)
+bun run check       # contrast gate: tone pairs + body text pairs ≥ 4.5:1
+bun test            # unit tests for check scripts
+bun run typecheck   # JSDoc check on the optional JS surface
+bun run lint:css    # Stylelint + utility-class bans
+bun run check:size  # gzip budget for dist/hikarion.min.css (after build)
+bun run check:a11y  # axe-core against kitchen-sink.html (after build)
+bun run ci          # full quality gate
 ```
 
+See [CONTRIBUTING.md](CONTRIBUTING.md) for vocabulary/RFC expectations and
+[docs/versioning.md](docs/versioning.md) for SemVer + deprecation policy.
+
 The framework is authored in plain modern CSS partials under `src/`; Lightning
-CSS is the only build dependency and the shipped artifact is runtime-dependency-free.
-The docs site lives in `site/` (Astro).
+CSS is the only runtime build dependency and the shipped artifact is
+runtime-dependency-free. The docs site lives in `site/` (Astro).
 
 ## What Hikarion deliberately doesn't do
 

@@ -22,5 +22,8 @@
     --_tint-bg: color-mix(in oklch, var(--_tone) 10%, transparent);
     --_tint-border: color-mix(in oklch, var(--_tone) 30%, transparent);
     --_tone-hover: color-mix(in oklch, var(--_tone), black 14%);
+    /* Soft surfaces use tinted backgrounds; ink is mixed toward --fg so soft
+       badges/alerts clear WCAG AA even for light tones like warning. */
+    --_tone-ink: color-mix(in oklch, var(--_tone) 28%, var(--fg));
   }
 }

@@ -1,7 +1,7 @@
 /* Stepper — `<ol data-stepper>` of numbered step items. A multi-step flow
    indicator: completed, active, and pending steps connected by a line. No JS —
    state is driven by ARIA: `aria-current="step"` on the active `<li>`,
-   `aria-checked="true"` on completed ones. Bare `<ol>` (no list markers — the
+   completed steps are those before `aria-current="step"`. Bare `<ol>` (no list markers — the
    step number is the marker).
 
    Horizontal on wide viewports, vertical on narrow. The connecting line runs
@@ -10,7 +10,7 @@
 
    Markup:
      <ol data-stepper>
-       <li aria-checked="true"><button>Account</button></li>
+       <li><button>Account</button></li>
        <li aria-current="step"><button>Profile</button></li>
        <li><button>Confirm</button></li>
      </ol> */
@@ -51,6 +51,8 @@
     /* Completed predecessor tints its outgoing connector with the accent. */
     z-index: 0;
   }
+  [data-stepper] > li:has(~ li[aria-current="step"]) + li::before,
+  /* Deprecated: aria-checked on <li> is invalid ARIA; kept for one minor. */
   [data-stepper] > li[aria-checked="true"] + li::before {
     background: var(--accent);
   }
@@ -77,6 +79,7 @@
   }
 
   /* Completed step — accent fill, check mark instead of a number. */
+  [data-stepper] > li:has(~ li[aria-current="step"])::after,
   [data-stepper] > li[aria-checked="true"]::after {
     content: "✓";
     background: var(--accent);
@@ -105,6 +108,7 @@
     color: var(--fg);
     font-weight: 600;
   }
+  [data-stepper] > li:has(~ li[aria-current="step"]) > :where(button, a, span),
   [data-stepper] > li[aria-checked="true"] > :where(button, a, span) {
     color: var(--fg);
   }

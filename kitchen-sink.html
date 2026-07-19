@@ -88,12 +88,12 @@
     <blockquote>Semantic HTML is the API. Taste is the default; the palette is yours.</blockquote>
 
     <h2>Nav</h2>
-    <nav>
+    <nav aria-label="Primary">
       <a href="#">Home</a> · <a href="#">Components</a> · <a href="#">Themes</a> · <a href="#">Docs</a>
     </nav>
 
     <h3>Breadcrumbs</h3>
-    <nav data-breadcrumbs>
+    <nav data-breadcrumbs aria-label="Breadcrumb">
       <ol>
         <li><a href="#">Home</a></li>
         <li><a href="#">Docs</a></li>
@@ -102,7 +102,7 @@
     </nav>
 
     <h3>Pagination</h3>
-    <nav data-pagination>
+    <nav data-pagination aria-label="Pagination">
       <button aria-disabled="true">Prev</button>
       <a href="#">1</a>
       <a href="#" aria-current="page">2</a>
@@ -219,7 +219,7 @@
 
     <h2>Stepper</h2>
     <ol data-stepper>
-      <li aria-checked="true"><button>Account</button></li>
+      <li><button>Account</button></li>
       <li aria-current="step"><button>Profile</button></li>
       <li><button>Confirm</button></li>
       <li><span>Done</span></li>

@@ -1,0 +1,46 @@
+name: Design proposal (RFC)
+description: Propose a new public data-* hook or Tier-1 token
+title: "[rfc] "
+labels: ["needs-triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Read [docs/rfc.md](../blob/main/docs/rfc.md) and
+        [docs/public-surface.md](../blob/main/docs/public-surface.md) first.
+        Prefer ≤ 1–2 new hooks.
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: Why semantic HTML / existing hooks are not enough.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed names & markup
+      description: Exact attribute/token names and a minimal HTML example.
+      render: html
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+    validations:
+      required: true
+  - type: textarea
+    id: a11y
+    attributes:
+      label: Accessibility & progressive enhancement
+      description: Keyboard, ARIA, and no-JS behavior.
+    validations:
+      required: true
+  - type: textarea
+    id: migration
+    attributes:
+      label: Migration / deprecation
+      description: If anything is superseded, how deprecation will work.
+    validations:
+      required: false

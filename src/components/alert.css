@@ -25,9 +25,9 @@
     border: 1px solid var(--_tint-border);
     border-radius: var(--radius);
 
-    /* Title picks up the tone; body stays --fg for readability on the tint. */
+    /* Title picks up tone-ink (AA-safe on the tint); body stays --fg. */
     & > strong,
-    & :is(h3, h4) { color: var(--_tone); }
+    & :is(h3, h4) { color: var(--_tone-ink); }
 
     /* First/last child shed their margin so the padding box stays even. */
     & > :first-child { margin-block-start: 0; }

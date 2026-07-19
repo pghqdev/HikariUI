@@ -257,17 +257,20 @@ on a toned ancestor).
 
 ### Stepper
 A multi-step flow indicator — `<ol data-stepper>` of step items. No JS; state
-is ARIA-driven: `aria-checked="true"` on completed steps, `aria-current="step"`
-on the active one.
+is ARIA-driven: `aria-current="step"` on the active item. Steps before the
+current one are treated as completed (check + accent connector).
 ```html
 <ol data-stepper>
-  <li aria-checked="true"><button>Account</button></li>
+  <li><button>Account</button></li>
   <li aria-current="step"><button>Profile</button></li>
   <li><button>Confirm</button></li>
 </ol>
 ```
 Completed steps show a check and tint their connector with the accent; the
 active step gets an accent ring. Stacks vertically on narrow viewports.
+
+`aria-checked="true"` on completed `<li>` items is **deprecated** (invalid on
+`<li>`): still styled for this minor; remove in the next major.
 
 ## Theming
 

@@ -13,19 +13,21 @@
     --bg: oklch(99% 0.004 250);
     --fg: oklch(24% 0.02 260);
     --surface: oklch(97% 0.006 250);
-    --muted: oklch(52% 0.02 260);
+    /* Deepened so muted text clears 4.5:1 on --bg, --surface, and surface-2. */
+    --muted: oklch(44% 0.02 260);
     --border: oklch(90% 0.008 260);
 
-    --accent: oklch(54% 0.2 258);
+    /* Deepened so accent-as-link and solid accent fills clear axe AA in sRGB. */
+    --accent: oklch(48% 0.2 258);
     --accent-content: oklch(99% 0.01 258);
 
     /* Status. Part of Tier-1 — every theme sets all six. Each pair
        (colour / -content) must clear the 4.5 contrast gate for solid alerts. */
-    --success: oklch(51% 0.14 150);
+    --success: oklch(46% 0.14 150);
     --success-content: oklch(99% 0.02 150);
-    --warning: oklch(75% 0.15 78);
-    --warning-content: oklch(30% 0.05 78);
-    --danger: oklch(55% 0.2 27);
+    --warning: oklch(72% 0.15 78);
+    --warning-content: oklch(28% 0.05 78);
+    --danger: oklch(50% 0.2 27);
     --danger-content: oklch(99% 0.02 27);
 
     --radius: 0.875rem;
@@ -48,7 +50,8 @@
       --bg: oklch(20% 0.015 260);
       --fg: oklch(93% 0.01 260);
       --surface: oklch(24% 0.018 260);
-      --muted: oklch(66% 0.02 260);
+      /* Lifted so muted (and muted code) clears 4.5:1 on surface-2 tints. */
+      --muted: oklch(72% 0.018 260);
       --border: oklch(32% 0.02 260);
 
       --accent: oklch(72% 0.16 255);
@@ -69,7 +72,7 @@
     --bg: oklch(20% 0.015 260);
     --fg: oklch(93% 0.01 260);
     --surface: oklch(24% 0.018 260);
-    --muted: oklch(66% 0.02 260);
+    --muted: oklch(72% 0.018 260);
     --border: oklch(32% 0.02 260);
 
     --accent: oklch(72% 0.16 255);

@@ -1,0 +1,26 @@
+/* Catppuccin (Mocha) — a soothing pastel dark theme, mauve-anchored. Opt in
+   with one extra <link> and data-theme="catppuccin". Palette only: the
+   non-colour Tier-1 (radius, space, motion, fonts) and all Tier-2 tokens
+   inherit from core. Ships the Mocha flavour; other flavours are their own
+   theme file. */
+@layer hikarion {
+  [data-theme="catppuccin"] {
+    color-scheme: dark;
+
+    --bg: oklch(24.3% 0.030 283.9);
+    --fg: oklch(87.9% 0.043 272.3);
+    --surface: oklch(32.4% 0.032 282.0);
+    --muted: oklch(75.1% 0.040 273.9);
+    --border: oklch(40.4% 0.032 280.2);
+
+    --accent: oklch(78.7% 0.119 304.8);
+    --accent-content: oklch(24.3% 0.030 283.9);
+
+    --success: oklch(85.8% 0.109 142.7);
+    --success-content: oklch(24.3% 0.030 283.9);
+    --warning: oklch(91.9% 0.070 86.5);
+    --warning-content: oklch(24.3% 0.030 283.9);
+    --danger: oklch(75.6% 0.130 2.8);
+    --danger-content: oklch(24.3% 0.030 283.9);
+  }
+}

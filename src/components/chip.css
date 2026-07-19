@@ -1,0 +1,53 @@
+/* Chip — [data-chip]. A filter/input token, larger than a badge. Use a
+   <button> for a selectable filter ([aria-pressed]); a <span> for a static or
+   removable token (a nested [data-chip-remove] renders as a quiet ✕). */
+
+@layer hikarion {
+  [data-chip] {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: 0.35rem 0.8rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    line-height: 1.2;
+    color: var(--fg);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-pill);
+    white-space: nowrap;
+  }
+
+  /* Interactive chip (filter): strip the base <button> chrome to a flat pill. */
+  button[data-chip] {
+    box-shadow: none;
+    cursor: pointer;
+  }
+  button[data-chip]:hover { background: var(--hover); }
+  button[data-chip][aria-pressed="true"] {
+    color: var(--accent);
+    background: color-mix(in oklch, var(--accent) 10%, transparent);
+    border-color: color-mix(in oklch, var(--accent) 45%, var(--border));
+  }
+
+  /* Remove control: a bare <button data-chip-remove> as a quiet ✕. Chrome is
+     shed by the shared quiet-control reset (base/elements.css). */
+  [data-chip] > [data-chip-remove] {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    inline-size: 1.15em;
+    block-size: 1.15em;
+    margin-inline-end: -0.3rem;
+    padding: 0;
+    font-size: 1em;
+    line-height: 1;
+    color: var(--muted);
+    border-radius: var(--radius-pill);
+    cursor: pointer;
+  }
+  [data-chip] > [data-chip-remove]:hover {
+    color: var(--fg);
+    background: color-mix(in oklch, var(--fg) 10%, transparent);
+  }
+}

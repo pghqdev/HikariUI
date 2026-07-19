@@ -1,0 +1,83 @@
+/* Toggle/Switch — `data-switch` on a hidden checkbox. A distinct control from a
+   checkbox: it expresses a binary on/off state, not a checked item. The
+   checkbox is visually hidden but stays in the tab order and in the a11y tree;
+   a `<label>` (or the `::after` on the switch itself) draws the track and thumb.
+
+   Tone-respecting: `data-variant="<tone>"` retints the active track via the
+   tone resolver (base/tone.css); without a tone the switch defaults to the
+   accent. The thumb slides on `--ease-hikarion`, gated by the global
+   reduced-motion killswitch in reset.css.
+
+   Markup:
+     <input type="checkbox" data-switch>                  <!-- accent -->
+     <input type="checkbox" data-switch data-variant="danger">  <!-- destructive -->
+   Pair with a `<label for>` as the control's accessible name. The switch is
+   inline-block so it sits next to its label text. */
+
+@layer hikarion {
+  [data-switch] {
+    /* Default tone, so a bare data-variant="solid"-less switch is the accent. */
+    --_tone: var(--accent);
+    --_tone-content: var(--accent-content);
+
+    appearance: none;
+    -webkit-appearance: none;
+    display: inline-grid;
+    align-items: center;
+    inline-size: 2.6rem;
+    block-size: 1.5rem;
+    margin: 0;
+    padding: 0;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-pill);
+    /* Track reads as a quiet surface when off; the tone fills it when on. */
+    background: var(--surface-2);
+    cursor: pointer;
+    vertical-align: middle;
+    transition: background var(--dur) var(--ease-hikarion),
+                border-color var(--dur) var(--ease-hikarion);
+  }
+
+  /* The thumb — a flat dot that slides to the inline-end when checked. */
+  [data-switch]::after {
+    content: "";
+    grid-area: 1 / 1;
+    justify-self: start;
+    inline-size: 1.1rem;
+    block-size: 1.1rem;
+    margin-inline-start: 0.1rem;
+    border-radius: var(--radius-pill);
+    background: var(--fg);
+    box-shadow: var(--shadow-sm);
+    transition: transform var(--dur) var(--ease-hikarion),
+                background var(--dur) var(--ease-hikarion);
+  }
+
+  /* Checked — the track fills with the tone, the thumb slides across and
+     takes the readable -content pair so it stays legible on the fill. */
+  [data-switch]:checked {
+    background: var(--_tone);
+    border-color: transparent;
+  }
+  [data-switch]:checked::after {
+    transform: translateX(1.1rem);
+    background: var(--_tone-content);
+  }
+
+  /* Focus — the same crisp accent edge as the other fields, on the track. */
+  [data-switch]:focus-visible {
+    border-color: var(--accent);
+    box-shadow: inset 0 0 0 1px var(--accent);
+    outline: 2px solid transparent;
+    outline-offset: 0;
+  }
+
+  /* Disabled — dim and inert, like a disabled button. */
+  [data-switch]:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  /* Tone words resolve via base/tone.css; only the default lives here. The
+     resolver sets --_tone / --_tone-content on any [data-variant~="<tone>"]. */
+}

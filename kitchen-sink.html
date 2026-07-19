@@ -1,0 +1,417 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Hikarion UI — kitchen sink</title>
+  <!-- No-FOUC: apply the saved theme before paint. Ships as a copy-paste snippet. -->
+  <script>try{var t=localStorage.getItem("hikarion-theme");if(t)document.documentElement.dataset.theme=t}catch(e){}</script>
+  <link rel="stylesheet" href="dist/hikarion.css">
+  <style>
+    /* Page-local layout & showcase choreography — NOT part of Hikarion. */
+    main { max-width: 58rem; margin-inline: auto; }
+    .grid { display: grid; gap: calc(var(--space) * 2); grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr)); }
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: calc(var(--radius) + 0.125rem);
+      padding: calc(var(--space) * 3.5);
+      box-shadow: var(--shadow);
+    }
+    header.top { display: flex; justify-content: space-between; align-items: center; gap: var(--space); flex-wrap: wrap; margin-block-end: calc(var(--space) * 5); }
+    .row { display: flex; gap: calc(var(--space) * 1.5); flex-wrap: wrap; align-items: center; }
+
+    /* Segmented theme switch with a sliding thumb — the delight moment. */
+    .seg { position: relative; display: inline-flex; padding: 3px; background: var(--surface-2); border: 1px solid var(--line); border-radius: calc(var(--radius) + 2px); }
+    .seg button {
+      position: relative; z-index: 1; flex: 1 0 auto;
+      background: transparent; border: none; box-shadow: none;
+      color: var(--muted); padding: 0.35rem 0.95rem;
+      transition: color var(--dur) var(--ease-hikarion);
+    }
+    .seg button:hover { color: var(--fg); background: transparent; box-shadow: none; transform: none; }
+    .seg button[aria-pressed="true"] { color: var(--fg); }
+    .seg .thumb {
+      position: absolute; z-index: 0; inset-block: 3px; inset-inline-start: 0; left: 0;
+      border-radius: var(--radius); background: var(--surface); box-shadow: var(--shadow-sm);
+      transition: transform var(--dur) var(--ease-hikarion), width var(--dur) var(--ease-hikarion);
+    }
+
+    /* Nested demo cards lift subtly on hover. */
+    .card.demo { transition: transform var(--dur) var(--ease-hikarion), box-shadow var(--dur) var(--ease-hikarion); }
+    .card.demo:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); }
+
+    /* Proof that an unlayered author rule beats Hikarion with no !important. */
+    button.overridden { background: rebeccapurple; color: white; border-color: rebeccapurple; }
+
+    /* Theme swap crossfades the whole page via a View Transition (see script) —
+       one smooth dissolve, no per-property snapping. */
+    ::view-transition-old(root), ::view-transition-new(root) {
+      animation-duration: 0.28s;
+      animation-timing-function: var(--ease-hikarion);
+    }
+
+    /* Staggered entrance — first impression. Skipped under reduced-motion. */
+    @media (prefers-reduced-motion: no-preference) {
+      main > * { animation: rise .55s var(--ease-hikarion) backwards; }
+      main > :nth-child(1) { animation-delay: .02s }
+      main > :nth-child(2) { animation-delay: .06s }
+      main > :nth-child(3) { animation-delay: .10s }
+      main > :nth-child(4) { animation-delay: .14s }
+      main > :nth-child(5) { animation-delay: .18s }
+      main > :nth-child(6) { animation-delay: .22s }
+      main > :nth-child(n+7) { animation-delay: .26s }
+    }
+    @keyframes rise { from { opacity: 0; transform: translateY(10px); } }
+  </style>
+</head>
+<body>
+  <main>
+    <header class="top">
+      <h1 style="margin:0">Hikarion UI</h1>
+      <div class="seg" role="group" aria-label="Theme">
+        <span class="thumb" aria-hidden="true"></span>
+        <button data-set-theme="auto">Auto</button>
+        <button data-set-theme="light">Light</button>
+        <button data-set-theme="dark">Dark</button>
+      </div>
+    </header>
+
+    <p>Bare semantic HTML, zero classes. Switch the theme above — the whole page
+      re-lights from ~20 tokens, <strong>including the shadows</strong>, which
+      are tinted from <code>--accent</code>.</p>
+
+    <h2>Typography</h2>
+    <p>Body text with a <a href="#">tasteful link</a>, some <strong>strong</strong>
+      emphasis, inline <code>code</code>, and a <kbd>⌘K</kbd> key. Press
+      <a href="#">Tab</a> to see the accent focus ring ignite.</p>
+    <blockquote>Semantic HTML is the API. Taste is the default; the palette is yours.</blockquote>
+
+    <h2>Nav</h2>
+    <nav>
+      <a href="#">Home</a> · <a href="#">Components</a> · <a href="#">Themes</a> · <a href="#">Docs</a>
+    </nav>
+
+    <h3>Breadcrumbs</h3>
+    <nav data-breadcrumbs>
+      <ol>
+        <li><a href="#">Home</a></li>
+        <li><a href="#">Docs</a></li>
+        <li><a href="#" aria-current="page">Tokens</a></li>
+      </ol>
+    </nav>
+
+    <h3>Pagination</h3>
+    <nav data-pagination>
+      <button aria-disabled="true">Prev</button>
+      <a href="#">1</a>
+      <a href="#" aria-current="page">2</a>
+      <a href="#">3</a>
+      <a href="#">4</a>
+      <button>Next</button>
+    </nav>
+
+    <h2>Definition list</h2>
+    <dl>
+      <dt>Token</dt>
+      <dd>A CSS custom property a theme author sets to restyle the framework.</dd>
+      <dt>Hook</dt>
+      <dd>A bare <code>data-*</code> attribute that identifies an element as a component.</dd>
+      <dt>Tone</dt>
+      <dd>A semantic color role — <code>accent</code>, <code>success</code>, <code>warning</code>, or <code>danger</code>.</dd>
+    </dl>
+
+    <h3>Nested themes</h3>
+    <div class="grid">
+      <div class="card demo" data-theme="light">
+        <h4>Forced light</h4>
+        <p><small>This card is <code>data-theme="light"</code></small></p>
+        <button>Its shadow is light-lit</button>
+      </div>
+      <div class="card demo" data-theme="dark">
+        <h4>Forced dark</h4>
+        <p><small>This card is <code>data-theme="dark"</code></small></p>
+        <button>Its shadow is dark-lit</button>
+      </div>
+    </div>
+
+    <h2>Buttons</h2>
+    <div class="row">
+      <button>Default</button>
+      <button data-variant="solid">Solid</button>
+      <button data-variant="danger solid">Delete</button>
+      <button disabled>Disabled</button>
+      <button class="overridden">Author override wins</button>
+    </div>
+
+    <h2>Dialog</h2>
+    <p>Native <code>&lt;dialog&gt;</code>, opened as a modal. Open/close ride the
+      native <code>command</code> invoker — no JS unless the browser lacks it.</p>
+    <div class="row">
+      <button command="show-modal" commandfor="demo-dialog" data-variant="solid">Open dialog</button>
+    </div>
+    <dialog id="demo-dialog">
+      <h3>Ship it?</h3>
+      <p>A modal on bare <code>&lt;dialog&gt;</code>. Scrim is a flat neutral dim;
+        the box enters and leaves on <code>--ease-hikarion</code>. Press
+        <kbd>Esc</kbd> or a button to close.</p>
+      <div class="row" style="justify-content: flex-end">
+        <button command="close" commandfor="demo-dialog">Cancel</button>
+        <button command="close" commandfor="demo-dialog" data-variant="solid">Confirm</button>
+      </div>
+    </dialog>
+
+    <h2>Tabs</h2>
+    <div class="card">
+      <div data-tabs>
+        <div data-tab-list>
+          <button>Overview</button>
+          <button>Tokens</button>
+          <button>Motion</button>
+        </div>
+        <div data-tab-panel>
+          <p>Bare buttons become an underline tablist. Arrow keys move between
+            tabs; the selected edge is the one rationed accent.</p>
+        </div>
+        <div data-tab-panel>
+          <p>~20 Tier-1 tokens <em>are</em> a theme. Tier-2 derives the rest.</p>
+        </div>
+        <div data-tab-panel>
+          <p>One easing curve, gated by <code>prefers-reduced-motion</code>.</p>
+        </div>
+      </div>
+    </div>
+
+    <h2>Card</h2>
+    <div class="grid">
+      <article>
+        <h3>Bare &lt;article&gt;</h3>
+        <p>A semantic card by default — quiet surface, hairline, neutral lift.
+          No classes.</p>
+        <div class="row">
+          <button data-variant="solid">Action</button>
+          <span data-badge data-variant="accent">New</span>
+        </div>
+      </article>
+      <article>
+        <h3>Even margins</h3>
+        <p><small>The first and last child shed their margin, so the padding box
+          stays even no matter what you nest.</small></p>
+      </article>
+    </div>
+
+    <h2>Accordion</h2>
+    <details open>
+      <summary>What is Hikarion?</summary>
+      <p>Bare <code>&lt;details&gt;</code>/<code>&lt;summary&gt;</code>. The
+        chevron rotates on <code>--ease-hikarion</code>; the toggle is native, no JS.</p>
+    </details>
+    <details>
+      <summary>Does it need JavaScript?</summary>
+      <p>No — disclosure is native. <code>hikarion.js</code> is only for the few
+        things CSS can't do.</p>
+    </details>
+    <details>
+      <summary>What about reduced motion?</summary>
+      <p>The chevron transition is disabled by the global
+        <code>prefers-reduced-motion</code> killswitch.</p>
+    </details>
+
+    <h2>Stepper</h2>
+    <ol data-stepper>
+      <li aria-checked="true"><button>Account</button></li>
+      <li aria-current="step"><button>Profile</button></li>
+      <li><button>Confirm</button></li>
+      <li><span>Done</span></li>
+    </ol>
+
+    <h2>Badge</h2>
+    <p>One tone grammar everywhere: <code>data-variant="&lt;tone&gt; [solid]"</code>.</p>
+    <div class="row">
+      <span data-badge>Default</span>
+      <span data-badge data-variant="accent">Accent</span>
+      <span data-badge data-variant="success">Passing</span>
+      <span data-badge data-variant="warning">Flaky</span>
+      <span data-badge data-variant="danger">Failing</span>
+      <span data-badge data-variant="solid">Solid</span>
+      <span data-badge data-variant="danger solid">3 errors</span>
+      <span data-badge>7</span>
+    </div>
+
+    <h2>Chip</h2>
+    <div class="row">
+      <button data-chip aria-pressed="true">All</button>
+      <button data-chip aria-pressed="false">Components</button>
+      <button data-chip aria-pressed="false">Themes</button>
+      <span data-chip>filter.css <button data-chip-remove aria-label="Remove filter">✕</button></span>
+    </div>
+
+    <h2>Spinner</h2>
+    <p>CSS-only <code>[data-spinner]</code> — a rotating ring in the accent. No JS;
+      reduced-motion pauses it. Inline next to text or standalone.</p>
+    <div class="row">
+      <span data-spinner></span>
+      <button data-variant="solid" disabled><span data-spinner></span> Saving…</button>
+      <span data-badge data-variant="success"><span data-spinner></span> Syncing</span>
+    </div>
+
+    <h2>Switch</h2>
+    <p>A binary toggle — <code>data-switch</code> on a checkbox. Tone-respecting.</p>
+    <div class="row">
+      <label><input type="checkbox" data-switch checked> Notifications</label>
+      <label><input type="checkbox" data-switch data-variant="danger" checked> Destructive</label>
+      <label><input type="checkbox" data-switch data-variant="success"> Off</label>
+      <label><input type="checkbox" data-switch disabled> Disabled</label>
+    </div>
+
+    <h2>Dropdown</h2>
+    <p>Native <code>popover</code> — the browser owns open, light-dismiss, and
+      focus. Pinned under its trigger with CSS anchor positioning, no JS.</p>
+    <div class="row">
+      <button popovertarget="menu-demo" data-variant="solid">Actions</button>
+      <div popover id="menu-demo" data-menu>
+        <button>Edit</button>
+        <button>Duplicate</button>
+        <a href="#">Open in new tab</a>
+        <hr>
+        <button>Delete</button>
+      </div>
+    </div>
+
+    <h2>Tooltip</h2>
+    <p>CSS-only <code>[data-tooltip]</code> — hover or focus to reveal.</p>
+    <div class="row">
+      <button data-tooltip="Copied to clipboard">Hover me</button>
+      <button data-tooltip="Focus shows it too — try Tab">Or focus me</button>
+      <span data-badge data-variant="accent" data-tooltip="Works on any element">Badge</span>
+    </div>
+
+    <h2>Toast</h2>
+    <p>Transient feedback via <code>Hikarion.toast()</code> — auto-dismisses, or
+      close it. Stacks bottom-end.</p>
+    <div class="row">
+      <button data-variant="solid" onclick="Hikarion.toast('Changes saved')">Show toast</button>
+      <button onclick="Hikarion.toast('Undo available — 8s', { duration: 8000 })">Longer toast</button>
+      <button onclick="Hikarion.toast('Build passed', { variant: 'success' })">Success toast</button>
+      <button onclick="Hikarion.toast('Couldn\'t reach the server', { variant: 'danger' })">Danger toast</button>
+    </div>
+
+    <h2>Alert</h2>
+    <p>Callout via <code>[role]</code> + <code>data-variant</code>. Soft by
+      default; add <code>solid</code> to fill.</p>
+    <div role="status" data-variant="success">
+      <strong>Saved</strong> — your changes are live.
+    </div>
+    <div role="status" data-variant="warning">
+      <strong>Heads up</strong> — this action can't be undone.
+    </div>
+    <div role="alert" data-variant="danger">
+      <strong>Failed</strong> — couldn't reach the server.
+    </div>
+    <div role="status" data-variant="accent">
+      <strong>Tip</strong> — tone names mirror the tokens; this one is the accent.
+    </div>
+    <div role="alert" data-variant="danger solid">
+      <strong>Deleted</strong> — the record is gone. <a href="#">Undo</a>
+    </div>
+
+    <h2>Form</h2>
+    <div class="card">
+      <form onsubmit="return false" class="grid">
+        <p>
+          <label for="name">Name</label>
+          <input id="name" type="text" placeholder="Hikarion">
+        </p>
+        <p>
+          <label for="email">Email</label>
+          <input id="email" type="email" required placeholder="you@example.com">
+          <small>Type an invalid address and tab away — the edge turns <code>--danger</code>. No JS: native <code>:user-invalid</code>.</small>
+        </p>
+        <p>
+          <label for="role">Role</label>
+          <select id="role"><option>Developer</option><option>Agent</option></select>
+        </p>
+        <p>
+          <label for="bio">Bio</label>
+          <textarea id="bio" placeholder="Tell us something"></textarea>
+        </p>
+        <p>
+          <label for="vol">Volume <output for="vol">50</output></label>
+          <input id="vol" type="range" min="0" max="100" value="50" oninput="document.querySelector('output[for=vol]').textContent=this.value">
+        </p>
+        <p>
+          <label for="avatar">Avatar</label>
+          <input id="avatar" type="file">
+        </p>
+        <p>
+          <label for="drop">Drop a file</label>
+          <label data-dropzone>
+            <input id="drop" type="file" hidden>
+            <span data-dropzone-filename>Drop files here or click to browse</span>
+          </label>
+        </p>
+      </form>
+      <div class="row" style="margin-top: var(--space)">
+        <button type="submit" data-variant="solid">Submit</button>
+        <button type="reset">Reset</button>
+      </div>
+    </div>
+
+    <h2>Progress &amp; meter</h2>
+    <p>Native <code>&lt;progress&gt;</code> and <code>&lt;meter&gt;</code> — bars in the accent; <code>&lt;output&gt;</code> shows a computed value.</p>
+    <label for="upload">Upload <output for="upload">62%</output></label>
+    <progress id="upload" value="62" max="100"></progress>
+    <label for="thinking">Thinking…</label>
+    <progress></progress>
+    <label for="disk">Disk usage</label>
+    <meter id="disk" value="0.4" min="0" max="1" low="0.66" high="0.85" optimum="0.1"></meter>
+
+    <h2>Table</h2>
+    <table>
+      <thead>
+        <tr><th>Token</th><th>Tier</th><th>Role</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><code>--accent</code></td><td>1</td><td>The one electric hue</td></tr>
+        <tr><td><code>--surface</code></td><td>1</td><td>Quiet raised surface</td></tr>
+        <tr><td><code>--shadow</code></td><td>2</td><td>Depth, tinted from accent</td></tr>
+        <tr><td><code>--ease-hikarion</code></td><td>1</td><td>The one easing curve</td></tr>
+      </tbody>
+    </table>
+
+    <h2>Code</h2>
+    <p>Hover a code block for the copy button (from <code>hikarion.js</code>).</p>
+    <pre><code>&lt;link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hikarion-ui/dist/hikarion.min.css"&gt;
+&lt;script src="https://cdn.jsdelivr.net/npm/hikarion-ui/dist/hikarion.js" defer&gt;&lt;/script&gt;
+
+&lt;button&gt;Just works&lt;/button&gt;
+&lt;section data-theme="dark"&gt;
+  &lt;h2&gt;Themed region&lt;/h2&gt;
+&lt;/section&gt;</code></pre>
+  </main>
+
+  <script src="dist/hikarion.js" defer></script>
+  <script>
+    // The theme apply + persistence + crossfade + aria-pressed all live in
+    // hikarion.js (declarative [data-set-theme]). This is just the page-local
+    // sliding-thumb choreography — not part of Hikarion.
+    const seg = document.querySelector(".seg");
+    const thumb = seg.querySelector(".thumb");
+
+    function moveThumb(btn) {
+      if (!btn) return;
+      thumb.style.width = btn.offsetWidth + "px";
+      thumb.style.transform = `translateX(${btn.offsetLeft - thumb.offsetLeft}px)`;
+    }
+    const activeBtn = () =>
+      seg.querySelector(`[data-set-theme="${document.documentElement.dataset.theme || "auto"}"]`);
+
+    seg.addEventListener("click", (e) => {
+      const btn = e.target.closest("[data-set-theme]");
+      if (btn) moveThumb(btn);
+    });
+    addEventListener("resize", () => moveThumb(activeBtn()));
+    moveThumb(activeBtn());
+  </script>
+</body>
+</html>

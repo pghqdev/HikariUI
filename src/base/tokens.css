@@ -1,0 +1,132 @@
+/* Two-tier theming.
+   Tier 1: the ~20 tokens that ARE a theme. Set per-theme below.
+   Tier 2: derived component tokens, computed once on every theme root so a
+           nested [data-theme] re-derives from its own Tier-1 — including the
+           accent-tinted shadows. Never authored by users. */
+
+@layer hikarion {
+  /* --- Tier 1: light (also the default for a bare, theme-less page) --- */
+  :root,
+  [data-theme="light"] {
+    color-scheme: light;
+
+    --bg: oklch(99% 0.004 250);
+    --fg: oklch(24% 0.02 260);
+    --surface: oklch(97% 0.006 250);
+    --muted: oklch(52% 0.02 260);
+    --border: oklch(90% 0.008 260);
+
+    --accent: oklch(54% 0.2 258);
+    --accent-content: oklch(99% 0.01 258);
+
+    /* Status. Part of Tier-1 — every theme sets all six. Each pair
+       (colour / -content) must clear the 4.5 contrast gate for solid alerts. */
+    --success: oklch(51% 0.14 150);
+    --success-content: oklch(99% 0.02 150);
+    --warning: oklch(75% 0.15 78);
+    --warning-content: oklch(30% 0.05 78);
+    --danger: oklch(55% 0.2 27);
+    --danger-content: oklch(99% 0.02 27);
+
+    --radius: 0.875rem;
+    --space: 0.5rem;
+    --ease-hikarion: cubic-bezier(0.2, 0, 0, 1);
+    --dur: 0.16s;
+    --font: system-ui, -apple-system, "Segoe UI", sans-serif;
+    --mono: ui-monospace, "SF Mono", "Cascadia Code", monospace;
+  }
+
+  /* --- Tier 1: dark. Auto via OS preference, unless a [data-theme] forces it.
+     The :not([data-theme]) guard is load-bearing: without it this rule ties
+     `[data-theme="light"]` on :root and, being later in source order, wins.
+     Must carry the SAME palette as [data-theme="dark"] below — including the
+     six status tokens; `bun run check` gates both scopes so they can't drift. --- */
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme]) {
+      color-scheme: dark;
+
+      --bg: oklch(20% 0.015 260);
+      --fg: oklch(93% 0.01 260);
+      --surface: oklch(24% 0.018 260);
+      --muted: oklch(66% 0.02 260);
+      --border: oklch(32% 0.02 260);
+
+      --accent: oklch(72% 0.16 255);
+      --accent-content: oklch(20% 0.03 260);
+
+      --success: oklch(74% 0.15 150);
+      --success-content: oklch(22% 0.04 150);
+      --warning: oklch(80% 0.15 82);
+      --warning-content: oklch(26% 0.05 82);
+      --danger: oklch(70% 0.17 25);
+      --danger-content: oklch(22% 0.05 25);
+    }
+  }
+
+  [data-theme="dark"] {
+    color-scheme: dark;
+
+    --bg: oklch(20% 0.015 260);
+    --fg: oklch(93% 0.01 260);
+    --surface: oklch(24% 0.018 260);
+    --muted: oklch(66% 0.02 260);
+    --border: oklch(32% 0.02 260);
+
+    --accent: oklch(72% 0.16 255);
+    --accent-content: oklch(20% 0.03 260);
+
+    --success: oklch(74% 0.15 150);
+    --success-content: oklch(22% 0.04 150);
+    --warning: oklch(80% 0.15 82);
+    --warning-content: oklch(26% 0.05 82);
+    --danger: oklch(70% 0.17 25);
+    --danger-content: oklch(22% 0.05 25);
+  }
+
+  /* --- Tier 2: derived. Declared on every theme root (`:root` and any
+     `[data-theme]`) so switching or nesting a theme recomputes these from the
+     local Tier-1 accent — shadows and glow recolor for free. --- */
+  :root,
+  [data-theme] {
+    /* Spacing scale — every framework gap/padding/margin sits on one of these
+       steps; --space is the Tier-1 base unit, never used raw in components. */
+    --space-1: calc(var(--space) * 0.5);
+    --space-2: calc(var(--space) * 0.75);
+    --space-3: var(--space);
+    --space-4: calc(var(--space) * 1.5);
+    --space-5: calc(var(--space) * 2);
+    --space-6: calc(var(--space) * 2.5);
+    --space-7: calc(var(--space) * 3);
+    --space-8: calc(var(--space) * 4);
+
+    /* Radius scale — nested surfaces step down from the Tier-1 --radius. */
+    --radius-sm: calc(var(--radius) - 0.25rem);
+    --radius-xs: calc(var(--radius) - 0.375rem);
+    --radius-pill: 999px;
+
+    /* Motion constants for the overlay pop recipe (base/motion.css). --ease-out
+       decelerates for entrances; --ease-hikarion's settle-tail suits exits. */
+    --ease-out: cubic-bezier(0, 0, 0.2, 1);
+    --dur-enter: 0.13s;
+    --dur-exit: 0.11s;
+
+    --surface-2: color-mix(in oklch, var(--surface), var(--fg) 5%);
+    --hover: color-mix(in oklch, var(--surface), var(--fg) 5%);
+    /* Hairline that leans on the surface, not a hard gray line. */
+    --line: color-mix(in oklch, var(--border) 65%, transparent);
+
+    /* Depth mixed from the local accent, so a theme switch re-lights shadows
+       too. Crisp flat lift, not a halo: near-black with a whisper of accent. */
+    --shadow-color: color-mix(in oklch, var(--accent) 30%, oklch(18% 0.01 260));
+    --shadow-sm: 0 1px 2px color-mix(in oklch, var(--shadow-color), transparent 95%);
+    --shadow: 0 1px 3px color-mix(in oklch, var(--shadow-color), transparent 94%),
+              0 1px 2px -1px color-mix(in oklch, var(--shadow-color), transparent 95%);
+    --shadow-lg: 0 8px 30px -10px color-mix(in oklch, var(--shadow-color), transparent 88%);
+
+    /* The one chevron glyph — select's picker arrow, dropdown trigger, and
+       accordion marker all draw this. Components apply it as a mask filled
+       with currentColor; only the fallback <select> paints the URI directly,
+       so the baked gray stroke shows there alone. */
+    --chevron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16' fill='none' stroke='%23888' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 6l4 4 4-4'/%3E%3C/svg%3E");
+  }
+}

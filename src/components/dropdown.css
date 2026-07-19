@@ -1,0 +1,79 @@
+/* Dropdown — native Popover API. A [popovertarget] <button> opens a
+   [popover][data-menu]; the browser owns toggle + light-dismiss + focus. The
+   popover's implicit anchor is its invoker, so it pins under the trigger via
+   position-area — no anchor-name wiring per instance. Enter/exit pop lives in
+   base/motion.css. prefers-reduced-motion is the global killswitch. */
+
+@layer hikarion {
+  [data-menu] {
+    /* Top-layer popover; position: fixed lets it anchor to the invoker. */
+    position: fixed;
+    min-inline-size: 12rem;
+    max-inline-size: min(20rem, calc(100vw - var(--space-8)));
+    margin: 0;
+    padding: 0.3rem;
+    color: var(--fg);
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-lg);
+
+    /* Pin below the trigger, start-aligned; flip above near the viewport edge. */
+    position-area: block-end span-inline-end;
+    margin-block-start: 0.35rem;
+    position-try-fallbacks: flip-block;
+
+    /* The pop scales from the trigger edge, not the centre. */
+    transform-origin: top;
+  }
+
+  /* Trigger chevron. A dropdown trigger is a [popovertarget] button placed
+     immediately before its [data-menu]; give it a chevron that flips when the
+     menu opens. Drawn as a mask filled with currentColor, so it takes the
+     button's text colour (accent-content on a solid trigger, --fg otherwise);
+     the glyph is centred in its viewBox, so the 180° flip pivots in place.
+     :has(+ [data-menu]) keeps it off popovers that aren't menus. */
+  button[popovertarget]:has(+ [data-menu])::after {
+    content: "";
+    inline-size: 0.7em;
+    block-size: 0.7em;
+    background-color: currentColor;
+    mask: var(--chevron) center / contain no-repeat;
+    opacity: 0.85;
+    transform-origin: center;
+    transition: transform var(--dur) var(--ease-hikarion);
+  }
+  button[popovertarget]:has(+ [data-menu]:popover-open)::after {
+    transform: rotate(180deg);
+  }
+
+  /* Menu rows — bare <button>/<a> as flat, full-width items. Button chrome is
+     shed by the shared quiet-control reset (base/elements.css); the transparent
+     background here covers the <a> case. */
+  [data-menu] :is(button, a) {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: var(--space-3);
+    inline-size: 100%;
+    padding: 0.5rem 0.7rem;
+    font-size: 0.9375rem;
+    font-weight: 500;
+    text-align: start;
+    text-decoration: none;
+    color: var(--fg);
+    background: transparent;
+    border-radius: var(--radius-xs);
+  }
+  [data-menu] :is(button, a):hover {
+    background: var(--hover);
+  }
+
+  /* Separator between groups of rows. */
+  [data-menu] hr {
+    margin-block: 0.3rem;
+    margin-inline: 0;
+    border: none;
+    border-block-start: 1px solid var(--line);
+  }
+}

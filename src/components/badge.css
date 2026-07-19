@@ -1,0 +1,36 @@
+/* Badge — [data-badge], a bare hook. A small inline pill for counts, states,
+   and labels. Neutral by default; data-variant="<tone> [solid]" tints or
+   fills it — the status tokens are Tier-1, so a success/danger badge costs a
+   theme nothing it hasn't already paid. Tones resolve in base/tone.css. */
+
+@layer hikarion {
+  [data-badge] {
+    /* Default tone, so a bare data-variant="solid" fills with the accent. */
+    --_tone: var(--accent);
+    --_tone-content: var(--accent-content);
+
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+    padding: 0.15em 0.6em;
+    font-size: 0.8125em;
+    font-weight: 550;
+    line-height: 1.5;
+    color: var(--muted);
+    background: var(--surface-2);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-pill);
+    white-space: nowrap;
+  }
+  /* Soft — tone-coloured text on the shared tint. */
+  [data-badge][data-variant] {
+    color: var(--_tone);
+    background: var(--_tint-bg);
+    border-color: var(--_tint-border);
+  }
+  [data-badge][data-variant~="solid"] {
+    color: var(--_tone-content);
+    background: var(--_tone);
+    border-color: transparent;
+  }
+}

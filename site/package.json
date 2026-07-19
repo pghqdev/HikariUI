@@ -1,0 +1,14 @@
+{
+  "name": "hikarion-site",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "prebuild": "bun run sync-assets.mjs",
+    "dev": "bun run sync-assets.mjs && astro dev",
+    "build": "astro build",
+    "preview": "astro preview"
+  },
+  "dependencies": {
+    "astro": "^7.0.7"
+  }
+}

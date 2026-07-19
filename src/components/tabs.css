@@ -1,0 +1,36 @@
+/* Tabs. Markup is minimal semantic HTML — a [data-tab-list] of <button>s and
+   sibling [data-tab-panel]s inside [data-tabs]; hikarion.js wires the ARIA roles,
+   roving arrow-key nav, and panel visibility. Progressive enhancement: with no
+   JS every panel stays visible (stacked), so content is never hidden. */
+
+@layer hikarion {
+  [data-tab-list] {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-1);
+    border-block-end: 1px solid var(--line);
+  }
+
+  /* An underline tab — chrome is already shed by the shared quiet-control
+     reset (base/elements.css); only the underline look lives here. */
+  [data-tab-list] button {
+    border-radius: 0;
+    color: var(--muted);
+    padding: 0.55rem 0.85rem;
+    margin-block-end: -1px; /* overlap the list's bottom rule */
+    border-block-end: 2px solid transparent;
+    transition: color var(--dur) var(--ease-hikarion),
+                border-color var(--dur) var(--ease-hikarion);
+  }
+  [data-tab-list] button:hover {
+    color: var(--fg);
+  }
+  [data-tab-list] button[aria-selected="true"] {
+    color: var(--fg);
+    border-block-end-color: var(--accent);
+  }
+
+  [data-tab-panel] {
+    padding-block-start: var(--space-6);
+  }
+}

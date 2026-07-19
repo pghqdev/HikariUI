@@ -1,0 +1,131 @@
+/* Stepper — `<ol data-stepper>` of numbered step items. A multi-step flow
+   indicator: completed, active, and pending steps connected by a line. No JS —
+   state is driven by ARIA: `aria-current="step"` on the active `<li>`,
+   `aria-checked="true"` on completed ones. Bare `<ol>` (no list markers — the
+   step number is the marker).
+
+   Horizontal on wide viewports, vertical on narrow. The connecting line runs
+   between step bubbles; the accent fills completed/active steps, the line
+   dims to the hairline ahead of pending ones.
+
+   Markup:
+     <ol data-stepper>
+       <li aria-checked="true"><button>Account</button></li>
+       <li aria-current="step"><button>Profile</button></li>
+       <li><button>Confirm</button></li>
+     </ol> */
+
+@layer hikarion {
+  [data-stepper] {
+    display: flex;
+    gap: var(--space-2);
+    /* No native markers — the step bubble is the marker. */
+    list-style: none;
+    padding-inline-start: 0;
+    counter-reset: hk-step;
+    counter-increment: hk-step;
+  }
+
+  [data-stepper] > li {
+    counter-increment: hk-step;
+    display: flex;
+    flex: 1 1 0;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    text-align: center;
+    gap: var(--space-2);
+    /* The connector line sits behind the bubble, on the inline-start edge of
+       each item except the first. */
+  }
+  /* Connector — a hairline between steps, drawn from the centre of one bubble
+     to the next. Only items after the first get a leading line. */
+  [data-stepper] > li + li::before {
+    content: "";
+    position: absolute;
+    inset-block-start: 0.875rem;       /* half the bubble height */
+    inset-inline-end: 50%;
+    inline-size: calc(100% - 1.75rem); /* span minus the bubble on each side */
+    block-size: 2px;
+    background: var(--line);
+    /* Completed predecessor tints its outgoing connector with the accent. */
+    z-index: 0;
+  }
+  [data-stepper] > li[aria-checked="true"] + li::before {
+    background: var(--accent);
+  }
+
+  /* The step bubble — a circle carrying the step number or a check. */
+  [data-stepper] > li::after {
+    content: counter(hk-step);
+    position: relative;
+    z-index: 1;
+    display: grid;
+    place-items: center;
+    inline-size: 1.75rem;
+    block-size: 1.75rem;
+    border-radius: var(--radius-pill);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--muted);
+    font-size: 0.8125rem;
+    font-weight: 600;
+    line-height: 1;
+    transition: background var(--dur) var(--ease-hikarion),
+                border-color var(--dur) var(--ease-hikarion),
+                color var(--dur) var(--ease-hikarion);
+  }
+
+  /* Completed step — accent fill, check mark instead of a number. */
+  [data-stepper] > li[aria-checked="true"]::after {
+    content: "✓";
+    background: var(--accent);
+    border-color: transparent;
+    color: var(--accent-content);
+  }
+  /* Active step — accent ring on a surface bubble, full-colour label. */
+  [data-stepper] > li[aria-current="step"]::after {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  /* Step label — muted by default, full colour when active. */
+  [data-stepper] > li > :where(button, a, span) {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--muted);
+    text-decoration: none;
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    padding: 0;
+    cursor: pointer;
+  }
+  [data-stepper] > li[aria-current="step"] > :where(button, a, span) {
+    color: var(--fg);
+    font-weight: 600;
+  }
+  [data-stepper] > li[aria-checked="true"] > :where(button, a, span) {
+    color: var(--fg);
+  }
+
+  /* Narrow viewports — stack vertically; the connector runs vertically. */
+  @media (max-width: 36rem) {
+    [data-stepper] {
+      flex-direction: column;
+      gap: var(--space-4);
+    }
+    [data-stepper] > li {
+      flex-direction: row;
+      align-items: flex-start;
+      text-align: start;
+      gap: var(--space-3);
+    }
+    [data-stepper] > li + li::before {
+      inset-block-start: 1.75rem;       /* below the bubble */
+      inset-inline-start: 0.875rem;     /* centred under the bubble */
+      inline-size: 2px;
+      block-size: var(--space-4);
+    }
+  }
+}

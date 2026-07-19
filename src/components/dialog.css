@@ -1,0 +1,40 @@
+/* Native <dialog>, opened as a modal. Open/close ride native command invokers
+   (`command="show-modal|close"` + `commandfor`); hikarion.js polyfills only where
+   the browser lacks them. Enter/exit pop lives in base/motion.css. */
+
+@layer hikarion {
+  dialog {
+    /* The reset zeroes all margins; modal centring needs auto back. */
+    margin: auto;
+    max-width: min(32rem, calc(100vw - var(--space-8)));
+    padding: var(--space-8);
+    color: var(--fg);
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-lg);
+  }
+
+  /* Neutral scrim — a flat dim, never an accent glow. Same in both themes. */
+  dialog::backdrop {
+    background: color-mix(in oklch, black 42%, transparent);
+    backdrop-filter: blur(2px);
+    opacity: 0;
+    transition: opacity var(--dur-exit) var(--ease-hikarion),
+                overlay var(--dur-exit) allow-discrete,
+                display var(--dur-exit) allow-discrete;
+  }
+  dialog:modal::backdrop {
+    opacity: 1;
+    transition: opacity var(--dur-enter) var(--ease-out),
+                overlay var(--dur-enter) allow-discrete,
+                display var(--dur-enter) allow-discrete;
+  }
+  @starting-style {
+    dialog:modal::backdrop { opacity: 0; }
+  }
+
+  /* First/last child shed their own margin so the padding box stays even. */
+  dialog > :first-child { margin-block-start: 0; }
+  dialog > :last-child { margin-block-end: 0; }
+}

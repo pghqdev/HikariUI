@@ -1,0 +1,24 @@
+/* Dracula — the famous dark theme, purple-anchored. Opt in with one extra
+   <link> and data-theme="dracula". Palette only: the non-colour Tier-1 (radius,
+   space, motion, fonts) and all Tier-2 tokens inherit from core. */
+@layer hikarion {
+  [data-theme="dracula"] {
+    color-scheme: dark;
+
+    --bg: oklch(28.8% 0.022 277.5);
+    --fg: oklch(97.7% 0.008 106.5);
+    --surface: oklch(34.0% 0.027 276.0);
+    --muted: oklch(56.0% 0.080 270.1);
+    --border: oklch(40.3% 0.032 277.8);
+
+    --accent: oklch(74.2% 0.149 301.9);
+    --accent-content: oklch(28.8% 0.022 277.5);
+
+    --success: oklch(87.1% 0.220 148.0);
+    --success-content: oklch(28.8% 0.022 277.5);
+    --warning: oklch(83.4% 0.124 66.6);
+    --warning-content: oklch(28.8% 0.022 277.5);
+    --danger: oklch(68.2% 0.206 24.4);
+    --danger-content: oklch(28.8% 0.022 277.5);
+  }
+}

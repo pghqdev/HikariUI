@@ -1,0 +1,26 @@
+/* Nord — an arctic, north-bluish palette. Opt in with one extra <link> and
+   data-theme="nord". Palette only: the non-colour Tier-1 (radius, space, motion,
+   fonts) and all Tier-2 tokens inherit from core. */
+@layer hikarion {
+  [data-theme="nord"] {
+    color-scheme: dark;
+
+    --bg: oklch(32.4% 0.023 264.2);
+    --fg: oklch(95.1% 0.007 260.7);
+    --surface: oklch(37.9% 0.029 266.5);
+    --muted: oklch(72.0% 0.032 262.5);
+    --border: oklch(41.6% 0.032 264.1);
+
+    --accent: oklch(77.5% 0.062 217.5);
+    --accent-content: oklch(32.4% 0.023 264.2);
+
+    --success: oklch(76.8% 0.075 131.1);
+    --success-content: oklch(32.4% 0.023 264.2);
+    --warning: oklch(85.5% 0.089 84.1);
+    --warning-content: oklch(32.4% 0.023 264.2);
+    /* Nord's aurora red (#BF616A) is a mid-tone — it can't clear 4.5:1 against
+       light or dark text. Deepened to #A84852 so a solid danger stays readable. */
+    --danger: oklch(53.0% 0.127 16.1);
+    --danger-content: oklch(95.1% 0.007 260.7);
+  }
+}

@@ -1,0 +1,39 @@
+/* Overlay pop — the one enter/exit recipe for top-layer surfaces (<dialog>
+   modals and [data-menu] popovers). Enter/exit ride @starting-style +
+   transition-behavior: allow-discrete — no JS class-toggling.
+
+   A subtle scale-pop, not a vertical drift: a large surface sliding in on the
+   settle-tail easing reads as sluggish. Timing is asymmetric — the transition
+   an element animates with is the one on the state it moves INTO, so the base
+   rule drives the CLOSE and the open state the OPEN. Opacity snaps to full on
+   open (fading in from invisible always reads as lag, however fast) and only
+   the scale-pop animates the entrance; close keeps the fade (starts visible,
+   so it reads as instant either way).
+   ponytail: --dur-exit (0.11s) beats --dur (0.16s) — big surfaces feel slower
+   at the same duration; bump toward --dur if it ever reads as abrupt. */
+
+@layer hikarion {
+  :is(dialog, [data-menu]) {
+    /* Base = the closed/exit state. */
+    opacity: 0;
+    scale: 0.97;
+    transition: opacity var(--dur-exit) var(--ease-hikarion),
+                scale var(--dur-exit) var(--ease-hikarion),
+                overlay var(--dur-exit) allow-discrete,
+                display var(--dur-exit) allow-discrete;
+  }
+
+  dialog:modal,
+  [data-menu]:popover-open {
+    opacity: 1;
+    scale: 1;
+    transition: scale var(--dur-enter) var(--ease-out),
+                overlay var(--dur-enter) allow-discrete,
+                display var(--dur-enter) allow-discrete;
+  }
+
+  @starting-style {
+    dialog:modal,
+    [data-menu]:popover-open { scale: 0.96; }
+  }
+}

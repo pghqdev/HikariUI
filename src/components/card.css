@@ -1,0 +1,15 @@
+/* Card — bare <article>. The semantic card: a quiet raised surface with a
+   hairline and a neutral lift. First/last child shed their margin so the
+   padding box stays even. */
+
+@layer hikarion {
+  article {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: var(--space-7);
+  }
+  article > :first-child { margin-block-start: 0; }
+  article > :last-child { margin-block-end: 0; }
+}

@@ -1,0 +1,89 @@
+/* Pagination — `<nav data-pagination>` of page buttons/links. Prev/next
+   buttons, numbered pages, and a disabled state for first/last. Uses the
+   button card primitives from base/elements.css; the quiet-control reset
+   already strips chrome off these buttons since they live under a nav hook.
+
+   The active page is marked `aria-current="page"` — accent ring, not a fill,
+   so it reads as selected without competing with a solid primary button.
+   Disabled pages use `aria-disabled="true"` (not the native `disabled`, which
+   would drop them from the tab order and the a11y tree).
+
+   Markup:
+     <nav data-pagination>
+       <button aria-disabled="true">Prev</button>
+       <a href="?p=1">1</a>
+       <a href="?p=2" aria-current="page">2</a>
+       <a href="?p=3">3</a>
+       <button>Next</button>
+     </nav> */
+
+@layer hikarion {
+  [data-pagination] {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-1);
+  }
+
+  /* Page items — buttons or links, both rendered as quiet pills. The shared
+     quiet-control reset strips the boxed button chrome; links get the same
+     flat treatment here. :where keeps it at zero specificity. */
+  [data-pagination] :where(button, a) {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    inline-size: 2.25rem;
+    block-size: 2.25rem;
+    padding: 0;
+    font-size: 0.875rem;
+    font-weight: 500;
+    line-height: 1;
+    color: var(--muted);
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: var(--radius-sm);
+    text-decoration: none;
+    cursor: pointer;
+    transition: color var(--dur) var(--ease-hikarion),
+                background var(--dur) var(--ease-hikarion),
+                border-color var(--dur) var(--ease-hikarion);
+  }
+  [data-pagination] :where(button, a):hover {
+    color: var(--fg);
+    background: var(--hover);
+  }
+
+  /* Active page — accent ring (not a fill), so it reads as selected without
+     fighting a solid primary. */
+  [data-pagination] [aria-current="page"] {
+    color: var(--accent);
+    border-color: color-mix(in oklch, var(--accent) 45%, var(--border));
+    background: color-mix(in oklch, var(--accent) 10%, transparent);
+  }
+  [data-pagination] [aria-current="page"]:hover {
+    color: var(--accent);
+    background: color-mix(in oklch, var(--accent) 14%, transparent);
+  }
+
+  /* Disabled (first/last page) — dim and inert, stays in the a11y tree. */
+  [data-pagination] [aria-disabled="true"] {
+    opacity: 0.4;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+
+  /* Prev/next carry a chevron pointing the way; bare text is fine too. */
+  [data-pagination] :where(button, a):first-child,
+  [data-pagination] :where(button, a):last-child {
+    inline-size: auto;
+    padding-inline: 0.6rem;
+    gap: var(--space-1);
+  }
+
+  /* Focus — the shared accent ring from base/elements.css applies to buttons;
+     give links the same. */
+  [data-pagination] a:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+}

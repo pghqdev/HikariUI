@@ -1,0 +1,48 @@
+/* Alert — a callout box. Hook: a bare [role="alert"] / [role="status"] live
+   region. Tone via data-variant; the ARIA role stays an independent a11y
+   concern (a success message can be role="status", an error role="alert" —
+   initial page content in a live region is not announced, so static callouts
+   use the same hooks). Quiet by default — a soft full-surface tint, matching
+   Hikarion's flat surfaces. data-variant~="solid" opts into a filled banner
+   using the tone's readable -content pair.
+
+   One composable attribute: data-variant="danger" (soft) or "danger solid".
+   Tone words resolve in base/tone.css; only the neutral default lives here. */
+
+@layer hikarion {
+  [role="alert"],
+  [role="status"] {
+    /* Neutral default; a data-variant tone word overrides via the resolver. */
+    --_tone: var(--muted);
+    --_tone-content: var(--bg);
+
+    margin-block: var(--space-4);
+    padding: var(--space-5) var(--space-5);
+    color: var(--fg);
+    /* Tone reads from the shared soft tint + a tone-matched hairline, not a
+       stripe down one edge — the whole surface carries it, flat and crisp. */
+    background: var(--_tint-bg);
+    border: 1px solid var(--_tint-border);
+    border-radius: var(--radius);
+
+    /* Title picks up the tone; body stays --fg for readability on the tint. */
+    & > strong,
+    & :is(h3, h4) { color: var(--_tone); }
+
+    /* First/last child shed their margin so the padding box stays even. */
+    & > :first-child { margin-block-start: 0; }
+    & > :last-child { margin-block-end: 0; }
+
+    /* Solid — fill with the tone; -content guarantees readable text. Pair it
+       with a tone (accent/success/warning/danger), not the neutral default. */
+    &[data-variant~="solid"] {
+      color: var(--_tone-content);
+      background: var(--_tone);
+      border-color: transparent;
+
+      & > strong,
+      & :is(h3, h4),
+      & a { color: inherit; }
+    }
+  }
+}

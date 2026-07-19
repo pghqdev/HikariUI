@@ -1,0 +1,67 @@
+/* File dropzone — `label[data-dropzone]` wrapping a hidden `input[type="file"]`.
+   Renders as a dashed-border card with a prompt; click or drag files onto it to
+   trigger the native picker. The input stays in the a11y tree (screen-reader
+   friendly) but is visually hidden.
+
+   CSS-only for the visual styling. `hikarion.js` adds the drag-over highlight
+   (toggling `[data-dragover]` on the label) and writes the selected filename
+   into a `[data-dropzone-filename]` slot if present.
+
+   Markup:
+     <label data-dropzone>
+       <input type="file" hidden>
+       <span data-dropzone-filename>Drop files here or click to browse</span>
+     </label> */
+
+@layer hikarion {
+  [data-dropzone] {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-2);
+    min-block-size: 7rem;
+    padding: var(--space-6);
+    color: var(--muted);
+    background: var(--surface);
+    border: 1px dashed var(--border);
+    border-radius: var(--radius);
+    text-align: center;
+    cursor: pointer;
+    transition: border-color var(--dur) var(--ease-hikarion),
+                background var(--dur) var(--ease-hikarion),
+                color var(--dur) var(--ease-hikarion);
+  }
+
+  [data-dropzone]:hover {
+    border-color: color-mix(in oklch, var(--accent) 45%, var(--border));
+    color: var(--fg);
+  }
+
+  /* Focus (when the wrapped input has focus) — the same crisp accent edge as
+     the other fields, on the label. :focus-within catches the hidden input. */
+  [data-dropzone]:focus-within {
+    border-color: var(--accent);
+    box-shadow: inset 0 0 0 1px var(--accent);
+    color: var(--fg);
+  }
+
+  /* Drag-over — set by hikarion.js on dragenter/dragover. Accent-tinted surface
+     with a solid accent edge signals an active drop target. */
+  [data-dropzone][data-dragover] {
+    border-color: var(--accent);
+    background: color-mix(in oklch, var(--accent) 8%, var(--surface));
+    color: var(--accent);
+  }
+
+  /* The filename/prompt slot — muted by default, accent once a file is
+     chosen (hikarion.js sets [data-chosen] on the label). */
+  [data-dropzone-filename] {
+    font-size: 0.9375rem;
+    line-height: 1.4;
+  }
+  [data-dropzone][data-chosen] [data-dropzone-filename] {
+    color: var(--accent);
+    font-weight: 550;
+  }
+}

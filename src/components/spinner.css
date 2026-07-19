@@ -1,0 +1,50 @@
+/* Loading spinner — CSS-only `[data-spinner]`. A rotating ring in the accent,
+   no JS. Stands alone (block, centred) or sits inline next to text in a button.
+
+   The ring is a conic gradient masked to a hollow circle so the gap is
+   transparent, not a second colour — it composes over any background. The spin
+   is a single linear rotation; the global `prefers-reduced-motion: reduce`
+   killswitch in reset.css (animation-duration: 0.01ms !important) pauses it.
+
+   Markup:
+     <span data-spinner></span>                 <!-- standalone -->
+     <button data-variant="solid"><span data-spinner></span> Saving…</button>
+   Inline usage: the spinner is inline-flex sized to the cap-height so it lines
+   up with text. */
+
+@layer hikarion {
+  [data-spinner] {
+    --_size: 1.25em;
+    display: inline-block;
+    inline-size: var(--_size);
+    block-size: var(--_size);
+    /* A hollow ring: the leading edge is the accent, trailing fades to
+       transparent, masked to a donut so the centre is see-through. */
+    border-radius: var(--radius-pill);
+    background: conic-gradient(from 0deg, transparent 0%, var(--accent) 60%);
+    /* The donut mask — only the ring shows; the hole is the page behind. */
+    -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 0.18em), #000 calc(100% - 0.18em));
+    mask: radial-gradient(farthest-side, transparent calc(100% - 0.18em), #000 calc(100% - 0.18em));
+    vertical-align: -0.2em;
+    animation: hk-spin 0.7s linear infinite;
+  }
+
+  /* A standalone spinner centres itself in its container. */
+  [data-spinner]:not(span) {
+    display: block;
+    margin-inline: auto;
+  }
+
+  /* Tone-respecting: a toned ancestor (e.g. a solid danger button) tints the
+     ring via currentColor fallback. The default is the accent; components that
+     need the ring to read on a coloured fill set --_tone and we honour it. */
+  [data-variant~="danger"] [data-spinner],
+  [data-variant~="success"] [data-spinner],
+  [data-variant~="warning"] [data-spinner] {
+    background: conic-gradient(from 0deg, transparent 0%, var(--_tone, var(--accent)) 60%);
+  }
+
+  @keyframes hk-spin {
+    to { transform: rotate(360deg); }
+  }
+}

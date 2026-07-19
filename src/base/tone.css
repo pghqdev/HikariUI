@@ -1,0 +1,26 @@
+/* Tone resolver — the one seam that maps a tone word on any element to the
+   local tone values components consume. Components never map data-variant to
+   colors themselves; they set a default --_tone and read --_tone* (CONTEXT.md:
+   Tone). Grammar: data-variant="<tone> [solid]", tone ∈ accent success
+   warning danger — names mirror the Tier-1 tokens (ADR-0002).
+
+   Imported last: component tone defaults sit on hook selectors with the same
+   (0,1,0) specificity, so the resolver must win ties by source order. */
+
+@layer hikarion {
+  [data-variant~="accent"]  { --_tone: var(--accent);  --_tone-content: var(--accent-content); }
+  [data-variant~="success"] { --_tone: var(--success); --_tone-content: var(--success-content); }
+  [data-variant~="warning"] { --_tone: var(--warning); --_tone-content: var(--warning-content); }
+  [data-variant~="danger"]  { --_tone: var(--danger);  --_tone-content: var(--danger-content); }
+
+  /* Derived per element (custom properties substitute var() where declared,
+     not where consumed, so this can't live on :root): the one soft-tint
+     recipe — translucent, composes on any background — and the hover shade.
+     Where no --_tone is in scope these are guaranteed-invalid and simply
+     unusable, by design. */
+  * {
+    --_tint-bg: color-mix(in oklch, var(--_tone) 10%, transparent);
+    --_tint-border: color-mix(in oklch, var(--_tone) 30%, transparent);
+    --_tone-hover: color-mix(in oklch, var(--_tone), black 14%);
+  }
+}

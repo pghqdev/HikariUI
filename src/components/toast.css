@@ -1,0 +1,76 @@
+/* Toast — transient feedback. Hikarion.toast(msg) appends a [data-toast] to a
+   single [data-toast-region] live region (a bottom-end stack). Enter/exit are
+   CSS animations, so the global reduced-motion killswitch neutralises them.
+
+   ponytail: the region is a fixed, high-z-index layer, not the top layer, so a
+   toast shown while a modal <dialog> is open sits behind it. Promote the region
+   to popover="manual" if toasts-over-modals matters. */
+
+@layer hikarion {
+  [data-toast-region] {
+    position: fixed;
+    inset-block-end: var(--space-7);
+    inset-inline-end: var(--space-7);
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    inline-size: min(22rem, calc(100vw - var(--space-8)));
+    pointer-events: none;                 /* clicks pass through the gaps... */
+  }
+
+  [data-toast] {
+    pointer-events: auto;                 /* ...but the toasts stay clickable */
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-5);
+    color: var(--fg);
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-lg);
+    font-size: 0.9375rem;
+    animation: hk-toast-in var(--dur-enter) var(--ease-hikarion);
+  }
+  [data-toast][data-closing] {
+    animation: hk-toast-out var(--dur-exit) var(--ease-hikarion) forwards;
+  }
+
+  /* Toned toast — Hikarion.toast(msg, {variant: "danger"}) writes data-variant;
+     tones resolve in base/tone.css. Soft only: the shared tint layered over
+     the surface, since toasts float over content and must stay opaque. */
+  [data-toast][data-variant] {
+    background: linear-gradient(var(--_tint-bg), var(--_tint-bg)) var(--surface);
+    border-color: var(--_tint-border);
+  }
+
+  [data-toast] :where(span, p) { flex: 1; }   /* message takes the room */
+
+  /* Dismiss control — a quiet ✕, like the chip remove. Chrome is shed by the
+     shared quiet-control reset (base/elements.css). */
+  [data-toast] [data-toast-close] {
+    flex: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    inline-size: 1.4em;
+    block-size: 1.4em;
+    margin-inline-end: -0.35rem;
+    padding: 0;
+    color: var(--muted);
+    border-radius: var(--radius-pill);
+    cursor: pointer;
+  }
+  [data-toast] [data-toast-close]:hover {
+    color: var(--fg);
+    background: color-mix(in oklch, var(--fg) 10%, transparent);
+  }
+
+  @keyframes hk-toast-in {
+    from { opacity: 0; transform: translateY(0.5rem) scale(0.98); }
+  }
+  @keyframes hk-toast-out {
+    to { opacity: 0; transform: translateY(0.3rem) scale(0.98); }
+  }
+}

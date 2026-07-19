@@ -1,0 +1,53 @@
+/* Accordion — bare <details>/<summary>. Native disclosure; our own chevron
+   rotates on open. prefers-reduced-motion is handled by the global killswitch
+   in reset.css — no per-component gate. */
+
+@layer hikarion {
+  details {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding-inline: var(--space-6);
+  }
+  details + details { margin-block-start: var(--space-4); }
+
+  summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
+    padding-block: var(--space-5);
+    font-weight: 550;
+    cursor: pointer;
+    list-style: none;                             /* Firefox disclosure marker */
+    user-select: none;
+  }
+  summary::-webkit-details-marker { display: none; }   /* Safari/Chrome marker */
+
+  /* The shared chevron glyph (--chevron), masked so it takes --muted. Centred
+     in its viewBox, so the 180° open-flip pivots in place. */
+  summary::after {
+    content: "";
+    inline-size: 0.7em;
+    block-size: 0.7em;
+    margin-inline-start: var(--space-3);
+    background-color: var(--muted);
+    mask: var(--chevron) center / contain no-repeat;
+    transform-origin: center;
+    transition: transform var(--dur) var(--ease-hikarion);
+  }
+  details[open] summary::after {
+    transform: rotate(180deg);
+  }
+
+  summary:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: -2px;                    /* stays inside the rounded box */
+    border-radius: var(--radius-sm);
+  }
+
+  /* Open body: a divider under the summary, content padded to the bottom edge. */
+  details[open] > summary { border-block-end: 1px solid var(--line); }
+  details[open] > :not(summary) { margin-block: var(--space-5) 0; }
+  details[open] { padding-block-end: var(--space-5); }
+}

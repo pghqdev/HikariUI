@@ -1,0 +1,55 @@
+/* Breadcrumbs — `<nav data-breadcrumbs>` of a list of links, the last item the
+   current page (plain text, not a link). Items separated by the shared chevron
+   glyph, rotated to point inline (right in LTR). No JS; the nav link styles
+   live in base/elements.css.
+
+   Markup:
+     <nav data-breadcrumbs>
+       <ol>
+         <li><a href="/">Home</a></li>
+         <li><a href="/docs">Docs</a></li>
+         <li><a aria-current="page">Tokens</a></li>
+       </ol>
+     </nav>
+   The current page carries `aria-current="page"` — it is muted, not a link. */
+
+@layer hikarion {
+  [data-breadcrumbs] ol {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-1);
+    list-style: none;
+    padding-inline-start: 0;
+    margin: 0;
+  }
+
+  [data-breadcrumbs] li {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+    font-size: 0.875rem;
+  }
+
+  /* Separator — the shared chevron, rotated to point inline. Drawn as a mask
+     filled with --muted so it takes the link colour on hover. Centred in its
+     viewBox, so it sits on the baseline without translation. */
+  [data-breadcrumbs] li + li::before {
+    content: "";
+    inline-size: 0.7em;
+    block-size: 0.7em;
+    background-color: var(--muted);
+    mask: var(--chevron) center / contain no-repeat;
+    /* The chevron points down by default; rotate -90deg to point inline
+       (right in LTR, left in RTL via the flip). */
+    transform: rotate(-90deg);
+    opacity: 0.8;
+  }
+
+  /* Current page — muted, not a link, no underline. */
+  [data-breadcrumbs] [aria-current="page"] {
+    color: var(--muted);
+    text-decoration: none;
+    cursor: default;
+  }
+}

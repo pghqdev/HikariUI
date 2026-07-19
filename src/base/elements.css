@@ -1,0 +1,672 @@
+/* Bare semantic elements. Zero classes; taste by default. */
+
+@layer hikarion {
+  body {
+    background: var(--bg);
+    color: var(--fg);
+    font-family: var(--font);
+    font-size: 1rem;
+    letter-spacing: -0.006em;
+    padding: var(--space-8);
+    transition: background var(--dur) var(--ease-hikarion),
+                color var(--dur) var(--ease-hikarion);
+  }
+
+  ::selection {
+    background: color-mix(in oklch, var(--accent) 22%, transparent);
+  }
+
+  /* A data-theme container swaps the whole palette: re-assert colour and
+     background so the subtree re-resolves from the local tokens instead of
+     inheriting the outer theme's already-computed colour. :where keeps it at
+     zero specificity so author overrides win. */
+  :where([data-theme]) {
+    color: var(--fg);
+    background-color: var(--bg);
+  }
+
+  /* Crisp focus: one clean accent ring, offset to follow the radius. No soft
+     translucent halo, no border-colour change stacked on top. */
+  :focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+
+  /* --- Structural elements --- */
+  /* Bare layout containers get normalisation, not visual noise — spacing and
+     text-wrap so a bare `<main>` or `<section>` reads like a page, not a div. */
+  main,
+  header,
+  footer,
+  aside,
+  section {
+    text-wrap: balance;
+  }
+  main {
+    margin-block: var(--space-8) 0;
+  }
+  header,
+  footer {
+    margin-block: var(--space-8) var(--space-5);
+  }
+  header + header,
+  footer + footer {
+    margin-block-start: 0;
+  }
+  aside {
+    color: var(--muted);
+    font-size: 0.9375rem;
+  }
+  section + section {
+    margin-block-start: var(--space-8);
+  }
+
+  /* Navigation — bare links get a muted, underline-free run; hover and the
+     page-level a:hover rules restore the accent. :where keeps it at zero
+     specificity so the tone resolver and author overrides win. */
+  :where(nav) :where(a) {
+    color: var(--muted);
+    text-decoration-thickness: 0;
+    transition: color var(--dur) var(--ease-hikarion),
+                text-decoration-color var(--dur) var(--ease-hikarion);
+  }
+  :where(nav) :where(a:hover) {
+    color: var(--fg);
+    text-decoration-thickness: 1px;
+    text-decoration-color: currentColor;
+  }
+
+  /* --- Typography --- */
+  h1 { font-size: 2.5rem; font-weight: 680; letter-spacing: -0.03em; }
+  h2 { font-size: 1.75rem; font-weight: 640; letter-spacing: -0.022em; }
+  h3 { font-size: 1.3125rem; font-weight: 620; letter-spacing: -0.015em; }
+  h4 { font-size: 1.0625rem; font-weight: 600; letter-spacing: -0.01em; }
+
+  h1, h2, h3, h4 {
+    margin-block: var(--space-8) var(--space-3);
+  }
+  :is(h1, h2, h3, h4):first-child {
+    margin-block-start: 0;
+  }
+
+  p, ul, ol, dl, blockquote, table, pre {
+    margin-block: var(--space-4);
+  }
+
+  a {
+    color: var(--accent);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.18em;
+    text-decoration-color: color-mix(in oklch, var(--accent) 35%, transparent);
+    transition: text-decoration-color var(--dur) var(--ease-hikarion);
+  }
+  a:hover {
+    text-decoration-color: currentColor;
+  }
+
+  strong { font-weight: 620; }
+  small { font-size: 0.875em; color: var(--muted); }
+
+  hr {
+    border: none;
+    border-top: 1px solid var(--line);
+    margin-block: var(--space-8);
+  }
+
+  ul, ol {
+    padding-inline-start: var(--space-7);
+  }
+  li {
+    margin-block: var(--space-1);
+  }
+  li::marker { color: var(--muted); }
+
+  blockquote {
+    padding-inline-start: var(--space-6);
+    border-inline-start: 2px solid color-mix(in oklch, var(--accent) 55%, var(--line));
+    color: var(--muted);
+  }
+
+  /* Definition lists — glossaries and FAQ. Terms are muted, small-capped;
+     definitions indent under their term. :where keeps it at zero specificity. */
+  :where(dt) {
+    font-weight: 550;
+    font-size: 0.8125em;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--muted);
+  }
+  :where(dd) {
+    margin-block: var(--space-1) var(--space-3);
+    padding-inline-start: var(--space-6);
+  }
+
+  /* --- Code --- */
+  code, kbd, samp {
+    font-family: var(--mono);
+    font-size: 0.9em;
+  }
+  :not(pre) > code {
+    background: var(--surface-2);
+    padding: 0.15em 0.4em;
+    border-radius: var(--radius-xs);
+  }
+  kbd {
+    background: var(--surface-2);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-xs);
+    padding: 0.1em 0.45em;
+    font-size: 0.8em;
+    box-shadow: 0 1px 0 var(--line);
+  }
+  pre {
+    position: relative;
+    background: var(--surface-2);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: var(--space-6);
+    overflow-x: auto;
+    font-size: 0.9375rem;
+    line-height: 1.5;
+  }
+  pre code {
+    background: none;
+    padding: 0;
+    font-size: 1em;
+  }
+
+  /* Copy button injected by hikarion.js. Quiet until the block is hovered. */
+  pre .hk-copy {
+    position: absolute;
+    inset-block-start: var(--space-4);
+    inset-inline-end: var(--space-4);
+    padding: 0.3rem 0.6rem;
+    font-family: var(--font);
+    font-size: 0.75rem;
+    font-weight: 550;
+    line-height: 1;
+    color: var(--muted);
+    background: color-mix(in oklch, var(--surface) 85%, transparent);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-xs);
+    backdrop-filter: blur(4px);
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity var(--dur) var(--ease-hikarion),
+                color var(--dur) var(--ease-hikarion),
+                border-color var(--dur) var(--ease-hikarion);
+  }
+  pre:hover .hk-copy,
+  pre .hk-copy:focus-visible,
+  pre .hk-copy[data-copied] {
+    opacity: 1;
+  }
+  pre .hk-copy:hover {
+    color: var(--fg);
+    border-color: color-mix(in oklch, var(--accent) 40%, var(--line));
+  }
+  pre .hk-copy[data-copied] {
+    color: var(--accent);
+    border-color: color-mix(in oklch, var(--accent) 45%, var(--line));
+  }
+
+  /* --- Buttons --- */
+  button,
+  input[type="button"],
+  input[type="submit"],
+  input[type="reset"] {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-2);
+    font-size: 0.9375rem;
+    font-weight: 550;
+    line-height: 1.2;
+    letter-spacing: -0.006em;
+    padding: 0.5rem 0.95rem;
+    color: var(--fg);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    box-shadow: var(--shadow-sm);
+    cursor: pointer;
+    transition: background var(--dur) var(--ease-hikarion),
+                border-color var(--dur) var(--ease-hikarion),
+                box-shadow var(--dur) var(--ease-hikarion),
+                transform var(--dur) var(--ease-hikarion);
+  }
+  button:hover,
+  input[type="button"]:hover,
+  input[type="submit"]:hover,
+  input[type="reset"]:hover {
+    background: var(--hover);
+    border-color: color-mix(in oklch, var(--fg) 22%, var(--border));
+  }
+  button:active,
+  input[type="button"]:active,
+  input[type="submit"]:active,
+  input[type="reset"]:active {
+    background: var(--surface-2);
+    box-shadow: none;
+    transform: scale(0.985);
+    transition-duration: 0.04s;
+  }
+  button:disabled,
+  input:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  /* Solid — the one filled primary, accent-anchored by default. Reserve it
+     for a view's single main action; flat, no shadow, no glow. The press-scale
+     from the base :active still applies (only the fill is overridden here).
+     A tone word retints it — data-variant="danger solid" for a destructive
+     action (base/tone.css). Buttons consume tone only when solid; there is no
+     soft toned button. :where keeps the default at zero specificity so the
+     resolver's tone words win. */
+  :where(button, input[type="button"], input[type="submit"], input[type="reset"]) {
+    --_tone: var(--accent);
+    --_tone-content: var(--accent-content);
+  }
+  :is(button, input[type="button"], input[type="submit"], input[type="reset"])[data-variant~="solid"] {
+    color: var(--_tone-content);
+    background: var(--_tone);
+    border-color: transparent;
+    box-shadow: none;
+  }
+  :is(button, input[type="button"], input[type="submit"], input[type="reset"])[data-variant~="solid"]:hover {
+    background: var(--_tone-hover);
+    border-color: transparent;
+  }
+  :is(button, input[type="button"], input[type="submit"], input[type="reset"])[data-variant~="solid"]:active {
+    background: var(--_tone-hover);
+  }
+
+  /* Quiet controls — component buttons that shed the boxed chrome (tab
+     handles, menu rows, the small ✕ dismissers) reset here once; each
+     component adds only its own layout on top. The states rule must follow
+     the base :hover/:active rules — it wins on source order, and component
+     hover fills (higher specificity) still win over it. */
+  button:where([data-tab-list] *, [data-menu] *, [data-chip-remove], [data-toast-close]) {
+    background: transparent;
+    border: none;
+    box-shadow: none;
+  }
+  button:where([data-tab-list] *, [data-menu] *, [data-chip-remove], [data-toast-close]):is(:hover, :active) {
+    background: transparent;
+    box-shadow: none;
+    transform: none;
+  }
+
+  /* --- Form fields --- */
+  input:not([type="button"]):not([type="submit"]):not([type="reset"]):not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]):not([type="file"]),
+  textarea,
+  select {
+    width: 100%;
+    max-width: 100%;
+    padding: 0.6rem 0.85rem;
+    color: var(--fg);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    transition: border-color var(--dur) var(--ease-hikarion);
+  }
+  textarea { min-height: 6rem; resize: vertical; line-height: 1.5; }
+  /* The native resize grip clashes with the rounded corner — hide it; the
+     bottom edge still drags. */
+  textarea::-webkit-resizer { display: none; }
+
+  /* Own the select's chrome so its text centres like an input and the chevron
+     is ours, not the OS default. */
+  select {
+    appearance: none;
+    padding-inline-end: 2.25rem;
+    background-image: var(--chevron);
+    background-repeat: no-repeat;
+    background-position: right 0.85rem center;
+  }
+
+  /* Where the browser supports the customizable select, style the picker itself
+     so the drawer is page-anchored (aligned to the field) and matches the
+     surface. Elsewhere the native popup above is used, unchanged. */
+  @supports (appearance: base-select) {
+    select,
+    ::picker(select) {
+      appearance: base-select;
+    }
+    select {
+      background-image: none;
+      padding-inline-end: 0.85rem;
+      gap: var(--space-3);
+    }
+    /* Replace the UA's solid triangle with our own stroked chevron — the same
+       glyph the fallback select uses. A solid triangle's visual centroid sits a
+       third up from its base, not at its box centre, so rotating it 180° on open
+       translates it and it swings around a corner. Our chevron is drawn centred
+       in its viewBox, so a 180° flip pivots cleanly in place. */
+    select::picker-icon {
+      content: var(--chevron);
+      block-size: 1em;
+      align-self: center;
+      transform-origin: center;
+      transition: transform var(--dur) var(--ease-hikarion);
+    }
+    select:open::picker-icon {
+      transform: rotate(180deg);
+    }
+    ::picker(select) {
+      position-area: block-end span-inline-end;
+      display: flex;
+      flex-direction: column;
+      gap: 0.125rem;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--surface);
+      box-shadow: var(--shadow-lg);
+      padding: 0.25rem;
+      margin-block-start: 0.35rem;
+    }
+    /* Horizontal padding = field padding (0.85rem) − picker padding (0.25rem)
+       so an open option's text lines up with the closed value. */
+    option {
+      padding: 0.45rem 0.6rem;
+      border-radius: var(--radius-xs);
+    }
+    /* Highlight the active option with a fill, not the accent focus ring. */
+    option:hover,
+    option:focus,
+    option:focus-visible {
+      background: var(--hover);
+      outline: none;
+    }
+    option::checkmark {
+      display: none;
+    }
+    option:checked {
+      color: var(--accent);
+      font-weight: 550;
+    }
+  }
+
+  /* Fields get a single crisp accent edge (border + flush inset, same colour →
+     reads as one 2px accent border). No outer ring, no gap, no glow. */
+  :is(input, textarea, select):focus-visible {
+    border-color: var(--accent);
+    box-shadow: inset 0 0 0 1px var(--accent);
+    outline: 2px solid transparent; /* keeps a focus indicator under forced-colors */
+    outline-offset: 0;
+  }
+
+  /* Invalid fields — :user-invalid fires only after the user has interacted, so
+     a pristine form never yells on load. [aria-invalid="true"] covers JS-driven
+     validation with no native constraint. Selector mirrors the base field rule
+     so checkbox/radio/range/etc. are left to their native invalid look.
+     The danger border carries the tone; the always-on inset ring makes the edge
+     visibly heavier than a valid field — a second, non-colour cue (weight, not
+     just hue) so the error state doesn't rely on colour alone. It also overrides
+     the accent focus ring when an invalid field is focused. */
+  :is(
+    input:not([type="button"]):not([type="submit"]):not([type="reset"]):not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]):not([type="file"]),
+    textarea,
+    select
+  ):is(:user-invalid, [aria-invalid="true"]) {
+    border-color: var(--danger);
+    box-shadow: inset 0 0 0 1px var(--danger);
+  }
+
+  label {
+    display: inline-block;
+    margin-block-end: var(--space-3);
+    font-size: 0.8125rem;
+    font-weight: 550;
+    letter-spacing: 0.005em;
+    color: var(--muted);
+  }
+
+  ::placeholder { color: color-mix(in oklch, var(--muted) 75%, transparent); }
+
+  fieldset {
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: var(--space-6);
+  }
+  legend { padding-inline: var(--space-3); font-weight: 600; }
+
+  /* --- Range slider --- */
+  /* Track and thumb share the radius family; the thumb is a flat accent dot,
+     not a glossy 3D ball. The track sits on a hairline so it reads as a
+     control, not a bare groove. :where keeps it at zero specificity. */
+  :where(input[type="range"]) {
+    --_track-h: 0.375rem;
+    --_thumb: 1.15rem;
+    width: 100%;
+    max-width: 100%;
+    height: var(--_thumb);
+    appearance: none;
+    background: transparent;
+    cursor: pointer;
+  }
+  :where(input[type="range"])::-webkit-slider-runnable-track {
+    height: var(--_track-h);
+    border-radius: var(--radius-pill);
+    background: var(--line);
+  }
+  :where(input[type="range"])::-moz-range-track {
+    height: var(--_track-h);
+    border-radius: var(--radius-pill);
+    background: var(--line);
+  }
+  :where(input[type="range"])::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    inline-size: var(--_thumb);
+    block-size: var(--_thumb);
+    margin-block-start: calc((var(--_track-h) - var(--_thumb)) / 2);
+    border: none;
+    border-radius: var(--radius-pill);
+    background: var(--accent);
+    box-shadow: var(--shadow-sm);
+    transition: transform var(--dur) var(--ease-hikarion);
+  }
+  :where(input[type="range"])::-moz-range-thumb {
+    inline-size: var(--_thumb);
+    block-size: var(--_thumb);
+    border: none;
+    border-radius: var(--radius-pill);
+    background: var(--accent);
+    box-shadow: var(--shadow-sm);
+    transition: transform var(--dur) var(--ease-hikarion);
+  }
+  :where(input[type="range"]):hover::-webkit-slider-thumb,
+  :where(input[type="range"]):focus-visible::-webkit-slider-thumb {
+    transform: scale(1.12);
+  }
+  :where(input[type="range"]):hover::-moz-range-thumb,
+  :where(input[type="range"]):focus-visible::-moz-range-thumb {
+    transform: scale(1.12);
+  }
+  :where(input[type="range"]):focus-visible::-webkit-slider-thumb {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+  :where(input[type="range"]):focus-visible::-moz-range-thumb {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+  :where(input[type="range"]):disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  /* --- File input --- */
+  /* Strip the native button so the whole field reads as one quiet surface with
+     a labelled prompt. ::file-selector-button repaints the OS button as a
+     Hikarion button — same tokens as the base <button>. :where keeps it at zero
+     specificity so author overrides win. */
+  :where(input[type="file"]) {
+    width: 100%;
+    max-width: 100%;
+    padding: 0.5rem 0.85rem;
+    color: var(--muted);
+    background: var(--surface);
+    border: 1px dashed var(--border);
+    border-radius: var(--radius-sm);
+    font-size: 0.9375rem;
+  }
+  :where(input[type="file"])::file-selector-button {
+    margin-inline-end: var(--space-3);
+    padding: 0.5rem 0.95rem;
+    font-size: 0.9375rem;
+    font-weight: 550;
+    line-height: 1.2;
+    color: var(--accent-content);
+    background: var(--accent);
+    border: 1px solid transparent;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: background var(--dur) var(--ease-hikarion);
+  }
+  :where(input[type="file"])::file-selector-button:hover {
+    background: var(--_tone-hover);
+  }
+  :where(input[type="file"]:focus-visible) {
+    border-color: var(--accent);
+    box-shadow: inset 0 0 0 1px var(--accent);
+    outline: 2px solid transparent;
+    outline-offset: 0;
+  }
+
+  /* --- Progress & meter --- */
+  /* Native gauge elements. The bar fill is the accent; the track is the
+     hairline surface. Indeterminate <progress> (no value attr) animates a
+     moving stripe, gated by the reduced-motion killswitch in reset.css.
+     :where keeps it at zero specificity. */
+  :where(progress),
+  :where(meter) {
+    display: block;
+    inline-size: 100%;
+    block-size: 0.625rem;
+    border: none;
+    border-radius: var(--radius-pill);
+    background: var(--line);
+    overflow: hidden;
+  }
+  :where(progress)::-webkit-progress-bar {
+    border-radius: var(--radius-pill);
+    background: var(--line);
+  }
+  :where(progress)::-webkit-progress-value {
+    border-radius: var(--radius-pill);
+    background: var(--accent);
+    transition: inline-size var(--dur) var(--ease-hikarion);
+  }
+  :where(progress)::-moz-progress-bar {
+    border-radius: var(--radius-pill);
+    background: var(--accent);
+  }
+  :where(meter)::-webkit-meter-bar {
+    border-radius: var(--radius-pill);
+    background: var(--line);
+  }
+  :where(meter)::-webkit-meter-optimum-value,
+  :where(meter)::-webkit-meter-suboptimum-value,
+  :where(meter)::-webkit-meter-even-less-good-value {
+    border-radius: var(--radius-pill);
+  }
+  :where(meter)::-webkit-meter-optimum-value { background: var(--success); }
+  :where(meter)::-webkit-meter-suboptimum-value { background: var(--warning); }
+  :where(meter)::-webkit-meter-even-less-good-value { background: var(--danger); }
+  :where(meter)::-moz-meter-bar {
+    border-radius: var(--radius-pill);
+  }
+  /* The <meter> element's background fills by default; the optimum/low/high
+     regions drive the bar colour via the Firefox pseudo-bars above, and via
+     the Chromium pseudo-values. A bare meter with no thresholds is the accent. */
+  :where(meter) { background: color-mix(in oklch, var(--accent) 50%, var(--line)); }
+  /* Indeterminate <progress> — a single moving stripe, no spinning glow. */
+  :where(progress:not([value]))::-webkit-progress-value {
+    inline-size: 40%;
+    animation: hk-progress-strip 1s var(--ease-hikarion) infinite;
+  }
+  :where(progress:not([value]))::-moz-progress-bar {
+    inline-size: 40%;
+    animation: hk-progress-strip 1s var(--ease-hikarion) infinite;
+  }
+  @keyframes hk-progress-strip {
+    from { transform: translateX(-100%); }
+    to   { transform: translateX(250%); }
+  }
+
+  /* --- Output --- */
+  /* A computed result — read as a small inline value, not a field. Monospaced
+     so tabular values line up; muted so it reads as derived, not authored. */
+  :where(output) {
+    display: inline-block;
+    padding: 0.15em 0.55em;
+    font-family: var(--mono);
+    font-size: 0.9em;
+    color: var(--fg);
+    background: var(--surface-2);
+    border-radius: var(--radius-xs);
+  }
+
+  /* --- Datalist suggestion popup --- */
+  /* Where the browser exposes the customizable ::picker(datalist), the popup
+     inherits the page surface and tokens, matching the select picker. Elsewhere
+     the native suggestion list is used, unchanged. */
+  @supports (appearance: base-select) {
+    input[list]::-webkit-datalist,
+    ::picker(datalist) {
+      appearance: base-select;
+    }
+    ::picker(datalist) {
+      display: flex;
+      flex-direction: column;
+      gap: 0.125rem;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--surface);
+      box-shadow: var(--shadow-lg);
+      padding: 0.25rem;
+      margin-block-start: 0.35rem;
+    }
+    option:where([data-datalist-option]) {
+      padding: 0.45rem 0.6rem;
+      border-radius: var(--radius-xs);
+      color: var(--fg);
+    }
+    option:where([data-datalist-option]):hover,
+    option:where([data-datalist-option]):focus {
+      background: var(--hover);
+      outline: none;
+    }
+  }
+
+  /* --- Tables --- */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-variant-numeric: tabular-nums;
+    font-size: 0.9375rem;
+  }
+  th, td {
+    padding: var(--space-4);
+    text-align: start;
+    border-block-end: 1px solid var(--line);
+  }
+  thead th {
+    font-weight: 550;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--muted);
+  }
+  tbody tr {
+    transition: background var(--dur) var(--ease-hikarion);
+  }
+  tbody tr:hover {
+    background: color-mix(in oklch, var(--surface) 55%, transparent);
+  }
+  tbody tr:last-child td { border-block-end: none; }
+}

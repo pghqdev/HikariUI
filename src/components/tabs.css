@@ -16,7 +16,7 @@
   [data-tab-list] button {
     border-radius: 0;
     color: var(--muted);
-    padding: 0.55rem 0.85rem;
+    padding: calc(0.55rem * var(--_density)) calc(0.85rem * var(--_density));
     margin-block-end: -1px; /* overlap the list's bottom rule */
     border-block-end: 2px solid transparent;
     transition: color var(--dur) var(--ease-hikarion),

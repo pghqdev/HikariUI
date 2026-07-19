@@ -219,11 +219,11 @@
     align-items: center;
     justify-content: center;
     gap: var(--space-2);
-    font-size: 0.9375rem;
+    font-size: var(--control-fz);
     font-weight: 550;
     line-height: 1.2;
     letter-spacing: -0.006em;
-    padding: 0.5rem 0.95rem;
+    padding: var(--control-py) var(--control-px);
     color: var(--fg);
     background: var(--surface);
     border: 1px solid var(--border);
@@ -304,7 +304,7 @@
   select {
     width: 100%;
     max-width: 100%;
-    padding: 0.6rem 0.85rem;
+    padding: var(--field-py) var(--field-px);
     color: var(--fg);
     background: var(--surface);
     border: 1px solid var(--border);
@@ -320,10 +320,10 @@
      is ours, not the OS default. */
   select {
     appearance: none;
-    padding-inline-end: 2.25rem;
+    padding-inline-end: calc(var(--field-px) + 1.4rem);
     background-image: var(--chevron);
     background-repeat: no-repeat;
-    background-position: right 0.85rem center;
+    background-position: right var(--field-px) center;
   }
 
   /* Where the browser supports the customizable select, style the picker itself
@@ -336,7 +336,7 @@
     }
     select {
       background-image: none;
-      padding-inline-end: 0.85rem;
+      padding-inline-end: var(--field-px);
       gap: var(--space-3);
     }
     /* Replace the UA's solid triangle with our own stroked chevron — the same
@@ -506,17 +506,17 @@
   :where(input[type="file"]) {
     width: 100%;
     max-width: 100%;
-    padding: 0.5rem 0.85rem;
+    padding: var(--control-py) var(--field-px);
     color: var(--muted);
     background: var(--surface);
     border: 1px dashed var(--border);
     border-radius: var(--radius-sm);
-    font-size: 0.9375rem;
+    font-size: var(--control-fz);
   }
   :where(input[type="file"])::file-selector-button {
     margin-inline-end: var(--space-3);
-    padding: 0.5rem 0.95rem;
-    font-size: 0.9375rem;
+    padding: var(--control-py) var(--control-px);
+    font-size: var(--control-fz);
     font-weight: 550;
     line-height: 1.2;
     color: var(--accent-content);
@@ -647,7 +647,7 @@
     width: 100%;
     border-collapse: collapse;
     font-variant-numeric: tabular-nums;
-    font-size: 0.9375rem;
+    font-size: var(--control-fz);
   }
   th, td {
     padding: var(--space-4);

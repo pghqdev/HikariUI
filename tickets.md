@@ -46,10 +46,10 @@ Out of scope for 1.0 is still ticketed as post-1.0 work (tickets 39–43) so it 
 
 **Blocked by:** Freeze public vocabulary & versioning hygiene
 
-- [ ] Density mechanism is public, documented in agent rules, and available in the kitchen-sink
-- [ ] Existing components respond coherently in both Crisp and Compact
-- [ ] Contrast gate covers both density modes
-- [ ] CHANGELOG records the new public density surface
+- [x] Density mechanism is public, documented in agent rules, and available in the kitchen-sink
+- [x] Existing components respond coherently in both Crisp and Compact
+- [x] Contrast gate covers both density modes
+- [x] CHANGELOG records the new public density surface
 
 ## Packaging & distribution polish
 

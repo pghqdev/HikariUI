@@ -7,8 +7,8 @@
     display: inline-flex;
     align-items: center;
     gap: var(--space-2);
-    padding: 0.35rem 0.8rem;
-    font-size: 0.875rem;
+    padding: calc(0.35rem * var(--_density)) calc(0.8rem * var(--_density));
+    font-size: var(--control-fz-sm);
     font-weight: 500;
     line-height: 1.2;
     color: var(--fg);

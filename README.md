@@ -70,6 +70,8 @@ Then just write HTML — no classes:
   re-tint for free.
 - **`data-theme` swaps everything.** Set it on any container; themes nest. Dark
   mode is automatic from the OS, overridable per-region.
+- **`data-density` retunes the rhythm.** `crisp` (default) for product UI,
+  `compact` for dense views. CSS-only, and it nests like `data-theme`.
 - **Your overrides always win.** Everything is wrapped in `@layer hikarion`, so
   any unlayered CSS you write beats it — no `!important` needed.
 

@@ -24,6 +24,8 @@
     -webkit-appearance: none;
     display: inline-grid;
     align-items: center;
+    /* Deliberately density-invariant: 1.5rem is exactly the WCAG 2.2 AA 2.5.8
+       target-size floor (24px), so Compact has no room to shrink it. */
     inline-size: 2.6rem;
     block-size: 1.5rem;
     margin: 0;

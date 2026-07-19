@@ -75,6 +75,10 @@
         <button data-set-theme="light">Light</button>
         <button data-set-theme="dark">Dark</button>
       </div>
+      <div id="density" role="group" aria-label="Density">
+        <button aria-pressed="true" value="crisp">Crisp</button>
+        <button aria-pressed="false" value="compact">Compact</button>
+      </div>
     </header>
 
     <p>Bare semantic HTML, zero classes. Switch the theme above — the whole page
@@ -379,6 +383,30 @@
       </tbody>
     </table>
 
+    <h2>Density</h2>
+    <p><code>data-density="crisp|compact"</code> retunes spacing and control
+      metrics from the same tokens. Crisp is the default; Compact is for
+      information-dense views. It nests like <code>data-theme</code> — the panel
+      below is Compact regardless of the toggle above, with no JS involved.</p>
+    <article data-density="compact">
+      <h3>Compact region</h3>
+      <p>Same markup, tighter rhythm.</p>
+      <label for="d-name">Name</label>
+      <input id="d-name" placeholder="Ada Lovelace">
+      <p>
+        <button data-variant="accent solid">Save</button>
+        <button>Cancel</button>
+        <span data-chip>tag</span>
+      </p>
+      <table>
+        <thead><tr><th>Row</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td>First</td><td>1</td></tr>
+          <tr><td>Second</td><td>2</td></tr>
+        </tbody>
+      </table>
+    </article>
+
     <h2>Code</h2>
     <p>Hover a code block for the copy button (from <code>hikarion.js</code>).</p>
     <pre><code>&lt;link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hikarion-ui/dist/hikarion.min.css"&gt;
@@ -412,6 +440,18 @@
     });
     addEventListener("resize", () => moveThumb(activeBtn()));
     moveThumb(activeBtn());
+
+    // Density is pure CSS — an attribute on any container. Hikarion ships no JS
+    // for it; this is just the demo toggle.
+    document.getElementById("density").addEventListener("click", (e) => {
+      const btn = e.target.closest("button[value]");
+      if (!btn) return;
+      document.documentElement.dataset.density = btn.value;
+      for (const b of btn.parentElement.children) {
+        b.setAttribute("aria-pressed", String(b === btn));
+      }
+      moveThumb(activeBtn());
+    });
   </script>
 </body>
 </html>

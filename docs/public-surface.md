@@ -39,6 +39,7 @@ of them.
 | Attribute | Values | Notes |
 |-----------|--------|-------|
 | `data-theme` | `light`, `dark`, plus shipped theme names (`nord`, `dracula`, `catppuccin`, …) | Nestable; swaps the Tier-1 palette |
+| `data-density` | `crisp` (default), `compact` | Nestable; retunes the spacing scale and control metrics. CSS-only |
 
 ## Variant grammar
 

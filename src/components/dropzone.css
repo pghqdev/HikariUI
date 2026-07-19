@@ -20,7 +20,7 @@
     align-items: center;
     justify-content: center;
     gap: var(--space-2);
-    min-block-size: 7rem;
+    min-block-size: calc(7rem * var(--_density));
     padding: var(--space-6);
     color: var(--muted);
     background: var(--surface);
@@ -57,7 +57,7 @@
   /* The filename/prompt slot — muted by default, accent once a file is
      chosen (hikarion.js sets [data-chosen] on the label). */
   [data-dropzone-filename] {
-    font-size: 0.9375rem;
+    font-size: var(--control-fz);
     line-height: 1.4;
   }
   [data-dropzone][data-chosen] [data-dropzone-filename] {

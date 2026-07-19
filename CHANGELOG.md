@@ -18,6 +18,12 @@ Public surface and deprecation rules: [`docs/versioning.md`](docs/versioning.md)
 - Contributing guide, issue templates, and RFC path for vocabulary changes
 - CI quality gates: expanded contrast pairs, Stylelint (utility-class bans),
   gzip size budget, axe-core kitchen-sink check, and JSDoc typecheck
+- **Public `data-density="crisp|compact"`** — nestable, CSS-only density that
+  retunes the spacing scale and control metrics. Crisp is the default and needs
+  no attribute; kitchen-sink demos both, and the axe gate runs against each
+  ([RFC 0001](docs/rfcs/0001-data-density.md))
+- a11y gate enables axe's `target-size` rule (WCAG 2.2 AA 2.5.8), the rule
+  Compact density can regress
 
 ### Changed
 

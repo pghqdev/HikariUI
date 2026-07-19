@@ -11,7 +11,7 @@
     min-inline-size: 12rem;
     max-inline-size: min(20rem, calc(100vw - var(--space-8)));
     margin: 0;
-    padding: 0.3rem;
+    padding: calc(0.3rem * var(--_density));
     color: var(--fg);
     background: var(--surface);
     border: 1px solid var(--line);
@@ -56,8 +56,8 @@
     justify-content: flex-start;
     gap: var(--space-3);
     inline-size: 100%;
-    padding: 0.5rem 0.7rem;
-    font-size: 0.9375rem;
+    padding: calc(0.5rem * var(--_density)) calc(0.7rem * var(--_density));
+    font-size: var(--control-fz);
     font-weight: 500;
     text-align: start;
     text-decoration: none;
@@ -71,7 +71,7 @@
 
   /* Separator between groups of rows. */
   [data-menu] hr {
-    margin-block: 0.3rem;
+    margin-block: calc(0.3rem * var(--_density));
     margin-inline: 0;
     border: none;
     border-block-start: 1px solid var(--line);

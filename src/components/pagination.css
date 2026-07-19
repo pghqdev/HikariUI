@@ -32,10 +32,11 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    inline-size: 2.25rem;
-    block-size: 2.25rem;
+    /* 36px Crisp / 27px Compact — both clear WCAG 2.2 target size (2.5.8). */
+    inline-size: calc(2.25rem * var(--_density));
+    block-size: calc(2.25rem * var(--_density));
     padding: 0;
-    font-size: 0.875rem;
+    font-size: var(--control-fz-sm);
     font-weight: 500;
     line-height: 1;
     color: var(--muted);
@@ -76,7 +77,7 @@
   [data-pagination] :where(button, a):first-child,
   [data-pagination] :where(button, a):last-child {
     inline-size: auto;
-    padding-inline: 0.6rem;
+    padding-inline: calc(0.6rem * var(--_density));
     gap: var(--space-1);
   }
 

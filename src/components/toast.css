@@ -30,7 +30,7 @@
     border: 1px solid var(--line);
     border-radius: var(--radius);
     box-shadow: var(--shadow-lg);
-    font-size: 0.9375rem;
+    font-size: var(--control-fz);
     animation: hk-toast-in var(--dur-enter) var(--ease-hikarion);
   }
   [data-toast][data-closing] {

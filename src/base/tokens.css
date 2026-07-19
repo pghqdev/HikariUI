@@ -86,21 +86,52 @@
     --danger-content: oklch(22% 0.05 25);
   }
 
+  /* --- Density. Public: `data-density="crisp" | "compact"`, nestable like
+     data-theme. Crisp is the default and needs no attribute; it is spelled out
+     so a subtree can opt back out of an enclosing Compact.
+
+     These two multipliers feed every derived step below. They are declared on
+     `:root` ONLY and then inherited — deliberately not on `[data-theme]`, or a
+     themed region nested inside a Compact container would reset itself to
+     Crisp. The scale that reads them is recomputed per theme/density container
+     (next block); the multipliers themselves just inherit down. --- */
+  :root,
+  [data-density="crisp"] {
+    --_density: 1;
+    --_density-type: 1;
+  }
+  [data-density="compact"] {
+    --_density: 0.75;
+    --_density-type: 0.9375;
+  }
+
   /* --- Tier 2: derived. Declared on every theme root (`:root` and any
      `[data-theme]`) so switching or nesting a theme recomputes these from the
-     local Tier-1 accent — shadows and glow recolor for free. --- */
+     local Tier-1 accent — shadows and glow recolor for free. `[data-density]`
+     joins them so a density container recomputes the scale rather than
+     inheriting the outer one's already-computed steps. --- */
   :root,
-  [data-theme] {
+  [data-theme],
+  [data-density] {
     /* Spacing scale — every framework gap/padding/margin sits on one of these
        steps; --space is the Tier-1 base unit, never used raw in components. */
-    --space-1: calc(var(--space) * 0.5);
-    --space-2: calc(var(--space) * 0.75);
-    --space-3: var(--space);
-    --space-4: calc(var(--space) * 1.5);
-    --space-5: calc(var(--space) * 2);
-    --space-6: calc(var(--space) * 2.5);
-    --space-7: calc(var(--space) * 3);
-    --space-8: calc(var(--space) * 4);
+    --space-1: calc(var(--space) * 0.5 * var(--_density));
+    --space-2: calc(var(--space) * 0.75 * var(--_density));
+    --space-3: calc(var(--space) * var(--_density));
+    --space-4: calc(var(--space) * 1.5 * var(--_density));
+    --space-5: calc(var(--space) * 2 * var(--_density));
+    --space-6: calc(var(--space) * 2.5 * var(--_density));
+    --space-7: calc(var(--space) * 3 * var(--_density));
+    --space-8: calc(var(--space) * 4 * var(--_density));
+
+    /* Control metrics — buttons and fields. Components read these instead of
+       hard-coding rem padding, so density reaches the controls too. */
+    --control-py: calc(0.5rem * var(--_density));
+    --control-px: calc(0.95rem * var(--_density));
+    --field-py: calc(0.6rem * var(--_density));
+    --field-px: calc(0.85rem * var(--_density));
+    --control-fz: calc(0.9375rem * var(--_density-type));
+    --control-fz-sm: calc(0.875rem * var(--_density-type));
 
     /* Radius scale — nested surfaces step down from the Tier-1 --radius. */
     --radius-sm: calc(var(--radius) - 0.25rem);

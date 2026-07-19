@@ -23,8 +23,8 @@
     z-index: 50;
     inline-size: max-content;
     max-inline-size: 16rem;
-    padding: 0.35rem 0.6rem;
-    font-size: 0.8125rem;
+    padding: calc(0.35rem * var(--_density)) calc(0.6rem * var(--_density));
+    font-size: calc(0.8125rem * var(--_density-type));
     font-weight: 500;
     line-height: 1.3;
     color: var(--bg);

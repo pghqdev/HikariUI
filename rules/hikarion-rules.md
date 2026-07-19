@@ -293,6 +293,31 @@ Paste this inline in `<head>` **before** the stylesheet to prevent a theme flash
 <script>try{var t=localStorage.getItem("hikarion-theme");if(t)document.documentElement.dataset.theme=t}catch(e){}</script>
 ```
 
+## Density
+
+`data-density` retunes spacing and control metrics. Two values, and that is the
+whole vocabulary:
+
+| Value | Use |
+|-------|-----|
+| `crisp` | Default. Product UI. No attribute needed. |
+| `compact` | Information-dense views — tables, dashboards, admin panels. |
+
+Pure CSS, no JS, and it nests exactly like `data-theme`, so a dense panel can
+live inside a crisp page:
+```html
+<body data-density="crisp">
+  <article data-density="compact">…</article>
+</body>
+```
+Spell `crisp` explicitly only to opt a subtree back out of an enclosing
+`compact`. Density is **not** a size variant on individual components — there is
+no `data-density` on a single button. Put it on the container.
+
+Density tightens **chrome**: spacing, control padding, control type. It leaves
+body copy, headings, and code blocks at full size (dense ≠ harder to read), and
+it leaves the switch at its WCAG 2.2 target-size floor.
+
 ## Tier-1 tokens
 
 These ~20 tokens **are** a theme. Set them on `:root` or a `[data-theme]`

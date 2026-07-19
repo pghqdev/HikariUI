@@ -28,7 +28,7 @@
     display: inline-flex;
     align-items: center;
     gap: var(--space-1);
-    font-size: 0.875rem;
+    font-size: var(--control-fz-sm);
   }
 
   /* Separator — the shared chevron, rotated to point inline. Drawn as a mask

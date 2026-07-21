@@ -521,23 +521,23 @@
       <article>
         <button popovertarget="menu-demo" data-variant="solid">Actions</button>
         <div popover id="menu-demo" data-menu>
-          <button>Rename <kbd>⌘R</kbd></button>
-          <button>Duplicate <kbd>⌘D</kbd></button>
+          <button commandfor="menu-demo" command="hide-popover">Rename <kbd>⌘R</kbd></button>
+          <button commandfor="menu-demo" command="hide-popover">Duplicate <kbd>⌘D</kbd></button>
           <a href="#">Open in new tab</a>
           <button aria-disabled="true">Move to…</button>
           <hr>
-          <button data-variant="danger">Delete <kbd>⌫</kbd></button>
+          <button commandfor="menu-demo" command="hide-popover" data-variant="danger">Delete <kbd>⌫</kbd></button>
         </div>
       </article>
       <article data-density="compact">
         <button popovertarget="menu-demo-c" data-variant="solid">Actions</button>
         <div popover id="menu-demo-c" data-menu>
-          <button>Rename <kbd>⌘R</kbd></button>
-          <button>Duplicate <kbd>⌘D</kbd></button>
+          <button commandfor="menu-demo-c" command="hide-popover">Rename <kbd>⌘R</kbd></button>
+          <button commandfor="menu-demo-c" command="hide-popover">Duplicate <kbd>⌘D</kbd></button>
           <a href="#">Open in new tab</a>
           <button aria-disabled="true">Move to…</button>
           <hr>
-          <button data-variant="danger">Delete <kbd>⌫</kbd></button>
+          <button commandfor="menu-demo-c" command="hide-popover" data-variant="danger">Delete <kbd>⌫</kbd></button>
         </div>
       </article>
     </div>
@@ -563,10 +563,10 @@
             <button data-variant="accent solid">Save</button>
             <button data-variant="accent solid" popovertarget="ks-save-more" aria-label="More save options"></button>
             <div popover id="ks-save-more" data-menu>
-              <button>Save as…</button>
-              <button>Save a copy</button>
+              <button commandfor="ks-save-more" command="hide-popover">Save as…</button>
+              <button commandfor="ks-save-more" command="hide-popover">Save a copy</button>
               <hr>
-              <button data-variant="danger">Discard changes</button>
+              <button commandfor="ks-save-more" command="hide-popover" data-variant="danger">Discard changes</button>
             </div>
           </div>
         </div>
@@ -584,10 +584,10 @@
             <button data-variant="accent solid">Save</button>
             <button data-variant="accent solid" popovertarget="ks-save-more-c" aria-label="More save options"></button>
             <div popover id="ks-save-more-c" data-menu>
-              <button>Save as…</button>
-              <button>Save a copy</button>
+              <button commandfor="ks-save-more-c" command="hide-popover">Save as…</button>
+              <button commandfor="ks-save-more-c" command="hide-popover">Save a copy</button>
               <hr>
-              <button data-variant="danger">Discard changes</button>
+              <button commandfor="ks-save-more-c" command="hide-popover" data-variant="danger">Discard changes</button>
             </div>
           </div>
         </div>

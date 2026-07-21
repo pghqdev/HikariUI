@@ -11,8 +11,11 @@
    out identically.
 
    The stack is capped at the viewport and anchored to its end, so an
-   over-eager caller clips the oldest toasts instead of pushing the newest
-   one off-screen.
+   over-eager caller clips the oldest toasts instead of pushing the newest one
+   off-screen. Clipping is the backstop, not the mechanism: Hikarion.toast()
+   evicts past STACK_MAX so nothing is left focusable-but-invisible. A
+   hand-authored region with more toasts than fit clips them and keeps them
+   tabbable — author fewer, or cap them yourself.
 
    ponytail: top-layer order is insertion order — a <dialog> opened *after*
    the region still covers it. Re-showing the region on each toast would fix

@@ -40,7 +40,7 @@ Generated for **v0.1.0** by `bun scripts/cdn-docs.mjs` (part of `bun run build`)
 |------|-------------|
 | `dist/hikarion.min.css` | `sha384-rQvoTJjwMOZGTS0vTTGfRa5Zm9QPpEAtZ9HUNSD+umzF/6pf42CQ550bMtka17Mg` |
 | `dist/hikarion.css` | `sha384-CKW90ReN9JcAV8ZfmEnKR3DUzJlbpiipVT8qgLKNaeHzLavHJc7IKHA1SrgTkTXZ` |
-| `dist/hikarion.js` | `sha384-CMIWU7bk50jvhw3dLWQUKcBQO+X4NVjMAuOQIKk6K6ozVpZVGLoxI5dxs/TNH2+m` |
+| `dist/hikarion.js` | `sha384-HpxtLU9l7oAYwkBjjHbgEOPiseBVNjWLobgePoxAvMl36wBn646BhDtQ6DUYY3I7` |
 | `dist/themes/nord.min.css` | `sha384-zWGdcdTuFI+0oUj7gWilGuppC++uwPj6BGRRspchXuLvnERZc8eZRfX0CJOOPKr5` |
 | `dist/themes/dracula.min.css` | `sha384-0nnDtePKlqxirgzDUpCSP/QUB22BNn7T2jTQIRtJYWJs2YywdbDZHxCA05t/6dh2` |
 | `dist/themes/catppuccin.min.css` | `sha384-Ib1CpXG4K/pjKZ8VNwyDiJGB3Beu7uPl/pfZCCy4iOdR8UJLX7cqGU7Gmi5AU1Gi` |

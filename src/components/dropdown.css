@@ -10,6 +10,11 @@
    pagination precedent — stays in the a11y tree), and a shortcut hint is a
    real <kbd>. Nothing new is invented for any of them.
 
+   Light dismiss only fires for clicks outside the panel, so a row that acts
+   closes the menu itself — `command="hide-popover" commandfor="<panel id>"`,
+   the native invoker, never a click handler. Chromium exposes no expanded
+   state for a hide-only invoker, so the row's semantics are untouched.
+
    ponytail: this is a *disclosure* — real buttons reached with Tab — not an
    APG `role="menu"`. Roving-tabindex arrow keys cannot be done in CSS, and
    menu roles without menu keys are worse than neither (docs/accessibility.md).

@@ -168,6 +168,17 @@ so they are additive too.
 - **Navigation** — `[data-nav]` stacks into a column when its nearest query
   container (a card) is narrower than 22rem, so the same markup is a bar in a page
   header and a rail in a narrow card. No new hook
+- **Action menu** rows that run an action now close their own menu, declaratively:
+  `command="hide-popover" commandfor="<panel id>"`. Light dismiss only fires for
+  clicks *outside* a popover, so before this a row left the panel open. It is a
+  native invoker, not a click handler — no `aria-expanded` is added to the row,
+  and focus returns to the trigger exactly as on `Esc`. On a browser without
+  invoker commands *and* without `hikarion.js`, the row does not close the menu;
+  `Esc` and light-dismiss still do. No new hook and no JS dependency
+- Agent rules gained an **overlay invoker vocabulary** table (`popovertarget` as
+  the default popover opener, `show-modal`/`close`/`request-close` for `<dialog>`,
+  the `*-popover` commands for remote open/close) and state plainly that invoker
+  commands are feature-detected separately from the Popover API
 
 ### Fixed
 

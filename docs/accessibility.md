@@ -85,7 +85,7 @@ Every interactive pattern in `kitchen-sink.html`, driven from the keyboard.
 | Dialog | `Enter` on invoker, `Tab`, `Esc` | ✅ See the focus-order table above. |
 | Tabs | `Tab` to the tablist, `←` `→` `↑` `↓` `Home` `End`, `Tab` into the panel | ✅ APG tablist: roving `tabindex` (one stop for the whole list), automatic activation, panel is `tabindex="0"` so its content is reachable. |
 | Accordion | `Tab`, `Enter`/`Space` | ✅ Native `<summary>`; inset focus ring so it stays inside the rounded box. |
-| Dropdown / action menu | `Enter` on trigger, `Tab`, `Esc` | ✅ Native popover: `Tab` moves into the popover from the invoker, `Esc` light-dismisses and returns focus to the trigger. Inert rows use `aria-disabled`, so they keep their tab stop and stay announced. **Not** an APG menu — see limitations. |
+| Dropdown / action menu | `Enter` on trigger, `Tab`, `Esc` | ✅ Native popover: `Tab` moves into the popover from the invoker, `Esc` light-dismisses and returns focus to the trigger. An action row carries `command="hide-popover"`, so activating it closes the menu and focus returns to the trigger — same as `Esc`, no script. Inert rows use `aria-disabled`, so they keep their tab stop and stay announced. **Not** an APG menu — see limitations. |
 | Button group / split button | `Tab`, `Enter`/`Space` | ✅ Plain tab order — every child is a real `<button>`, nothing roving, nothing trapped. The focused button is raised above its overlapping neighbour so the ring is never clipped. The chevron-only menu half renders with no text and **must** carry its own `aria-label`. |
 | Nav | `Tab`, `Enter` | ✅ Native links only. The current item is `aria-current="page"` and is marked by geometry (underline / inline-start edge) as well as colour. |
 | Data table | `Tab`, `Space` | ✅ Selection is a native checkbox per row, so it is keyboard-operable, submittable and announced as a real checked state. Each needs an author-supplied `aria-label` naming its row — documented, not enforceable in CSS. |
@@ -154,7 +154,9 @@ Verified in Chromium with `javaScriptEnabled: false`, and again with only
 
 **Works unchanged** — all styling and theming; `<dialog>` open/close (native
 `command` invokers); `[data-menu]` open, light-dismiss and `Esc` (native
-popover); `popover="hint"` open and toggle-to-close; the split button; `<select>`, `select[multiple]` and the
+popover); a `[data-menu]` action row closing its own menu (a native
+`command="hide-popover"` invoker); `popover="hint"` open and toggle-to-close;
+the split button; `<select>`, `select[multiple]` and the
 `input[list]` + `<datalist>` combobox; date/time fields and their platform
 picker; `<details>` disclosure; the dropzone's picker, preview slots and keyboard access;
 form validation (`:user-invalid`); tooltips; spinners; progress and meter;
@@ -173,7 +175,7 @@ these is presentational or native.
 | Theme switcher | `[data-set-theme]` buttons do nothing; the page uses the OS `prefers-color-scheme`. |
 | `<pre>` copy buttons | Absent. The code block is unaffected. |
 | Toasts | `Hikarion.toast()` does not exist; nothing renders. There is no no-JS toast. |
-| `command`/`commandfor` on old browsers | The polyfill is the JS, so on a browser lacking native invokers *and* without the script, the dialog cannot be opened. Current Chromium, Safari and Firefox all support invokers natively. |
+| `command`/`commandfor` on old browsers | The polyfill is the JS, so on a browser lacking native invokers *and* without the script, the dialog cannot be opened and a `[data-menu]` action row does not close its own menu (the menu still light-dismisses and closes on `Esc`). Current Chromium, Safari and Firefox all support invokers natively. |
 
 Density is **not** in this list: `data-density` is a CSS attribute with zero JS
 behind it. The kitchen sink's toggle is a demo of the attribute, not part of the

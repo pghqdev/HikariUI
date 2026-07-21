@@ -11,6 +11,9 @@
 (() => {
   let uid = 0;
   const THEME_KEY = "hikarion-theme";
+  const STACK_MAX = 4;                       // most toasts the region will hold
+  /** @type {WeakMap<Element, () => void>} */
+  const dismissers = new WeakMap();          // toast → its own dismiss()
 
   // --- Copy buttons ---
   function decorate(pre) {
@@ -204,6 +207,7 @@
     el.appendChild(text);
 
     let timer, removed = false;
+    dismissers.set(el, () => dismiss());
     // Remove the toast, and the region with it once it holds no more toasts —
     // an empty region left behind reads as a stray shell.
     const remove = () => {
@@ -243,12 +247,28 @@
     // this toast.
     region.setAttribute("aria-live", variant === "danger" ? "assertive" : "polite");
     setTimeout(() => {
-      if (!removed) region.appendChild(el);
+      if (removed) return;
+      // The region clips at the viewport, and a clipped toast is still in the
+      // DOM — its ✕ keeps its place in the tab order, focusable but invisible.
+      // Evict the oldest so nothing is ever only visually gone. Runs here, not
+      // at call time: the append is deferred, so a synchronous burst of
+      // toast() calls would all read the same empty region and evict nothing.
+      // ponytail: a flat count, not a measured fit — four is already more
+      // feedback than anyone reads at once. Measure if a caller disagrees.
+      const live = [...region.querySelectorAll("[data-toast]:not([data-closing])")];
+      for (const old of live.slice(0, live.length - (STACK_MAX - 1))) dismissers.get(old)?.();
+      region.appendChild(el);
     });
     // WCAG 2.2.1 — a toast must not expire while it is being read or while its
     // ✕ holds focus. Leaving re-arms the full duration.
     if (duration > 0) {
-      const arm = () => { clearTimeout(timer); timer = setTimeout(dismiss, duration); };
+      // Re-arm on leaving — but not while the ✕ still holds focus, or a mouse
+      // drifting off a toast a keyboard user is sitting on restarts its clock.
+      const arm = () => {
+        clearTimeout(timer);
+        if (el.contains(document.activeElement)) return;
+        timer = setTimeout(dismiss, duration);
+      };
       const hold = () => clearTimeout(timer);
       el.addEventListener("pointerenter", hold);
       el.addEventListener("focusin", hold);

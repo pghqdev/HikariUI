@@ -277,6 +277,26 @@ invokers only where the browser lacks them.
 </dialog>
 ```
 
+### Overlays: invokers before JavaScript
+Every overlay in Hikarion opens, closes and dismisses from markup. Reach for a
+click handler only when no declarative form exists — not because one is shorter
+to type.
+
+| Markup | Use for |
+|--------|---------|
+| `popovertarget="id"` | The **default** way to open a popover. Widest support, gives the button `aria-expanded` for free |
+| `command="show-modal\|close\|request-close" commandfor="id"` | `<dialog>` |
+| `command="toggle-popover\|show-popover\|hide-popover" commandfor="id"` | A popover opened or closed from somewhere other than its own trigger |
+
+`request-close` is the polite close: it fires a cancellable `cancel` event first,
+so an unsaved-changes guard gets a say. `close` is unconditional.
+
+Invoker commands shipped roughly three years after the Popover API, so a browser
+can support `popover` fully and still ignore `command`. They are feature-detected
+separately (`"command" in HTMLButtonElement.prototype`). `hikarion.js` polyfills
+the invoker *click* where it is missing; without the script too, a
+`[popovertarget]` button still works and a dialog invoker does not.
+
 ### Dropdown menu
 Native Popover API. The button opens the menu; the browser owns toggle,
 light-dismiss, and focus.
@@ -296,12 +316,17 @@ Rows inside a `[data-menu]` are plain `<button>`/`<a>`. Three states are free,
 all reusing vocabulary you already know:
 ```html
 <div id="file-menu" popover data-menu>
-  <button>Rename <kbd>⌘R</kbd></button>
+  <button commandfor="file-menu" command="hide-popover">Rename <kbd>⌘R</kbd></button>
   <button aria-disabled="true">Move to…</button>
   <hr>
-  <button data-variant="danger">Delete</button>
+  <button commandfor="file-menu" command="hide-popover" data-variant="danger">Delete</button>
 </div>
 ```
+Light dismiss only fires for clicks *outside* the popover, so a row that runs an
+action has to close the menu itself — that is the `command="hide-popover"` pair,
+not a click handler. It is inert on the row's own semantics (no `aria-expanded`
+is added) and composes with whatever else the button does. Skip it on rows that
+navigate: leaving the page closes the menu anyway.
 - `data-variant="danger"` (or any tone) inks the row and tints its hover. Do
   **not** add `solid` inside a menu — a filled row is a button, not a menu item.
 - `aria-disabled="true"` dims the row and blocks pointer input while keeping it
@@ -346,7 +371,7 @@ part in the row's layout.
   <button data-variant="accent solid" popovertarget="save-more"
           aria-label="More save options"></button>
   <div popover id="save-more" data-menu>
-    <button>Save as…</button>
+    <button commandfor="save-more" command="hide-popover">Save as…</button>
   </div>
 </div>
 ```

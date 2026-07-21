@@ -201,7 +201,7 @@ _Remaining: action menus and split-button menus ship; there is no right-click co
 - [x] JS remains optional; core styling does not require it
 - [x] Kitchen-sink + agent rules updated
 
-_Note: the stack clips its oldest members when a caller pushes more than fit the viewport (`duration: 0`); the clipped ✕ buttons stay focusable. Capping the stack in JS is deferred._
+_Note: `Hikarion.toast()` caps the stack at 4 and evicts the oldest, so nothing is left focusable-but-invisible. A hand-authored region with more toasts than fit still clips them and keeps them tabbable — cap it yourself._
 
 ## Date / time inputs (native-first)
 
@@ -333,10 +333,12 @@ _Remaining: dismissal. `[data-tooltip]` is hover/focus-only with no `Esc`, and `
 
 **Blocked by:** Accessibility & progressive-enhancement contract for the existing set; Menu (context & action)
 
-- [ ] Invoker/popover patterns are used consistently for new overlay work
-- [ ] Fallbacks exist when APIs are missing
-- [ ] Docs/rules teach the preferred declarative markup
-- [ ] No new dependence on required JS for core affordances
+- [x] Invoker/popover patterns are used consistently for new overlay work
+- [x] Fallbacks exist when APIs are missing
+- [x] Docs/rules teach the preferred declarative markup
+- [x] No new dependence on required JS for core affordances
+
+_Note: an action row closes its menu via `command="hide-popover"`. Without invoker-command support the row does not close the panel; `Esc` and light-dismiss still do, and `hikarion.js` polyfills the click when present._
 
 ## Scroll-driven animations (reduced-motion safe)
 

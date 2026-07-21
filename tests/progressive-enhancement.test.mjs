@@ -206,3 +206,30 @@ describe("pointer contract", () => {
     });
   });
 });
+
+describe("toast stack stays reachable", () => {
+  test("the region evicts past the cap instead of clipping tabbable toasts", async () => {
+    // Regression: the region caps at the viewport and clips the overflow, but a
+    // clipped toast is still in the DOM — its ✕ kept its place in the tab order,
+    // focusable and invisible. Every toast the user can tab to must be on screen.
+    await withPage({}, async (page) => {
+      await page.evaluate(() => {
+        for (let i = 0; i < 30; i++) window.Hikarion.toast(`toast ${i}`, { duration: 0 });
+      });
+      await page.waitForTimeout(100);
+
+      const region = page.locator("[data-toast-region]");
+      const regionBox = await region.boundingBox();
+      const closes = page.locator("[data-toast]:not([data-closing]) [data-toast-close]");
+      expect(await closes.count()).toBeGreaterThan(0);
+
+      for (const close of await closes.all()) {
+        const box = await close.boundingBox();
+        expect(box).not.toBeNull();
+        // Inside the region's painted area, not clipped above its top edge.
+        expect(box.y).toBeGreaterThanOrEqual(regionBox.y - 1);
+        expect(box.y + box.height).toBeLessThanOrEqual(regionBox.y + regionBox.height + 1);
+      }
+    });
+  });
+});

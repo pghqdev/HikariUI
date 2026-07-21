@@ -47,15 +47,24 @@ const GITHUB = "https://github.com/pghqdev/HikarionUI/blob/main/";
 // relative so the site works at a domain root and under a project subpath.
 const relink = (md, depth, dir) => {
   const up = "../".repeat(depth);
+  // Order matters: the directory rule matches any relative directory link, so
+  // it runs before the two rules that emit `../docs/<slug>/`.
   return md
+    // Directory links (`compositions/`, `docs/adr/`) have no page.
+    .replace(/\]\(\.{1,2}\/((?:[\w.-]+\/)+)\)/g, (m, path) => `](${GITHUB.replace("/blob/", "/tree/")}${path})`)
+    // The rules file ships standalone, so its doc links are absolute GitHub
+    // URLs. On the site those docs are pages — keep the reader here.
+    .replace(new RegExp(`${GITHUB}docs/([\\w-]+)\\.md`, "g"), (m, name) =>
+      DOC_SLUGS.includes(name) ? `${up}docs/${name}/` : m,
+    )
     .replace(/\]\((\.{0,2}\/)?((?:[\w.-]+\/)*)([\w-]+)\.md(#[^)]*)?\)/g, (m, _p, sub, name, hash = "") => {
       const path = (sub + name).replace(/^\.\//, "");
       if (name === "hikarion-rules") return `](${up}components/${hash})`;
-      if (!sub && DOC_SLUGS.includes(name)) return `](${up}docs/${name}/${hash})`;
+      // A doc is addressed as `tokens.md` from inside docs/ and as
+      // `docs/tokens.md` from the rules file; both are the same page.
+      if ((!sub || sub === "docs/") && DOC_SLUGS.includes(name)) return `](${up}docs/${name}/${hash})`;
       return `](${GITHUB}${path.startsWith("docs/") || !dir ? path : dir + path}.md${hash})`;
-    })
-    // Links to a repo directory (`compositions/`, `docs/adr/`) have no page.
-    .replace(/\]\(\.{1,2}\/((?:[\w.-]+\/)+)\)/g, (m, path) => `](${GITHUB.replace("/blob/", "/tree/")}${path})`);
+    });
 };
 
 // Turn a repo doc into an Astro page: strip the H1 (the layout renders it as

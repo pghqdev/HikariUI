@@ -38,8 +38,8 @@ Generated for **v0.1.0** by `bun scripts/cdn-docs.mjs` (part of `bun run build`)
 
 | File | `integrity` |
 |------|-------------|
-| `dist/hikarion.min.css` | `sha384-H9EqkiydnpipJYr3gr07iLrg2nkqITMjpe52LRwsWHdstEMjBRD487sQOljFlLFx` |
-| `dist/hikarion.css` | `sha384-r4pn7en0nWny2fi9CM8jY4DzXKjK0WQ9c+5Q7ZmDxWxYbUIynOCv57clZ6mybQhp` |
+| `dist/hikarion.min.css` | `sha384-rywTKf6TotellHleIugshuNMU4hat0ad1mCZoAsmq3pz097bo5oCKHkl16Ftg0C+` |
+| `dist/hikarion.css` | `sha384-5gIkyvADN9LPPyFy9YIwkKhQ+ZhkIJBkZ9o1nwueSCRazOyHYGrK2P/VVCgZgYa8` |
 | `dist/hikarion.js` | `sha384-Izz30opAStRPoUVTCV+pSWmbh4IekPmyAtAxtLa4Ao/BcwPxEdN0h5AqQb61J5Wa` |
 | `dist/themes/nord.min.css` | `sha384-zWGdcdTuFI+0oUj7gWilGuppC++uwPj6BGRRspchXuLvnERZc8eZRfX0CJOOPKr5` |
 | `dist/themes/dracula.min.css` | `sha384-0nnDtePKlqxirgzDUpCSP/QUB22BNn7T2jTQIRtJYWJs2YywdbDZHxCA05t/6dh2` |

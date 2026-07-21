@@ -1,8 +1,10 @@
 // Hand-rolled rather than @astrojs/sitemap: the site is a fixed handful of
 // routes, so the dependency would buy nothing a map() doesn't.
-import { DOC_SLUGS } from "../nav.mjs";
+import { TABS, DOC_SLUGS } from "../nav.mjs";
 
-const ROUTES = ["", "components", "playground", "examples", "agents", ...DOC_SLUGS.map((s) => `docs/${s}`)];
+// Every tab except Docs, whose href points at one doc page; the docs are
+// enumerated from DOC_SLUGS instead so all of them are listed.
+const ROUTES = [...TABS.filter((t) => !t.match).map((t) => t.href), ...DOC_SLUGS.map((s) => `docs/${s}`)];
 
 export function GET({ site }) {
   const base = import.meta.env.BASE_URL;

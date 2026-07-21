@@ -42,8 +42,8 @@ const examples = [
       <div class="bar">
         <h2 id={e.file.replace(".html", "")}>{e.title}</h2>
         <p class="row">
-          <a href={`${BASE}demo/${e.file}`}><button>Open full page ↗</button></a>
-          <a href={`https://github.com/pghqdev/HikarionUI/blob/main/${e.file === "kitchen-sink.html" ? "" : "compositions/"}${e.file}`}><button>View source ↗</button></a>
+          <a href={`${BASE}demo/${e.file}`}>Open full page ↗</a>
+          <a href={`https://github.com/pghqdev/HikarionUI/blob/main/${e.file === "kitchen-sink.html" ? "" : "compositions/"}${e.file}`}>View source ↗</a>
         </p>
       </div>
       <p>{e.blurb}</p>
@@ -52,7 +52,6 @@ const examples = [
   ))}
 
   <style>
-    .lede { color: var(--muted); max-width: 62ch; }
     section { margin-block-start: var(--space-7); }
     iframe {
       inline-size: 100%;

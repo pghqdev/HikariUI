@@ -26,7 +26,6 @@
     list-style: none;
     padding-inline-start: 0;
     counter-reset: hk-step;
-    counter-increment: hk-step;
   }
 
   [data-stepper] > li {
@@ -60,9 +59,13 @@
     background: var(--accent);
   }
 
-  /* The step bubble — a circle carrying the step number or a check. */
+  /* The step bubble — a circle carrying the step number or a check. It is an
+     ::after so the label stays the only real content, but it leads the item in
+     both layouts: the connector geometry is measured from the bubble, and a
+     label rendered above it would have the line struck through it. */
   [data-stepper] > li::after {
     content: counter(hk-step);
+    order: -1;
     position: relative;
     z-index: 1;
     display: grid;

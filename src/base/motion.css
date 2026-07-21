@@ -117,7 +117,13 @@
         background: var(--accent);
         transform-origin: 0 50%;
         pointer-events: none;
-        animation: hk-scroll-progress linear both;
+        /* Longhands, not the `animation` shorthand: the shorthand resets
+           animation-timeline to auto, and a minifier that folds these back into
+           it silently drops the timeline — the bar then renders permanently
+           full instead of tracking the scroll. */
+        animation-name: hk-scroll-progress;
+        animation-timing-function: linear;
+        animation-fill-mode: both;
         animation-timeline: scroll(root block);
       }
 

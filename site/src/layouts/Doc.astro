@@ -8,7 +8,7 @@ const toc = headings.filter((h) => h.depth === 2);
 ---
 
 <Page title={frontmatter.title} description={frontmatter.description} wide>
-  <div class="doc">
+  <div class="doc" data-cols={toc.length > 1 ? undefined : "2"}>
     <nav class="side" aria-label="Docs">
       {DOC_NAV.map((g) => (
         <>

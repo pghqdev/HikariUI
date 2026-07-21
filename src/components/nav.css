@@ -108,13 +108,12 @@
     gap: var(--space-1);
   }
 
-  /* Current page in a rail reads as a filled row with a leading edge, not an
-     underline. The 2px edge is taken back out of the padding so the label
-     stays on the same optical line as its siblings. */
+  /* Current page in a rail reads as a filled row, not an underline. Tint and
+     weight carry it; no leading edge-stripe — same call as the alert tone,
+     where the stripe is the tell of a generated dashboard rather than a
+     signal the tint doesn't already give. */
   [data-nav="sidebar"] [aria-current="page"] {
     background: color-mix(in oklch, var(--accent) 10%, transparent);
-    border-inline-start: 2px solid var(--accent);
-    padding-inline-start: calc(var(--space-4) - 2px);
     text-decoration: none;
   }
 

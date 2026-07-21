@@ -17,7 +17,7 @@ const jsonLd = {
   applicationCategory: "DeveloperApplication",
   operatingSystem: "Any",
   description,
-  url: Astro.site?.href,
+  url: Astro.site ? new URL(BASE, Astro.site).href : undefined,
   license: "https://opensource.org/licenses/MIT",
   offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
   softwareVersion: "0.1.0",
@@ -40,9 +40,11 @@ const jsonLd = {
       all — from ~20 tokens.
     </p>
     <div class="row" style="margin-block-start:var(--space-6)">
-      <a href={`${BASE}docs/installation`}><button data-variant="solid">Get started</button></a>
+      <!-- Links, not buttons in links: Hikarion has no documented
+           link-that-looks-like-a-button, and nesting one is invalid HTML. -->
+      <a href={`${BASE}docs/installation`}>Get started →</a>
       <button onclick="Hikarion.toast('Copied the install snippet', {variant:'success'}); navigator.clipboard?.writeText(document.getElementById('snippet').innerText)">Copy install</button>
-      <a href="https://github.com/pghqdev/HikarionUI"><button>GitHub</button></a>
+      <a href="https://github.com/pghqdev/HikarionUI">GitHub ↗</a>
     </div>
     <pre style="margin-block-start:var(--space-6)"><code id="snippet">{install}</code></pre>
   </section>

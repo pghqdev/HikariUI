@@ -137,10 +137,10 @@ Out of scope for 1.0 is still ticketed as post-1.0 work (tickets 39–43) so it 
 
 **Blocked by:** Ship Crisp / Compact density as first-class; Accessibility & progressive-enhancement contract for the existing set
 
-- [ ] High-contrast support is available (dedicated token set and/or automatic adjustment)
-- [ ] Forced-colors mode is verified for interactive patterns
-- [ ] Contrast gate covers high-contrast presentation
-- [ ] Docs/rules describe when and how to use it
+- [x] High-contrast support is available (dedicated token set and/or automatic adjustment)
+- [x] Forced-colors mode is verified for interactive patterns
+- [x] Contrast gate covers high-contrast presentation
+- [x] Docs/rules describe when and how to use it
 
 ## Data table
 
@@ -148,11 +148,11 @@ Out of scope for 1.0 is still ticketed as post-1.0 work (tickets 39–43) so it 
 
 **Blocked by:** Ship Crisp / Compact density as first-class; Accessibility & progressive-enhancement contract for the existing set
 
-- [ ] Native `<table>` styling with minimal hook surface
-- [ ] Sticky header works in the kitchen-sink demo
-- [ ] Row selection uses `aria-selected` correctly
-- [ ] Works in Crisp and Compact; passes a11y expectations
-- [ ] Agent rules document the markup contract
+- [x] Native `<table>` styling with minimal hook surface
+- [x] Sticky header works in the kitchen-sink demo
+- [x] Row selection uses `aria-selected` correctly
+- [x] Works in Crisp and Compact; passes a11y expectations
+- [x] Agent rules document the markup contract
 
 ## Navigation (sidebar + top)
 
@@ -160,10 +160,10 @@ Out of scope for 1.0 is still ticketed as post-1.0 work (tickets 39–43) so it 
 
 **Blocked by:** Ship Crisp / Compact density as first-class; Accessibility & progressive-enhancement contract for the existing set
 
-- [ ] Sidebar and top nav compositions are styled and documented
-- [ ] Active/current states are unambiguous
-- [ ] Both density modes look intentional
-- [ ] Kitchen-sink + agent rules cover the patterns
+- [x] Sidebar and top nav compositions are styled and documented
+- [x] Active/current states are unambiguous
+- [x] Both density modes look intentional
+- [x] Kitchen-sink + agent rules cover the patterns
 
 ## Select / searchable combobox
 
@@ -171,10 +171,10 @@ Out of scope for 1.0 is still ticketed as post-1.0 work (tickets 39–43) so it 
 
 **Blocked by:** Accessibility & progressive-enhancement contract for the existing set
 
-- [ ] Native `<select>` styling matches the system and is usable without JS
-- [ ] Searchable combobox PE path is keyboard-accessible and APG-correct
-- [ ] Vocabulary stays closed (minimal new hooks)
-- [ ] Kitchen-sink + agent rules document both paths
+- [x] Native `<select>` styling matches the system and is usable without JS
+- [x] Searchable combobox PE path is keyboard-accessible and APG-correct
+- [x] Vocabulary stays closed (minimal new hooks)
+- [x] Kitchen-sink + agent rules document both paths
 
 ## Menu (context & action)
 
@@ -184,8 +184,10 @@ Out of scope for 1.0 is still ticketed as post-1.0 work (tickets 39–43) so it 
 
 - [ ] Context and action menu patterns work via native Popover + minimal hooks
 - [ ] Keyboard and focus behavior match expectations for menus
-- [ ] Usable fallback exists when advanced APIs are missing
-- [ ] Kitchen-sink + agent rules cover the patterns
+- [x] Usable fallback exists when advanced APIs are missing
+- [x] Kitchen-sink + agent rules cover the patterns
+
+_Remaining: action menus and split-button menus ship; there is no right-click context-menu invocation (needs JS), and the panel stays a Tab-driven disclosure, not an APG `role="menu"` with roving tabindex._
 
 ## Toast / notification stack
 
@@ -193,11 +195,13 @@ Out of scope for 1.0 is still ticketed as post-1.0 work (tickets 39–43) so it 
 
 **Blocked by:** Accessibility & progressive-enhancement contract for the existing set
 
-- [ ] Positioning and stacking behave predictably for multiple toasts
-- [ ] Dismissal is clear and accessible
-- [ ] `aria-live` (or equivalent) behavior is correct when JS-enhanced
-- [ ] JS remains optional; core styling does not require it
-- [ ] Kitchen-sink + agent rules updated
+- [x] Positioning and stacking behave predictably for multiple toasts
+- [x] Dismissal is clear and accessible
+- [x] `aria-live` (or equivalent) behavior is correct when JS-enhanced
+- [x] JS remains optional; core styling does not require it
+- [x] Kitchen-sink + agent rules updated
+
+_Note: the stack clips its oldest members when a caller pushes more than fit the viewport (`duration: 0`); the clipped ✕ buttons stay focusable. Capping the stack in JS is deferred._
 
 ## Date / time inputs (native-first)
 
@@ -205,10 +209,10 @@ Out of scope for 1.0 is still ticketed as post-1.0 work (tickets 39–43) so it 
 
 **Blocked by:** Accessibility & progressive-enhancement contract for the existing set
 
-- [ ] Native date/time inputs match the system visually and in density modes
-- [ ] Keyboard and platform pickers remain usable
-- [ ] No heavy custom calendar ships in this ticket
-- [ ] Kitchen-sink + agent rules cover the patterns
+- [x] Native date/time inputs match the system visually and in density modes
+- [x] Keyboard and platform pickers remain usable
+- [x] No heavy custom calendar ships in this ticket
+- [x] Kitchen-sink + agent rules cover the patterns
 
 ## Tooltip (accessible + delay-controlled)
 
@@ -217,9 +221,11 @@ Out of scope for 1.0 is still ticketed as post-1.0 work (tickets 39–43) so it 
 **Blocked by:** Accessibility & progressive-enhancement contract for the existing set
 
 - [ ] Tooltips meet accessibility expectations (trigger, timing, dismiss)
-- [ ] Delay/show/hide behavior is controlled and documented
-- [ ] Works with keyboard focus, not hover-only
-- [ ] Kitchen-sink + agent rules updated
+- [x] Delay/show/hide behavior is controlled and documented
+- [x] Works with keyboard focus, not hover-only
+- [x] Kitchen-sink + agent rules updated
+
+_Remaining: dismissal. `[data-tooltip]` is hover/focus-only with no `Esc`, and `[popover="hint"]` falls back to the manual popover state (no `Esc`, no light-dismiss) on every shipping browser today — it is toggleable only from its own trigger._
 
 ## Split button / button group
 
@@ -227,9 +233,9 @@ Out of scope for 1.0 is still ticketed as post-1.0 work (tickets 39–43) so it 
 
 **Blocked by:** Accessibility & progressive-enhancement contract for the existing set
 
-- [ ] Button group and split-button patterns are styled and keyboard-correct
-- [ ] Minimal new vocabulary; reuses button/menu contracts where possible
-- [ ] Kitchen-sink + agent rules document usage
+- [x] Button group and split-button patterns are styled and keyboard-correct
+- [x] Minimal new vocabulary; reuses button/menu contracts where possible
+- [x] Kitchen-sink + agent rules document usage
 
 ## File upload with preview slots
 
@@ -237,10 +243,10 @@ Out of scope for 1.0 is still ticketed as post-1.0 work (tickets 39–43) so it 
 
 **Blocked by:** Accessibility & progressive-enhancement contract for the existing set
 
-- [ ] Upload/dropzone pattern supports preview slots
-- [ ] Keyboard and screen-reader feedback is acceptable
-- [ ] PE: core flow remains understandable without advanced JS feedback
-- [ ] Kitchen-sink + agent rules updated
+- [x] Upload/dropzone pattern supports preview slots
+- [x] Keyboard and screen-reader feedback is acceptable
+- [x] PE: core flow remains understandable without advanced JS feedback
+- [x] Kitchen-sink + agent rules updated
 
 ## Meter and range polish
 
@@ -248,10 +254,10 @@ Out of scope for 1.0 is still ticketed as post-1.0 work (tickets 39–43) so it 
 
 **Blocked by:** Ship Crisp / Compact density as first-class; Accessibility & progressive-enhancement contract for the existing set
 
-- [ ] Meter and range match the craft bar of other form controls
-- [ ] Both density modes are intentional
-- [ ] Keyboard and focus states are high-visibility
-- [ ] Kitchen-sink + agent rules updated
+- [x] Meter and range match the craft bar of other form controls
+- [x] Both density modes are intentional
+- [x] Keyboard and focus states are high-visibility
+- [x] Kitchen-sink + agent rules updated
 
 ## Pagination polish
 
@@ -259,10 +265,10 @@ Out of scope for 1.0 is still ticketed as post-1.0 work (tickets 39–43) so it 
 
 **Blocked by:** Ship Crisp / Compact density as first-class; Accessibility & progressive-enhancement contract for the existing set
 
-- [ ] Pagination pattern is visually and interaction-polished
-- [ ] Current/disabled/ellipsis states are unambiguous
-- [ ] Both density modes work
-- [ ] Kitchen-sink + agent rules updated
+- [x] Pagination pattern is visually and interaction-polished
+- [x] Current/disabled/ellipsis states are unambiguous
+- [x] Both density modes work
+- [x] Kitchen-sink + agent rules updated
 
 ## Breadcrumbs polish
 
@@ -270,10 +276,10 @@ Out of scope for 1.0 is still ticketed as post-1.0 work (tickets 39–43) so it 
 
 **Blocked by:** Ship Crisp / Compact density as first-class; Accessibility & progressive-enhancement contract for the existing set
 
-- [ ] Breadcrumb pattern is polished and semantic
-- [ ] Current page presentation is clear
-- [ ] Both density modes work
-- [ ] Kitchen-sink + agent rules updated
+- [x] Breadcrumb pattern is polished and semantic
+- [x] Current page presentation is clear
+- [x] Both density modes work
+- [x] Kitchen-sink + agent rules updated
 
 ## Component reference & override docs
 
@@ -281,12 +287,12 @@ Out of scope for 1.0 is still ticketed as post-1.0 work (tickets 39–43) so it 
 
 **Blocked by:** Freeze public vocabulary & versioning hygiene; Ship Crisp / Compact density as first-class; Accessibility & progressive-enhancement contract for the existing set
 
-- [ ] Each component (or equivalent structured reference) has usage + a11y notes
-- [ ] Token reference/playground is expanded and accurate
-- [ ] Density (Crisp/Compact) is documented
-- [ ] Migration/override guide shows how to customize without fighting `@layer hikarion`
-- [ ] Browser support matrix states modern-first + fallback policy
-- [ ] Agent rules remain synced with the public vocabulary
+- [x] Each component (or equivalent structured reference) has usage + a11y notes
+- [x] Token reference/playground is expanded and accurate
+- [x] Density (Crisp/Compact) is documented
+- [x] Migration/override guide shows how to customize without fighting `@layer hikarion`
+- [x] Browser support matrix states modern-first + fallback policy
+- [x] Agent rules remain synced with the public vocabulary
 
 ## Command palette / search dialog
 
@@ -338,10 +344,10 @@ Out of scope for 1.0 is still ticketed as post-1.0 work (tickets 39–43) so it 
 
 **Blocked by:** Design-language foundations (type, motion, elevation)
 
-- [ ] At least one production-quality scroll-driven effect ships in kitchen-sink or reference compositions
-- [ ] Effects fully disable under `prefers-reduced-motion: reduce`
-- [ ] Usable fallback when scroll-driven animations are unavailable
-- [ ] Motion still feels purposeful, not decorative noise
+- [x] At least one production-quality scroll-driven effect ships in kitchen-sink or reference compositions
+- [x] Effects fully disable under `prefers-reduced-motion: reduce`
+- [x] Usable fallback when scroll-driven animations are unavailable
+- [x] Motion still feels purposeful, not decorative noise
 
 ## View Transitions for theme & density
 
@@ -349,10 +355,10 @@ Out of scope for 1.0 is still ticketed as post-1.0 work (tickets 39–43) so it 
 
 **Blocked by:** Ship Crisp / Compact density as first-class; Design-language foundations (type, motion, elevation)
 
-- [ ] Theme and density switches can animate via View Transitions where supported
-- [ ] No functional dependence on View Transitions
-- [ ] Respects reduced-motion preferences
-- [ ] Documented as optional enhancement
+- [x] Theme and density switches can animate via View Transitions where supported
+- [x] No functional dependence on View Transitions
+- [x] Respects reduced-motion preferences
+- [x] Documented as optional enhancement
 
 ## Container + style queries for context-aware components
 
@@ -360,10 +366,10 @@ Out of scope for 1.0 is still ticketed as post-1.0 work (tickets 39–43) so it 
 
 **Blocked by:** Ship Crisp / Compact density as first-class; Design-language foundations (type, motion, elevation)
 
-- [ ] At least two components gain meaningful container/style-query behavior
-- [ ] Fallbacks keep layouts usable without query support
-- [ ] No utility-class escape hatches introduced
-- [ ] Kitchen-sink demonstrates the behavior
+- [x] At least two components gain meaningful container/style-query behavior
+- [x] Fallbacks keep layouts usable without query support
+- [x] No utility-class escape hatches introduced
+- [x] Kitchen-sink demonstrates the behavior
 
 ## Advanced color pipeline (`light-dark()`, relative color, color-mix)
 
@@ -397,6 +403,8 @@ Out of scope for 1.0 is still ticketed as post-1.0 work (tickets 39–43) so it 
 - [ ] Decorative motion disables under reduced-motion; essential state changes remain clear
 - [ ] Optional JS motion is truly optional
 - [ ] Kitchen-sink feels alive without playfulness-for-its-own-sake
+
+_Not started this round. `--ease-hikarion` / `--ease-out` are the existing curves; no spring/overshoot easing was added — `base/motion.css` records the decision to wait for a component that needs the bounce._
 
 ## Density refinement across the full component set
 

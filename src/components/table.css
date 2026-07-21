@@ -1,0 +1,77 @@
+/* Data table — a scroll frame, `[data-table]`, around a plain <table>. The
+   table itself is already styled in base/elements.css (full width, collapsed
+   borders, tabular numerals, uppercase muted head, row hover); this file adds
+   only the two things a *data* table needs and a layout table does not: a
+   scroll viewport that can be constrained, and a header that stays put inside
+   it.
+
+   One hook, on the wrapper. The sticky header needs a scroll container, and a
+   wide table needs somewhere to scroll horizontally — neither can live on the
+   <table> itself. Nothing is added to the rows: selection is read off the row's
+   own checkbox with :has(:checked), so the selected state is a real form value,
+   keyboard-operable and submittable, with no ARIA to get wrong.
+
+   `aria-selected` on a <tr> is only valid when the table carries grid/treegrid
+   semantics. Hikarion does not ship a grid (that needs arrow-key roving focus,
+   i.e. JS), so the checkbox is the supported path; the `[aria-selected="true"]`
+   selector is honoured for authors who have built a real role="grid", and is
+   invalid ARIA anywhere else.
+
+   Height is the author's call: the frame scrolls whatever it is given, so
+   constrain it inline (`style="max-block-size: 18rem"`) when the header should
+   stick. Unconstrained, it is a horizontal scroller and the header never
+   detaches.
+
+   Density rides base/elements.css: cell padding is --space-4 and the type is
+   --control-fz, so Compact tightens the chrome and the header band with it.
+   Checkbox size is untouched — it is a 24px hit target.
+
+   Markup:
+     <div data-table>
+       <table>
+         <thead><tr><th></th><th>Name</th></tr></thead>
+         <tbody>
+           <tr><td><input type="checkbox" aria-label="Select Ada"></td>
+               <td>Ada</td></tr>
+         </tbody>
+       </table>
+     </div> */
+
+@layer hikarion {
+  [data-table] {
+    overflow: auto;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+  }
+
+  /* Collapsed borders do not travel with a sticky cell — the hairline is
+     repainted as an inset shadow so the head keeps its edge while scrolling.
+     A hairline, not depth: the frame is flush (--elevation-0). */
+  [data-table] thead th {
+    position: sticky;
+    inset-block-start: 0;
+    z-index: 1;
+    background: var(--surface-2);
+    box-shadow: inset 0 -1px 0 var(--border);
+  }
+
+  /* Selected rows. The tint is deliberately faint — it sits under body text,
+     which must stay at full contrast. Both selectors tie or beat the
+     `tbody tr:hover` rule in base/elements.css, so a selected row stays
+     selected under the pointer. */
+  [data-table] tbody tr:has(input[type="checkbox"]:checked),
+  [data-table] tbody tr[aria-selected="true"] {
+    background: color-mix(in oklch, var(--accent) 10%, transparent);
+  }
+
+  @media (forced-colors: active) {
+    /* The tint is stripped with the palette; restate the selection in system
+       colours so it survives. Kept here rather than in base/forced-colors.css
+       because it is the same exception progress.css and skeleton.css take. */
+    [data-table] tbody tr:has(input[type="checkbox"]:checked),
+    [data-table] tbody tr[aria-selected="true"] {
+      background: Highlight;
+      color: HighlightText;
+    }
+  }
+}

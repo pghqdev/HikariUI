@@ -122,10 +122,17 @@ const install = `<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hikar
     </details>
 
     <h2>Token playground</h2>
-    <p>It's all ~20 variables. Drag these three Tier-1 tokens and watch the whole page recompute — spacing scale, radius scale, and the accent-tinted shadows all derive from them.</p>
+    <p>It's all 19 Tier-1 variables. Drag three of them and watch the whole page recompute — the spacing scale, the radius scale and the accent-tinted shadows are all derived, never set. The hue slider keeps the current theme's lightness and chroma and moves only the hue, which is what a theme swap does too.</p>
 
     <div class="play">
       <div>
+        <h5>Density</h5>
+        <nav class="switch" aria-label="Density">
+          <button data-set-density="crisp" aria-pressed="true">Crisp</button>
+          <button data-set-density="compact" aria-pressed="false">Compact</button>
+        </nav>
+        <p><small>Two values, nestable like <code>data-theme</code>, pure CSS. It tightens chrome — padding, control size, control type — and deliberately leaves headings, body copy and the switch's 24px target alone.</small></p>
+
         <p>
           <label for="hue">Accent hue <output id="hue-val">258</output></label>
           <input id="hue" type="range" min="0" max="360" value="258" />
@@ -159,6 +166,36 @@ const install = `<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hikar
       </article>
     </div>
 
+    <h2>Docs</h2>
+    <p>The component reference is the same file coding agents are given, so the two can't drift.</p>
+
+    <div class="grid">
+      <article>
+        <h3><a href="https://github.com/pghqdev/HikarionUI/blob/main/rules/hikarion-rules.md">Component reference</a></h3>
+        <p>Every hook, its markup contract, usage and accessibility notes. Canonical — <code>llms.txt</code>, the consumer <code>AGENTS.md</code> and the agent Skill all derive from it.</p>
+      </article>
+      <article>
+        <h3><a href="https://github.com/pghqdev/HikarionUI/blob/main/docs/tokens.md">Tokens &amp; density</a></h3>
+        <p>All 19 Tier-1 tokens, every derived token and its formula, and exactly what Compact does and doesn't move.</p>
+      </article>
+      <article>
+        <h3><a href="https://github.com/pghqdev/HikarionUI/blob/main/docs/overrides.md">Overrides &amp; adoption</a></h3>
+        <p>Customising without fighting <code>@layer</code>: unlayered CSS always wins, no <code>!important</code>. Plus shipping a theme and migrating an existing codebase.</p>
+      </article>
+      <article>
+        <h3><a href="https://github.com/pghqdev/HikarionUI/blob/main/docs/browser-support.md">Browser support</a></h3>
+        <p>Modern-first, graceful fallback. What you get when anchor positioning, container queries or scroll-driven animations aren't there.</p>
+      </article>
+      <article>
+        <h3><a href="https://github.com/pghqdev/HikarionUI/blob/main/docs/accessibility.md">Accessibility</a></h3>
+        <p>Keyboard audit, ARIA contracts, user preferences, and what genuinely degrades with JavaScript off.</p>
+      </article>
+      <article>
+        <h3><a href="https://github.com/pghqdev/HikarionUI/blob/main/docs/public-surface.md">Public surface</a></h3>
+        <p>The frozen contract: what you may depend on, and what's internal and free to change.</p>
+      </article>
+    </div>
+
     <footer>
       <p>
         Hikarion UI — <a href="https://github.com/pghqdev/HikarionUI">source</a> ·
@@ -177,9 +214,30 @@ const install = `<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hikar
         const out = document.getElementById(id + "-val");
         el.addEventListener("input", () => { out.textContent = fmt(el.value); apply(el.value); });
       };
-      bind("hue", (v) => v, (v) => root.style.setProperty("--accent", `oklch(58% 0.19 ${v})`));
+      // Hue only: drop our own override first, read whatever the active theme's
+      // --accent is, and put its lightness and chroma back with the new hue. A
+      // fixed lightness here would look right in light mode and fail contrast in
+      // dark — the L a theme picks is the part that keeps the accent readable.
+      bind("hue", (v) => v, (v) => {
+        root.style.removeProperty("--accent");
+        const m = getComputedStyle(root).getPropertyValue("--accent").match(/oklch\(\s*([\d.]+%)\s+([\d.]+)/);
+        if (m) root.style.setProperty("--accent", `oklch(${m[1]} ${m[2]} ${v})`);
+      });
       bind("radius", (v) => `${(+v).toFixed(3).replace(/0+$/, "").replace(/\.$/, "")}rem`, (v) => root.style.setProperty("--radius", `${v}rem`));
       bind("space", (v) => `${v}rem`, (v) => root.style.setProperty("--space", `${v}rem`));
+      // Density is a plain attribute on a container — no framework JS behind it.
+      // Wrapped in a View Transition where the browser has one; identical without.
+      for (const btn of document.querySelectorAll("[data-set-density]")) {
+        btn.addEventListener("click", () => {
+          const apply = () => {
+            root.dataset.density = btn.dataset.setDensity;
+            for (const b of document.querySelectorAll("[data-set-density]"))
+              b.setAttribute("aria-pressed", String(b === btn));
+          };
+          document.startViewTransition ? document.startViewTransition(apply) : apply();
+        });
+      }
+
       document.getElementById("reset").addEventListener("click", () => {
         ["--accent", "--radius", "--space"].forEach((p) => root.style.removeProperty(p));
         for (const [id, v] of [["hue", 258], ["radius", 0.875], ["space", 0.5]]) {

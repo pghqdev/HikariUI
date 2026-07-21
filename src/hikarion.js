@@ -1,6 +1,6 @@
 // hikarion.js — optional, dependency-free progressive enhancement.
 // Helpers: copy buttons on <pre>, tabs wiring, a command-invoker fallback for
-// <dialog>, theme switch + persistence, toast, and chip toggle/remove.
+// <dialog> and popovers, theme switch + persistence, toast, chip toggle/remove.
 // Hikarion.init(root) re-wires injected markup; it is idempotent. Every helper
 // is also documented as paste-it-yourself vanilla, so the file stays optional.
 //
@@ -85,18 +85,32 @@
     select(Math.max(0, tabs.findIndex((t) => t.getAttribute("aria-selected") === "true")));
   }
 
-  // --- Dialog: native `command`/`commandfor` invokers do the work where
-  // supported. Only polyfill the click when the browser lacks them. ---
-  function dialogFallback() {
+  // --- Invoker commands: native `command`/`commandfor` buttons do the work
+  // where supported; this only polyfills the click when the browser lacks them.
+  // Popover shipped ~3 years before invoker commands, so the two are detected
+  // separately — a browser can own `popover` fully and still ignore
+  // `command="toggle-popover"`. Where the Popover API itself is missing there
+  // is nothing to fall back to, and `[popovertarget]` (wider support, no JS at
+  // all) stays the recommended declarative form for popovers.
+  // ponytail: `request-close` degrades to close() — the fallback path skips the
+  // cancellable `cancel` event. Ceiling: a listener that vetoes the close won't
+  // be consulted pre-invokers. Upgrade = dispatch a cancelable `cancel` first.
+  function invokerFallback() {
     if ("command" in HTMLButtonElement.prototype) return;
+    const canPopover = "togglePopover" in HTMLElement.prototype;
     document.addEventListener("click", (e) => {
-      const btn = e.target.closest("[commandfor]");
+      const btn = e.target.closest("button[commandfor][command]");
       if (!btn) return;
       const target = document.getElementById(btn.getAttribute("commandfor"));
       if (!target) return;
       const cmd = btn.getAttribute("command");
       if (cmd === "show-modal") target.showModal?.();
       else if (cmd === "close") target.close?.();
+      else if (cmd === "request-close") (target.requestClose ?? target.close)?.call(target);
+      else if (!canPopover || !cmd.endsWith("-popover")) return;
+      else if (cmd === "toggle-popover") target.togglePopover();
+      else if (cmd === "show-popover") target.showPopover();
+      else if (cmd === "hide-popover") target.hidePopover();
     });
   }
 
@@ -151,7 +165,25 @@
       // aria-live only, no role="status" — the alert component styles bare
       // [role="status"], and the region must stay an unstyled positioning box.
       region.setAttribute("aria-live", "polite");
-      document.body.appendChild(region);
+      // Manual popover → top layer, so a toast paints over an open modal
+      // <dialog>. Manual, not auto: Esc and light-dismiss must not wipe the
+      // stack, and it must not close other popovers. Browsers without the API
+      // keep the z-index layer from toast.css.
+      region.setAttribute("popover", "manual");
+    }
+    // The top layer does not escape inertness: a modal <dialog> makes every
+    // element outside its own subtree inert, popovers included, so a toast
+    // parked on <body> would be visible but unfocusable and unclickable.
+    // Park it inside the open modal instead and hand it back on close.
+    // ponytail: last :modal in DOM order, not true top-layer order — stacked
+    // modals would need a real stack, and nothing here opens two.
+    const host = [...document.querySelectorAll("dialog:modal")].pop() || document.body;
+    if (region.parentNode !== host) {
+      host.appendChild(region);            // re-parenting drops it from the top layer
+      try { region.showPopover(); } catch { /* no Popover API — z-index it is */ }
+      if (host !== document.body) host.addEventListener("close", () => {
+        if (region.isConnected) toastRegion();   // still live → re-home on <body>
+      }, { once: true });
     }
     return region;
   }
@@ -204,10 +236,26 @@
     // any given call it may be one statement old — hand the append to the next
     // task so the region is registered first. `removed` guards a dismiss()
     // that beat the append.
+    // Severity picks the politeness: an error is feedback on something the user
+    // just did, and waiting for a pause can leave them acting on a failed
+    // operation; anything else is not worth interrupting a sentence for.
+    // aria-live is read when the content changes, so setting it now applies to
+    // this toast.
+    region.setAttribute("aria-live", variant === "danger" ? "assertive" : "polite");
     setTimeout(() => {
       if (!removed) region.appendChild(el);
     });
-    if (duration > 0) timer = setTimeout(dismiss, duration);
+    // WCAG 2.2.1 — a toast must not expire while it is being read or while its
+    // ✕ holds focus. Leaving re-arms the full duration.
+    if (duration > 0) {
+      const arm = () => { clearTimeout(timer); timer = setTimeout(dismiss, duration); };
+      const hold = () => clearTimeout(timer);
+      el.addEventListener("pointerenter", hold);
+      el.addEventListener("focusin", hold);
+      el.addEventListener("pointerleave", arm);
+      el.addEventListener("focusout", arm);
+      arm();
+    }
     return dismiss;
   }
 
@@ -289,7 +337,7 @@
       if (saved && !document.documentElement.dataset.theme)
         document.documentElement.dataset.theme = saved;
     } catch {}
-    dialogFallback();
+    invokerFallback();
     chips();
     dropzones();
     init();

@@ -80,11 +80,17 @@ Then just write HTML — no classes:
 
 ## Components
 
-Buttons · card (`<article>`) · badge · chip · alert · toast · tabs · accordion
-(`<details>`) · dialog (native `<dialog>`) · dropdown (native popover) · tooltip
-· styled forms with native `:user-invalid` validation. Every one is bare
-semantic HTML plus, at most, one `data-*` hook. See the [full
-vocabulary](rules/hikarion-rules.md).
+Buttons · card (`<article>`) · nav & sidebar · breadcrumbs · pagination · badge ·
+chip · avatar · alert · toast · tabs · accordion (`<details>`) · dialog (native
+`<dialog>`) · dropdown menu (native popover) · button group / split button ·
+tooltip · data table · form layout · file dropzone · switch · select & combobox ·
+spinner & progress · skeleton · empty state · stepper · scroll-progress bar,
+plus styled forms with native `:user-invalid` validation.
+
+Every one is bare semantic HTML plus, at most, one `data-*` hook.
+[`rules/hikarion-rules.md`](rules/hikarion-rules.md) is the component reference:
+markup contract, usage and accessibility notes for each, and it is the same file
+agents consume — so the docs cannot drift from what agents are told.
 
 The one variant grammar, everywhere:
 
@@ -123,10 +129,26 @@ All three surfaces derive from one source ([`rules/hikarion-rules.md`](rules/hik
 - **`AGENTS.md`** — drop into a consuming repo as project rules.
 - **`llms.txt`** — served at the docs domain root for doc-fetchers.
 
+## Documentation
+
+| Doc | What's in it |
+|-----|--------------|
+| [rules/hikarion-rules.md](rules/hikarion-rules.md) | **Component reference.** Every hook, its markup contract, usage and a11y notes. Canonical — `llms.txt`, the consumer `AGENTS.md` and the agent Skill all derive from it. |
+| [docs/tokens.md](docs/tokens.md) | Every token, its formula, and who owns it. Plus what density does and does not move. |
+| [docs/overrides.md](docs/overrides.md) | Customising without fighting `@layer`, shipping a theme, and adopting Hikarion into an existing codebase. |
+| [docs/browser-support.md](docs/browser-support.md) | Version matrix and, more usefully, what you get when a feature is missing. |
+| [docs/accessibility.md](docs/accessibility.md) | Keyboard, ARIA, user preferences, and what degrades without JavaScript. |
+| [docs/public-surface.md](docs/public-surface.md) | The frozen contract — what you may depend on. |
+| [docs/versioning.md](docs/versioning.md) · [docs/cdn.md](docs/cdn.md) · [docs/visual-regression.md](docs/visual-regression.md) | SemVer policy · CDN URLs and SRI hashes · screenshot baselines |
+
 ## Browser support
 
-Modern evergreen browsers. Hikarion uses OKLCH, `color-mix()`, `@layer`, `:has()`,
-native popover and `<dialog>` — no legacy fallbacks, by design.
+Modern-first with graceful fallback. The floor is **Chrome 111 / Safari 16.2 /
+Firefox 113** (`@layer`, OKLCH, `color-mix()`); newer features — container
+queries, anchor positioning, View Transitions, invoker commands, scroll-driven
+animations — are enhancements, each with a designed fallback rather than a
+polyfill. [docs/browser-support.md](docs/browser-support.md) states exactly what
+you get without each one.
 
 ## Development
 
@@ -139,15 +161,12 @@ bun run typecheck   # JSDoc check on the optional JS surface
 bun run lint:css    # Stylelint + utility-class bans
 bun run check:size  # gzip budget for dist/hikarion.min.css (after build)
 bun run check:a11y  # axe-core against kitchen-sink.html (after build)
+bun run check:visual # screenshot baselines (needs Docker; skips without it)
 bun run ci          # full quality gate
 ```
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) for vocabulary/RFC expectations,
-[docs/versioning.md](docs/versioning.md) for SemVer + deprecation policy, and
-[docs/accessibility.md](docs/accessibility.md) for the keyboard, ARIA and
-no-JavaScript contract (including what genuinely degrades without JS).
-[docs/visual-regression.md](docs/visual-regression.md) covers the screenshot
-baselines and how to update them.
+See [CONTRIBUTING.md](CONTRIBUTING.md) for vocabulary/RFC expectations; the table
+above for everything else.
 
 The framework is authored in plain modern CSS partials under `src/`; Lightning
 CSS is the only runtime build dependency and the shipped artifact is

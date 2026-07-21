@@ -435,13 +435,18 @@
   /* --- Range slider --- */
   /* Track and thumb share the radius family; the thumb is a flat accent dot,
      not a glossy 3D ball. The track sits on a hairline so it reads as a
-     control, not a bare groove. :where keeps it at zero specificity. */
+     control, not a bare groove. :where keeps it at zero specificity.
+
+     Density thins the groove and nothing else: the row is pinned to 1.5rem and
+     the thumb to its 1.15rem dot, so the drag target clears the WCAG 2.2 §2.5.8
+     24px floor in Compact exactly as it does in Crisp — the same deal
+     [data-switch] takes. Both engines centre the track in that taller box. */
   :where(input[type="range"]) {
-    --_track-h: 0.375rem;
+    --_track-h: calc(0.375rem * var(--_density));
     --_thumb: 1.15rem;
     width: 100%;
     max-width: 100%;
-    height: var(--_thumb);
+    block-size: 1.5rem;
     appearance: none;
     background: transparent;
     cursor: pointer;
@@ -485,6 +490,13 @@
   :where(input[type="range"]):focus-visible::-moz-range-thumb {
     transform: scale(1.12);
   }
+  /* The keyboard ring belongs on the thumb, not the whole strip: a rectangle
+     drawn around a 200px groove says "this slider" — the thumb ring says "this
+     handle, and arrow keys move it". The 2px offset opens a gap of track or
+     page between ring and dot so accent-on-accent still reads. */
+  :where(input[type="range"]):focus-visible {
+    outline: none;
+  }
   :where(input[type="range"]):focus-visible::-webkit-slider-thumb {
     outline: 2px solid var(--accent);
     outline-offset: 2px;
@@ -496,6 +508,18 @@
   :where(input[type="range"]):disabled {
     opacity: 0.5;
     cursor: not-allowed;
+  }
+  /* Forced colours flattens every author background to Canvas, which would sink
+     the thumb into its own track — the accent-as-state failure catalogued in
+     forced-colors.css, restated here because that file mirrors component
+     selectors and this one is a UA pseudo-element pair. */
+  @media (forced-colors: active) {
+    :where(input[type="range"])::-webkit-slider-thumb {
+      background: Highlight;
+    }
+    :where(input[type="range"])::-moz-range-thumb {
+      background: Highlight;
+    }
   }
 
   /* --- File input --- */
@@ -536,14 +560,66 @@
     outline-offset: 0;
   }
 
+  /* --- Date & time fields --- */
+  /* `date`, `time`, `datetime-local`, `month`, `week` already take the field
+     chrome above — they are inputs. What is left is the segment row the browser
+     draws inside them, and it is the picker button that gives them away: it is
+     an OS glyph in an OS colour, so it goes black-on-black the moment a dark
+     theme loads. Repaint it as the one chevron the select and the accordion
+     already use — same "this opens a drawer" promise, no second glyph to ship.
+     `input[list]` gets the same button in Chromium, and the same treatment,
+     which is the point.
+
+     No custom calendar. The platform picker is the picker; keyboard is the
+     browser's arrow/Tab handling over the segments.
+
+     Selected by pseudo-element rather than by `[type]`, because these pseudos
+     only exist on the elements they describe — one selector instead of a
+     five-way type list on every rule.
+
+     ponytail: the highlight on the segment being typed into is UA-drawn in
+     Chromium (`::-webkit-datetime-edit-*-field:focus` does not match it, and
+     `::selection` does not reach it), so it stays the system selection colour —
+     legible, just not ours. Firefox and Safari expose almost none of this and
+     degrade to the field chrome plus their own native button and value. */
+  :where(input)::-webkit-calendar-picker-indicator {
+    inline-size: 1em;
+    block-size: 1em;
+    padding: 0;
+    background: currentColor;
+    -webkit-mask: var(--chevron) center / contain no-repeat;
+    mask: var(--chevron) center / contain no-repeat;
+    opacity: 0.55;
+    cursor: pointer;
+    transition: opacity var(--dur) var(--ease-hikarion);
+  }
+  :where(input):hover::-webkit-calendar-picker-indicator,
+  :where(input):focus-visible::-webkit-calendar-picker-indicator {
+    opacity: 1;
+  }
+  /* Separators are punctuation, not data. */
+  :where(input)::-webkit-datetime-edit-text {
+    color: var(--muted);
+  }
+  /* Safari centres the value in a full-width field; the rest of the form reads
+     from the inline start. */
+  :where(input)::-webkit-date-and-time-value {
+    text-align: start;
+  }
+
   /* --- Progress & meter --- */
   /* Native gauge elements. The bar fill is the accent; the track is the
      hairline surface. Indeterminate <progress> (no value attr) animates a
      moving stripe, gated by the reduced-motion killswitch in reset.css.
-     :where keeps it at zero specificity. */
+     :where keeps it at zero specificity.
+
+     `appearance: none` is what lets Firefox take the track colour and the pill
+     radius at all — without it both elements keep their native bar. Chromium
+     renders identically with or without it. */
   :where(progress),
   :where(meter) {
     display: block;
+    appearance: none;
     inline-size: 100%;
     block-size: 0.625rem;
     border: none;
@@ -579,10 +655,18 @@
   :where(meter)::-moz-meter-bar {
     border-radius: var(--radius-pill);
   }
-  /* The <meter> element's background fills by default; the optimum/low/high
-     regions drive the bar colour via the Firefox pseudo-bars above, and via
-     the Chromium pseudo-values. A bare meter with no thresholds is the accent. */
-  :where(meter) { background: color-mix(in oklch, var(--accent) 50%, var(--line)); }
+  /* Firefox keys the fill off the element, not off three pseudo-values, so the
+     same three tones are re-stated through its own state pseudo-classes.
+     :where() is forgiving, so engines that do not know them drop the selector
+     and keep the rest of the sheet. */
+  :where(meter:-moz-meter-optimum)::-moz-meter-bar { background: var(--success); }
+  :where(meter:-moz-meter-sub-optimum)::-moz-meter-bar { background: var(--warning); }
+  :where(meter:-moz-meter-sub-sub-optimum)::-moz-meter-bar { background: var(--danger); }
+  /* The element's own background is the empty part of the gauge, and --line is
+     translucent, so anything tinted underneath it reads as fill: a meter at 0
+     looked half-full. It is the same hairline as <progress> — the optimum /
+     low / high regions carry all the colour, in both engines. */
+  :where(meter) { background: var(--line); }
   /* Indeterminate <progress> — a single moving stripe, no spinning glow. */
   :where(progress:not([value]))::-webkit-progress-value {
     inline-size: 40%;

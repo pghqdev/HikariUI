@@ -1,0 +1,33 @@
+/* View Transitions — the root cross-fade used when the theme or the density
+   attribute flips. Pure enhancement: nothing here is required for either switch
+   to work, and browsers without the API simply repaint instantly.
+
+   Only the timing is authored. The default UA cross-fade already does the right
+   thing visually; at 0.25s with a linear-ish curve it just doesn't sound like
+   the rest of the system, so it is retuned to --dur-slow on --ease-hikarion —
+   a whole-page repaint is the longest travel in the framework.
+
+   The reduced-motion killswitch has to live here: reset.css clamps `*` and its
+   ::before/::after, which never matches the ::view-transition pseudo tree. With
+   the animations nulled the transition finishes on its first frame, so the flip
+   is a hard cut — the same outcome as no API at all.
+
+   No named view-transition-name anywhere in core. Naming an element opts it out
+   of the root snapshot and into its own morph, which is a per-page composition
+   decision, not a framework default. Authors set it on their own selectors. */
+
+@layer hikarion {
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation-duration: var(--dur-slow);
+    animation-timing-function: var(--ease-hikarion);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    ::view-transition-group(*),
+    ::view-transition-old(*),
+    ::view-transition-new(*) {
+      animation: none !important;
+    }
+  }
+}

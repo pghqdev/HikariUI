@@ -1,17 +1,24 @@
-/* Breadcrumbs — `<nav data-breadcrumbs>` of a list of links, the last item the
-   current page (plain text, not a link). Items separated by the shared chevron
-   glyph, rotated to point inline (right in LTR). No JS; the nav link styles
-   live in base/elements.css.
+/* Breadcrumbs — `<nav data-breadcrumbs>` wrapping an `<ol>`, the last item the
+   current page. Items separated by the shared chevron glyph, rotated to point
+   inline. No JS; the trail links inherit the `nav a` styles in
+   base/elements.css.
+
+   The trail is context, the last item is where you are — so the emphasis runs
+   the other way from a nav bar: ancestors stay muted links, the current page
+   is full `--fg` at label weight and carries no underline or pointer. That is
+   the only visual difference, and it is keyed off `aria-current="page"`, so
+   the presentation cannot drift from what a screen reader announces.
 
    Markup:
-     <nav data-breadcrumbs>
+     <nav data-breadcrumbs aria-label="Breadcrumb">
        <ol>
          <li><a href="/">Home</a></li>
          <li><a href="/docs">Docs</a></li>
-         <li><a aria-current="page">Tokens</a></li>
+         <li><span aria-current="page">Tokens</span></li>
        </ol>
      </nav>
-   The current page carries `aria-current="page"` — it is muted, not a link. */
+   The current item may stay an `<a>` if it must remain linkable; it is styled
+   the same either way. */
 
 @layer hikarion {
   [data-breadcrumbs] ol {
@@ -31,24 +38,27 @@
     font-size: var(--control-fz-sm);
   }
 
-  /* Separator — the shared chevron, rotated to point inline. Drawn as a mask
-     filled with --muted so it takes the link colour on hover. Centred in its
-     viewBox, so it sits on the baseline without translation. */
+  /* Separator — the shared chevron, drawn as a mask so it inks from --muted.
+     Centred in its viewBox, so it sits on the baseline without translation. */
   [data-breadcrumbs] li + li::before {
     content: "";
     inline-size: 0.7em;
     block-size: 0.7em;
     background-color: var(--muted);
     mask: var(--chevron) center / contain no-repeat;
-    /* The chevron points down by default; rotate -90deg to point inline
-       (right in LTR, left in RTL via the flip). */
+    /* The chevron points down; -90deg points it inline-end in LTR. A rotation
+       is not direction-aware, so RTL needs the mirror below. */
     transform: rotate(-90deg);
     opacity: 0.8;
   }
+  [data-breadcrumbs]:dir(rtl) li + li::before {
+    transform: rotate(90deg);
+  }
 
-  /* Current page — muted, not a link, no underline. */
+  /* Current page — the trail's one emphasis, inert whether or not it's a link. */
   [data-breadcrumbs] [aria-current="page"] {
-    color: var(--muted);
+    color: var(--fg);
+    font-weight: 550;
     text-decoration: none;
     cursor: default;
   }

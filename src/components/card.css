@@ -1,9 +1,41 @@
 /* Card — bare <article>. The semantic card: a quiet raised surface with a
    hairline and a neutral lift. First/last child shed their margin so the
-   padding box stays even. */
+   padding box stays even.
+
+   The card is also the framework's one *query container*: `container-type:
+   inline-size` on every <article> means anything nested in a card can adapt to
+   the column it actually sits in, not to the viewport. That is why a nav in a
+   narrow card stacks (components/nav.css) with no hook, no breakpoint and no
+   size-variant attribute — the context is read, not declared.
+
+   The card's own adaptation is its media slot. A leading <figure> is stacked
+   and full width by default, and only floats into a leading column once the
+   card is wide enough to hold both. Mobile-first on purpose: a browser without
+   container queries never enters the wide branch, so the fallback is the
+   stacked layout, which is usable at every width. An @supports guard would
+   only re-state that, so there isn't one.
+
+   Density needs no rule here: Compact shrinks the card's padding, so the
+   content box gets *wider* and the media column arrives slightly sooner —
+   which is the correct behaviour, not a coincidence to be corrected.
+
+   ponytail: containment ceiling. `container-type` also applies inline-size and
+   layout containment, so an <article> used as an auto-sized flex item no
+   longer contributes its content's width and collapses to its padding. Cards
+   in normal flow or in a grid track are unaffected. If a card must size to its
+   content, give it a width — or, if that ever becomes common, scope the
+   container-type to `article:has(> figure, [data-nav])`.
+
+   Markup:
+     <article>
+       <figure><img src="…" alt=""></figure>
+       <h3>Title</h3>
+       <p>Body copy.</p>
+     </article> */
 
 @layer hikarion {
   article {
+    container-type: inline-size;
     background: var(--surface);
     border: 1px solid var(--line);
     border-radius: var(--radius);
@@ -12,4 +44,41 @@
   }
   article > :first-child { margin-block-start: 0; }
   article > :last-child { margin-block-end: 0; }
+
+  /* Media. The UA's 40px inline margin on <figure> is wrong inside a padded
+     surface; everything else the picture needs is the picture filling the
+     slot. */
+  article > figure {
+    margin-inline: 0;
+  }
+  article > figure :is(img, video) {
+    display: block;
+    inline-size: 100%;
+    border-radius: var(--radius-sm);
+  }
+
+  /* Wide enough for two columns: the leading figure floats and the copy runs
+     beside it. A float rather than a grid because the card's own containment
+     already makes it a block formatting context — the float is contained, the
+     children keep their source rhythm, and the narrow branch is simply the
+     absence of these three declarations. */
+  @container (inline-size >= 26rem) {
+    article > figure:first-child {
+      float: inline-start;
+      inline-size: 40%;
+      margin-inline-end: var(--space-5);
+    }
+    article > figure:first-child ~ footer {
+      clear: inline-start;
+    }
+  }
+
+  /* Narrow enough that a row of actions would be a row of slivers: the buttons
+     take the full column instead. Nothing else changes — the action row is
+     still <footer data-form-row>, still wrapping, just wrapping every item. */
+  @container (inline-size < 20rem) {
+    article > footer button {
+      inline-size: 100%;
+    }
+  }
 }

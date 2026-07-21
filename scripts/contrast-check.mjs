@@ -23,7 +23,7 @@ for (const r of results) {
     console.error(`✗ ${r.scope}: --${r.pair.replace("/", " / --")} missing`);
     continue;
   }
-  console.log(`${r.ok ? "✓" : "✗"} ${r.scope} --${r.pair.replace("/", " on --")}: ${r.ratio.toFixed(2)}:1`);
+  console.log(`${r.ok ? "✓" : "✗"} ${r.scope} --${r.pair.replace("/", " on --")}: ${r.ratio.toFixed(2)}:1 (≥ ${r.min})`);
 }
 
 process.exit(failed ? 1 : 0);

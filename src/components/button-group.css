@@ -1,0 +1,90 @@
+/* Button group / split button — `[data-button-group]`. Fuses adjacent
+   <button>s into one control: shared hairline seams, outer corners only.
+
+   One hook, because nothing native says "these buttons are one control".
+   `role="group"` alone is too broad to style on (fieldsets and radio groups
+   wear it too), so the hook carries the appearance and the author still writes
+   role="group" + a label for the semantics.
+
+   A split button is this group with a [popovertarget] half: the chevron, the
+   panel and the open/close behaviour all come from components/dropdown.css —
+   nothing menu-shaped is restyled here. The [data-menu] must stay the
+   toggle's immediate next sibling (that is what draws the chevron), so it
+   sits inside the group; it is a top-layer popover, so it never takes part in
+   the row's layout, and every rule below addresses `> button` only.
+
+   ponytail: single row, no wrap — the corner rules assume one line, and a
+   fused group that wraps has no honest corner to round. If a toolbar needs
+   more actions than fit, it wants separate groups, not this.
+
+   Markup:
+     <div data-button-group role="group" aria-label="Text style">
+       <button aria-pressed="true">Bold</button>
+       <button>Italic</button>
+     </div>
+
+     <div data-button-group role="group" aria-label="Save">
+       <button data-variant="accent solid">Save</button>
+       <button data-variant="accent solid" popovertarget="save-more"
+               aria-label="More save options"></button>
+       <div popover id="save-more" data-menu>
+         <button>Save as…</button>
+         <button>Save a copy</button>
+       </div>
+     </div> */
+
+@layer hikarion {
+  [data-button-group] {
+    display: inline-flex;
+  }
+
+  /* Square every seam; the outer two corners are restored below. The seam
+     itself is one hairline, not two, so the borders overlap by a pixel. */
+  [data-button-group] > button {
+    position: relative;
+    border-radius: 0;
+  }
+  [data-button-group] > button + button {
+    margin-inline-start: -1px;
+  }
+
+  /* Raise the active button so its border and focus ring sit above the
+     neighbour they overlap. */
+  [data-button-group] > button:is(:hover, :focus-visible, [aria-pressed="true"]) {
+    z-index: 1;
+  }
+
+  /* Outer corners. The last *button* — not :last-child, which would be the
+     popover panel in a split button. */
+  [data-button-group] > button:first-child {
+    border-start-start-radius: var(--radius-sm);
+    border-end-start-radius: var(--radius-sm);
+  }
+  [data-button-group] > button:not(:has(~ button)) {
+    border-start-end-radius: var(--radius-sm);
+    border-end-end-radius: var(--radius-sm);
+  }
+
+  /* Pressed member of a toggle group. Same tone seam the filter chip consumes,
+     so the two "this one is on" states in the framework are one recipe — and
+     without it `aria-pressed` would be announced but never painted. */
+  [data-button-group] > button[aria-pressed="true"] {
+    --_tone: var(--accent);
+    --_tone-content: var(--accent-content);
+    color: var(--_tone-ink);
+    background: var(--_tint-bg);
+    border-color: var(--_tint-border);
+  }
+
+  /* The press-scale would tear the seam open mid-click. */
+  [data-button-group] > button:active {
+    transform: none;
+  }
+
+  /* Solid buttons carry a transparent border, so a solid/solid seam would
+     vanish into one slab. Draw it from the tone's own content colour — the
+     pair is already contrast-gated, and this is a divider, not text. */
+  [data-button-group] > [data-variant~="solid"] + [data-variant~="solid"] {
+    border-inline-start-color: color-mix(in oklch, var(--_tone-content) 35%, transparent);
+  }
+}

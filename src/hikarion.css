@@ -16,15 +16,27 @@
    already owns, so a real component targeting the same tags wins ties on
    source order rather than this generic rhythm silently overriding it. */
 @import "components/form-layout.css";
+/* Same reason, same cluster: select.css only retunes native form tags that
+   elements.css already owns (optgroup, option, select:disabled, input[list]),
+   so it sits with form-layout rather than among the real components. */
+@import "components/select.css";
 
 @import "components/dialog.css";
 @import "components/tabs.css";
 @import "components/card.css";
+/* Beside card.css, the other frame-ish surface. After base/elements.css, which
+   owns the bare <table> and its `tbody tr:hover` — the selected-row rule in
+   here has to land later to win. */
+@import "components/table.css";
 @import "components/accordion.css";
 @import "components/badge.css";
 @import "components/chip.css";
 @import "components/avatar.css";
 @import "components/dropdown.css";
+/* After dropdown.css by composition, not by cascade: a split button is this
+   group plus that file's [popovertarget] chevron and [data-menu] panel. Every
+   rule here is scoped under [data-button-group], so no tie exists. */
+@import "components/button-group.css";
 @import "components/tooltip.css";
 @import "components/toast.css";
 @import "components/alert.css";
@@ -35,6 +47,10 @@
    Source order is the only tiebreak. */
 @import "components/progress.css";
 @import "components/stepper.css";
+/* With the other <nav> patterns. Must stay after base/elements.css, whose
+   `nav a:hover` exactly ties `[data-nav] a:hover` at (0,1,2) — source order is
+   the only tiebreak, and the pill wants no hover underline. */
+@import "components/nav.css";
 @import "components/breadcrumbs.css";
 @import "components/pagination.css";
 @import "components/dropzone.css";
@@ -52,6 +68,17 @@
    properties, so order carries no ties. See base/motion.css. */
 @import "base/motion.css";
 
+/* Beside motion.css, the other timing-only file. The ::view-transition tree is
+   its own pseudo-element tree — no selector in core can tie it, so placement
+   carries no cascade meaning. See base/view-transitions.css. */
+@import "base/view-transitions.css";
+
 /* Last on purpose — the tone resolver must beat component tone defaults on
    source order (equal specificity). See base/tone.css. */
 @import "base/tone.css";
+
+/* One step past the resolver: the contrast pass re-declares --_tint-border on
+   `*`, exactly tying tone.css's own `*` rule, and re-states elements.css's two
+   focus indicators at their exact specificity. Source order is the only
+   tiebreak in all three cases. See base/high-contrast.css. */
+@import "base/high-contrast.css";

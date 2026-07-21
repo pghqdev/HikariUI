@@ -62,11 +62,67 @@ Public surface and deprecation rules: [`docs/versioning.md`](docs/versioning.md)
   JS entry, plus a written deferral of a critical/layer subset with the size
   budget as evidence (`docs/cdn.md`)
 
-All five new hooks (`data-avatar`, `data-avatar-group`, `data-empty`,
-`data-skeleton`, `data-form-row`) are **additive and optional** — no existing
-markup changes meaning — so they are a **minor**, not a major, per
+- **Navigation** — `[data-nav]`, a horizontal primary link run, and
+  `[data-nav="sidebar"]` for the vertical rail. The active item is native
+  `aria-current="page"`, marked with geometry as well as colour, so forced
+  colours needs no restatement
+- **Data table** — `[data-table]`, a scroll frame around a plain `<table>` with a
+  `position: sticky` header and checkbox-driven row selection (`:has(:checked)`),
+  no new row-level vocabulary and no JS
+- **Button group / split button** — `[data-button-group]`, adjacent `<button>`s
+  fused into one control with shared seams and outer-only corners. A split button
+  is the same group with a `[popovertarget]` half, composing the existing
+  `[data-menu]` popover for the chevron and panel. CSS only
+- **Action menu rows** — `[data-menu]` rows now carry three states with no new
+  vocabulary: `data-variant="<tone>"` for a destructive/toned row,
+  `aria-disabled="true"` for an inert-but-announced row, and a trailing `<kbd>`
+  as a shortcut hint. Focus rings are inset so they stay inside the panel
+- **Select & searchable input** — no new hook: `<optgroup>` renders as an eyebrow
+  heading, `select[multiple]`/`select[size]` styles as a list box with an
+  accent-filled checked row, and `input[list]` + `<datalist>` gains the select
+  chevron so the native searchable combobox is discoverable
+- **Date and time fields** — `input[type="date"|"time"|"datetime-local"|"month"|"week"]`
+  are styled natively: the picker button is repainted as the one Hikarion chevron
+  (so it stays visible in dark themes), separators go muted, and Safari's value
+  aligns to the inline start. No custom calendar
+- **File upload previews** — a plain `<ul>` placed after a `[data-dropzone]` label
+  now renders as a grid of preview slots (optional square thumbnail + filename).
+  No new hook; the list is matched as a sibling
+- **Tooltip delay control** — `--hk-tooltip-delay` (show, `0.4s`) and
+  `--hk-tooltip-delay-out` (hide, `--dur-slow`), inherited author-settable values
+- **Hint popover** — `[popover="hint"]` now takes the tooltip skin and anchors
+  above its `[popovertarget]` invoker, giving a keyboard-reachable tooltip with
+  no JS (Esc and light-dismiss where `popover="hint"` is implemented — see
+  docs/browser-support.md)
+- **Scroll progress** — `[data-scroll-progress]`, an empty element that becomes a
+  hairline reading-progress bar driven by `animation-timeline: scroll(root block)`.
+  Fully removed under `prefers-reduced-motion: reduce` and where `scroll()` is
+  unsupported, rather than degraded
+- **View transitions** — theme and density switches cross-fade over `--dur-slow`
+  on `--ease-hikarion` where the browser supports the API, and hard-cut under
+  `prefers-reduced-motion` or without it. Enhancement only; no new hooks
+- **High contrast** — `prefers-contrast: more` is honoured automatically at the
+  token seam (`base/high-contrast.css`): `--muted` collapses into `--fg`,
+  `--border` becomes a full-strength line, soft tone edges go solid, and both
+  focus indicators thicken. `--accent` is unchanged. No hook — a permanently
+  high-contrast look is a theme, and themes are vocabulary Hikarion already has
+- **Forced colours** — a live dropzone (`[data-dragover]`) now restates as
+  `Highlight`/`HighlightText`; the tooltip bubble and solid alerts regain a
+  `CanvasText` edge, whose box was previously drawn by a fill the forced palette
+  removes
+- Contrast gate locks `--accent` against `--bg` and `--surface` at 4.5:1, and
+  raises `fg/bg` + `fg/surface` to 7:1 — under `prefers-contrast: more` those two
+  pairs *are* the muted and border pairs, so the AAA floor is what makes "more
+  contrast" mean measurably more
+
+The nine new hooks across this release (`data-avatar`, `data-avatar-group`,
+`data-empty`, `data-skeleton`, `data-form-row`, `data-nav`, `data-table`,
+`data-button-group`, `data-scroll-progress`) are **additive and optional** — no existing markup changes
+meaning — so they are a **minor**, not a major, per
 [`docs/versioning.md`](docs/versioning.md), which reserves major for renaming,
-removing, or changing the contract of existing surface.
+removing, or changing the contract of existing surface. The two new
+`--hk-tooltip-*` custom properties are read with fallbacks and never declared,
+so they are additive too.
 
 ### Changed
 
@@ -86,6 +142,60 @@ removing, or changing the contract of existing surface.
 - `--elevation-*`, `--dur-fast`, `--dur-slow` and `--hk-value` are enumerated in
   [`docs/public-surface.md`](docs/public-surface.md), since the agent rules now
   name them
+- **Toast** — the `[data-toast-region]` stack is now a `popover="manual"`, so
+  toasts render in the top layer and stay visible over an open modal `<dialog>`
+  (browsers without the Popover API fall back to the existing `z-index` layer).
+  The stack is capped at the viewport and clips its oldest members instead of
+  running off-screen, the auto-dismiss timer pauses on hover/focus, the ✕ is
+  pinned at the 24px target-size floor in both densities, and `variant: "danger"`
+  announces assertively while every other tone stays polite
+- **Meter and range** — a `<meter>` at 0 no longer reads as half-full: the empty
+  track is the same hairline as `<progress>`, and the `low`/`high`/`optimum` tones
+  now paint in Firefox too. The range row is pinned to 24px in both densities for
+  WCAG 2.2 §2.5.8, Compact thins only the groove, and the focus ring moved from
+  the whole strip to the thumb
+- **Breadcrumbs** — the `aria-current="page"` item is now the trail's emphasis
+  (full `--fg` at label weight) rather than the most muted thing in the row
+- **Pagination** — the disabled end lifts from `opacity: 0.4` to `0.5` and pins
+  `color: var(--muted)`, so it stays legible without reading as active
+- **Action menu** rows adopt the same disabled treatment, so the two inert states
+  in the framework are one recipe
+- **Card** — every `<article>` is now a container-query container. A leading
+  `<figure>` floats into a media column at ≥26rem and stacks below that;
+  `<footer>` buttons take the full column under 20rem. The stacked layout is the
+  no-container-query fallback. Containment caveat: a card used as an auto-sized
+  flex item no longer contributes its content's width
+- **Navigation** — `[data-nav]` stacks into a column when its nearest query
+  container (a card) is narrower than 22rem, so the same markup is a bar in a page
+  header and a rail in a narrow card. No new hook
+
+### Fixed
+
+- **`prefers-contrast: more` now reaches consumer themes** — the `--muted`/`--border`
+  retune ships unlayered. Inside `@layer hikarion` it was silently dead for any
+  theme an author declares unlayered (the documented way to ship one), since
+  unlayered CSS beats layered CSS at any specificity. Built-in themes were
+  unaffected, which is why CI never saw it
+- **Toast** — a toast shown while a modal `<dialog>` is open is no longer hidden
+  behind it
+- **Overlay placement fallback** — `[data-menu]` and `[popover="hint"]` gate their
+  anchor positioning behind `@supports (anchor-name: --x)`. The unconditional
+  `margin: 0` was cancelling the UA sheet's `inset: 0; margin: auto`, so in
+  browsers without anchor positioning both surfaces opened in the viewport's
+  top-left corner instead of falling back to centred placement. Anchored browsers
+  are unaffected
+- **`[data-tooltip]` is hoverable** (WCAG 2.2 1.4.13) — the bubble is hit-testable
+  while shown and survives the pointer travelling onto it
+- **Pagination** — buttons no longer inherit the raised button chrome
+  (`--shadow-sm`, hover border, `:active` press-scale), so Prev/Next sit flat
+  beside the number links instead of in a card
+- **Pagination** — an elided range (`<span aria-hidden="true">…</span>`) now takes
+  the page-item box without a pill, hover or pointer, so it can no longer be
+  mistaken for a missed target
+- **Breadcrumbs** — the separator chevron now mirrors under `:dir(rtl)`; a
+  rotation is not direction-aware, so RTL trails previously pointed backwards
+- A disabled `<select>` now dims and shows `not-allowed`, matching `button` and
+  `input`
 
 ## [0.1.0] — 2026-07-12
 

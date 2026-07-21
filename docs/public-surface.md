@@ -5,7 +5,11 @@ including Tier-2 derived tokens and undocumented `data-*` attributes — is
 **internal** and may change without a major version.
 
 Canonical markup contracts live in [`rules/hikarion-rules.md`](../rules/hikarion-rules.md).
-Versioning rules live in [`versioning.md`](./versioning.md).
+Versioning rules live in [`versioning.md`](./versioning.md). This file is the
+*contract*; [`tokens.md`](./tokens.md) is the full reference including the
+internal derived tokens, [`overrides.md`](./overrides.md) covers customising and
+adoption, and [`browser-support.md`](./browser-support.md) covers what degrades
+where.
 
 ## Tier-1 tokens
 
@@ -45,6 +49,8 @@ things authors read or set, so they are frozen surface too.
 | `--shadow-sm` / `--shadow` / `--shadow-lg` | Aliases for rungs 1, 2 and 4 | Read |
 | `--dur-fast` / `--dur-slow` | Durations beside the Tier-1 `--dur` | Read |
 | `--hk-value` | Fill percentage (0–100) of a `[data-spinner][role="progressbar"]` | Set by the author |
+| `--hk-tooltip-delay` | Show delay of a `[data-tooltip]` (default `0.4s`) | Set by the author |
+| `--hk-tooltip-delay-out` | Hide delay of a `[data-tooltip]` (default `--dur-slow`). Load-bearing: at `0` the bubble stops being hoverable | Set by the author |
 
 Everything else derived — `--space-*`, `--control-*`, `--text-*`, `--_`-prefixed
 privates — stays internal.
@@ -78,7 +84,10 @@ grammar, not a separate attribute.
 | `data-tabs` | Tabs root |
 | `data-tab-list` | Tab list container |
 | `data-tab-panel` | Tab panel |
-| `data-menu` | Dropdown menu (with native `popover`) |
+| `data-menu` | Dropdown / action menu (with native `popover`) |
+| `data-button-group` | Adjacent `<button>`s fused into one control; a `[popovertarget]` half makes it a split button |
+| `data-nav` | Primary navigation run (`top`, the spelled-out default, or `sidebar` for the vertical rail) |
+| `data-table` | Scroll frame + sticky header around a data `<table>` |
 | `data-tooltip` | CSS tooltip text |
 | `data-dropzone` | File dropzone on a `<label>` |
 | `data-dropzone-filename` | Filename / prompt slot inside a dropzone |
@@ -90,6 +99,7 @@ grammar, not a separate attribute.
 | `data-stepper` | Multi-step flow on `<ol>` |
 | `data-breadcrumbs` | Breadcrumb nav |
 | `data-pagination` | Pagination nav |
+| `data-scroll-progress` | Empty element that becomes the document's reading-progress bar |
 | `data-set-theme` | Theme control value (`light` / `dark` / `auto` / theme name) |
 
 Toasts are created by optional JS (`Hikarion.toast`); the runtime uses

@@ -2,7 +2,19 @@
    [popover][data-menu]; the browser owns toggle + light-dismiss + focus. The
    popover's implicit anchor is its invoker, so it pins under the trigger via
    position-area — no anchor-name wiring per instance. Enter/exit pop lives in
-   base/motion.css. prefers-reduced-motion is the global killswitch. */
+   base/motion.css. prefers-reduced-motion is the global killswitch.
+
+   Action-menu rows are the same component and live at the bottom of this file:
+   a row is a bare <button>/<a>, a destructive row is the existing
+   `data-variant="danger"` grammar, an inert row is `aria-disabled` (the
+   pagination precedent — stays in the a11y tree), and a shortcut hint is a
+   real <kbd>. Nothing new is invented for any of them.
+
+   ponytail: this is a *disclosure* — real buttons reached with Tab — not an
+   APG `role="menu"`. Roving-tabindex arrow keys cannot be done in CSS, and
+   menu roles without menu keys are worse than neither (docs/accessibility.md).
+   Upgrade path: add roving-tabindex wiring to hikarion.js, then role="menu" /
+   "menuitem" on top of exactly this markup. */
 
 @layer hikarion {
   [data-menu] {
@@ -10,7 +22,6 @@
     position: fixed;
     min-inline-size: 12rem;
     max-inline-size: min(20rem, calc(100vw - var(--space-8)));
-    margin: 0;
     padding: calc(0.3rem * var(--_density));
     color: var(--fg);
     background: var(--surface);
@@ -18,13 +29,24 @@
     border-radius: var(--radius);
     box-shadow: var(--shadow-lg);
 
-    /* Pin below the trigger, start-aligned; flip above near the viewport edge. */
-    position-area: block-end span-inline-end;
-    margin-block-start: 0.35rem;
-    position-try-fallbacks: flip-block;
-
     /* The pop scales from the trigger edge, not the centre. */
     transform-origin: top;
+  }
+
+  /* Anchored placement, gated so the fallback survives. Without anchor
+     positioning `position-area` is simply ignored — but `margin: 0` is not, and
+     it would defeat the UA sheet's `inset: 0; margin: auto`, dumping the panel
+     in the viewport's top-left corner. Inside the gate: pinned below the
+     trigger, flipping above near the edge. Outside it: the browser's own
+     centred placement, which is undramatic but usable — every row, Esc,
+     light-dismiss and focus return keep working, and no JS positions anything. */
+  @supports (anchor-name: --x) {
+    [data-menu] {
+      margin: 0;
+      position-area: block-end span-inline-end;
+      margin-block-start: 0.35rem;
+      position-try-fallbacks: flip-block;
+    }
   }
 
   /* Trigger chevron. A dropdown trigger is a [popovertarget] button placed
@@ -75,5 +97,47 @@
     margin-inline: 0;
     border: none;
     border-block-start: 1px solid var(--line);
+  }
+
+  /* The focus ring is the only navigation cue in a Tab-driven menu, so keep it
+     whole: the global 2px outward offset would straddle the panel's border. */
+  [data-menu] :is(button, a):focus-visible {
+    outline-offset: -2px;
+  }
+
+  /* Destructive row — reads --_tone-ink from the resolver, the same AA-safe
+     mix badges and alerts use, so it clears contrast on --surface with no
+     bespoke colour. A `solid` fill inside a menu is a button, not a row. */
+  [data-menu] :is(button, a)[data-variant]:not([data-variant~="solid"]) {
+    color: var(--_tone-ink);
+  }
+  [data-menu] :is(button, a)[data-variant]:not([data-variant~="solid"]):hover {
+    background: var(--_tint-bg);
+  }
+
+  /* Inert row — dim and pointer-inert, still focusable and announced. Same
+     0.5 as the pagination ends, for the same legibility reason. */
+  [data-menu] [aria-disabled="true"] {
+    color: var(--muted);
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+
+  /* Shortcut hint trails the label; <kbd> chrome comes from elements.css. */
+  [data-menu] :is(button, a) > kbd {
+    margin-inline-start: auto;
+    color: var(--muted);
+  }
+
+  /* Where the Popover API is missing, [popover] is an unknown attribute and the
+     panel is always visible — but `position: fixed` above would then float it
+     over unrelated content. Drop it back into flow as an inline panel under its
+     trigger; every row keeps working. */
+  @supports not selector(:popover-open) {
+    [data-menu] {
+      position: static;
+      box-shadow: var(--shadow-sm);
+    }
   }
 }

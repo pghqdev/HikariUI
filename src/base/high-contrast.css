@@ -1,0 +1,70 @@
+/* High contrast — `prefers-contrast: more`.
+
+   No `[data-contrast]` hook. The request already arrives from the OS/browser,
+   and a page-level override would be a second theming axis with nothing behind
+   it: an author who wants a permanently high-contrast look ships a theme file,
+   which is vocabulary Hikarion already has. A toggle would also have to answer
+   "what wins, my attribute or the user's OS setting?" — a question worth asking
+   only once someone actually asks it.
+
+   Everything happens at the token seam, so no component learns about contrast:
+
+     --muted  → --fg      secondary text stops being secondary. The hierarchy is
+                          still carried by size, weight and position; under an
+                          explicit contrast request, hue is no longer allowed to
+                          carry it too.
+     --border → --fg      every hairline becomes a real line, so surfaces,
+                          fields and cards keep their edges. --line (65% of
+                          --border) recomputes for free, so internal rules stay
+                          lighter than outer edges and the page does not turn
+                          into a grid of black boxes.
+
+   Aliases rather than color-mix on purpose: a self-referencing custom property
+   (`--muted: color-mix(…, var(--muted))`) is a cycle and voids the property,
+   and an alias is something the contrast gate can resolve without a mixer.
+
+   --accent is deliberately untouched. It is the one decisive colour, it already
+   clears 4.5:1 on --bg and --surface in every shipped theme, and any push would
+   have to move in opposite directions for light and dark themes while staying
+   paired with --accent-content at 4.5:1. Decisive stays decisive; the gate locks
+   it (see docs — accent/bg and accent/surface are checked in contrast scopes).
+
+   Imported last, after base/tone.css: the resolver declares --_tint-border on
+   `*` and this file re-declares it at the same specificity, so source order is
+   the only tiebreak. */
+
+/* The one unlayered block in Hikarion, and the only one that has to be. Authors
+   are told (docs/overrides.md) to ship their theme unlayered, and unlayered
+   beats layered whatever the specificity — a layered contrast pass would be
+   silently dead for every consumer theme, which is exactly the case it exists
+   for. Unlayered, the doubled (0,2,0) selector does the work it was written to
+   do: one step above a `[data-theme="brand"]` scope, so the retune lands on the
+   author's own --fg. An author who really wants to opt out overrides at (0,3,0).
+   Tokens only — nothing that could reach past a theme into a page's own CSS. */
+@media (prefers-contrast: more) {
+  :root:root,
+  [data-theme][data-theme] {
+    --muted: var(--fg);
+    --border: var(--fg);
+  }
+}
+
+@layer hikarion {
+  @media (prefers-contrast: more) {
+    /* A soft component's tone edge stops being a 30% wash. The tint background
+       stays where it is: raising it would push --_tone-ink (28% tone into --fg)
+       toward the tint it has to be readable on. */
+    * {
+      --_tint-border: var(--_tone);
+    }
+
+    /* The two focus indicators, thickened. Geometry only — the accent ring is
+       already solid, and both selectors match base/elements.css exactly. */
+    :focus-visible {
+      outline-width: 3px;
+    }
+    :is(input, textarea, select):focus-visible {
+      box-shadow: inset 0 0 0 2px var(--accent);
+    }
+  }
+}

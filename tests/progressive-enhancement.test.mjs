@@ -181,3 +181,28 @@ describe("forced colours keep state legible", () => {
     });
   });
 });
+
+describe("pointer contract", () => {
+  test("WCAG 1.4.13 hoverable: the tooltip survives the pointer crossing the gap", async () => {
+    // Regression: only opacity carried the hide delay, so `pointer-events`
+    // reverted to `none` the instant the pointer left the trigger for the
+    // 0.5rem gap — the still-visible bubble became un-pointable and faded out
+    // under the cursor.
+    await withPage({}, async (page) => {
+      const trigger = page.locator("button[data-tooltip]").first();
+      await trigger.scrollIntoViewIfNeeded();
+      const box = await trigger.boundingBox();
+      const x = box.x + box.width / 2;
+      await page.mouse.move(x, box.y + box.height / 2);
+      await page.waitForTimeout(600);
+
+      // Into the bubble: up through the gap, then onto the bubble itself.
+      await page.mouse.move(x, box.y - 20, { steps: 20 });
+      const state = await trigger.evaluate((el) => {
+        const s = getComputedStyle(el, "::after");
+        return { opacity: s.opacity, pointerEvents: s.pointerEvents };
+      });
+      expect(state).toEqual({ opacity: "1", pointerEvents: "auto" });
+    });
+  });
+});

@@ -1,26 +1,49 @@
 /* Toast — transient feedback. Hikarion.toast(msg) appends a [data-toast] to a
    single [data-toast-region] live region (a bottom-end stack). Enter/exit are
    CSS animations, so the global reduced-motion killswitch neutralises them.
+   Styling is pure CSS over plain markup — a hand-authored region and toast
+   render identically with no JS on the page.
 
-   ponytail: the region is a fixed, high-z-index layer, not the top layer, so a
-   toast shown while a modal <dialog> is open sits behind it. Promote the region
-   to popover="manual" if toasts-over-modals matters. */
+   The region is a manual popover, so the stack renders in the top layer and
+   stays visible over an open modal <dialog>. Browsers without the Popover API
+   ignore the attribute and fall back to the z-index layer; the UA popover
+   chrome (inset, margin, border, background) is zeroed here so both paths lay
+   out identically.
+
+   The stack is capped at the viewport and anchored to its end, so an
+   over-eager caller clips the oldest toasts instead of pushing the newest
+   one off-screen.
+
+   ponytail: top-layer order is insertion order — a <dialog> opened *after*
+   the region still covers it. Re-showing the region on each toast would fix
+   that; nobody has asked for it. */
 
 @layer hikarion {
   [data-toast-region] {
     position: fixed;
+    inset: auto;                          /* zero the UA popover's inset: 0 */
     inset-block-end: var(--space-7);
     inset-inline-end: var(--space-7);
-    z-index: 100;
+    z-index: 100;                         /* fallback where popover is absent */
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: inherit;
     display: flex;
     flex-direction: column;
+    justify-content: flex-end;            /* the stack grows upward... */
     gap: var(--space-4);
     inline-size: min(22rem, calc(100vw - var(--space-8)));
+    max-block-size: calc(100dvh - var(--space-8));
+    overflow: clip;                       /* ...and the oldest clip, not spill */
+    overflow-clip-margin: var(--space-5); /* leave the shadow room to paint */
     pointer-events: none;                 /* clicks pass through the gaps... */
   }
 
   [data-toast] {
     pointer-events: auto;                 /* ...but the toasts stay clickable */
+    flex: none;                           /* never squashed by the cap */
     display: flex;
     align-items: center;
     gap: var(--space-3);
@@ -48,15 +71,17 @@
   [data-toast] :where(span, p) { flex: 1; }   /* message takes the room */
 
   /* Dismiss control — a quiet ✕, like the chip remove. Chrome is shed by the
-     shared quiet-control reset (base/elements.css). */
+     shared quiet-control reset (base/elements.css). Pinned at 24px in both
+     densities (WCAG 2.2 §2.5.8): a toast is on a timer, so its one escape
+     hatch is the last thing allowed to shrink. */
   [data-toast] [data-toast-close] {
     flex: none;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    inline-size: 1.4em;
-    block-size: 1.4em;
-    margin-inline-end: -0.35rem;
+    inline-size: 1.5rem;
+    block-size: 1.5rem;
+    margin-inline-end: -0.25rem;
     padding: 0;
     color: var(--muted);
     border-radius: var(--radius-pill);

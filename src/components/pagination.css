@@ -1,19 +1,30 @@
 /* Pagination — `<nav data-pagination>` of page buttons/links. Prev/next
-   buttons, numbered pages, and a disabled state for first/last. Uses the
-   button card primitives from base/elements.css; the quiet-control reset
-   already strips chrome off these buttons since they live under a nav hook.
+   controls, numbered pages, an optional ellipsis for an elided range, and a
+   disabled state for the ends of the range.
 
-   The active page is marked `aria-current="page"` — accent ring, not a fill,
-   so it reads as selected without competing with a solid primary button.
-   Disabled pages use `aria-disabled="true"` (not the native `disabled`, which
-   would drop them from the tab order and the a11y tree).
+   Three states have to be told apart at a glance, so each gets its own
+   channel rather than three shades of one: the current page is an accent ring
+   (colour + border + tint, never a fill, so it does not compete with a solid
+   primary button); a disabled end is dimmed and inert; the ellipsis keeps the
+   grid slot but has no hover, no pointer and no pill — it reads as
+   punctuation, not as a target you failed to hit.
+
+   The quiet-control reset in base/elements.css does not list this nav, so the
+   boxed button chrome (shadow, press-scale, hover border) is stripped here
+   and the same flat pill is applied to `<a>` and `<button>` alike — otherwise
+   Prev/Next would sit in a raised card beside flat number links.
+
+   Ends use `aria-disabled="true"`, not the native `disabled`, so they stay in
+   the tab order and the a11y tree. That is a pointer-inert presentation only:
+   a disabled `<button>` must still no-op its own handler.
 
    Markup:
-     <nav data-pagination>
+     <nav data-pagination aria-label="Pagination">
        <button aria-disabled="true">Prev</button>
        <a href="?p=1">1</a>
        <a href="?p=2" aria-current="page">2</a>
-       <a href="?p=3">3</a>
+       <span aria-hidden="true">…</span>
+       <a href="?p=9">9</a>
        <button>Next</button>
      </nav> */
 
@@ -25,10 +36,9 @@
     gap: var(--space-1);
   }
 
-  /* Page items — buttons or links, both rendered as quiet pills. The shared
-     quiet-control reset strips the boxed button chrome; links get the same
-     flat treatment here. :where keeps it at zero specificity. */
-  [data-pagination] :where(button, a) {
+  /* Page items — links, buttons and the ellipsis share one box so the row
+     keeps a single rhythm. :where keeps it at zero specificity. */
+  [data-pagination] :where(button, a, span) {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -43,6 +53,7 @@
     background: transparent;
     border: 1px solid transparent;
     border-radius: var(--radius-sm);
+    box-shadow: none;
     text-decoration: none;
     cursor: pointer;
     transition: color var(--dur) var(--ease-hikarion),
@@ -53,9 +64,15 @@
     color: var(--fg);
     background: var(--hover);
   }
+  /* No press-scale and no border flash: these are flat pills, like every
+     other quiet control. Beats the base button :hover/:active on specificity. */
+  [data-pagination] button:is(:hover, :active) {
+    background: var(--hover);
+    border-color: transparent;
+    transform: none;
+  }
 
-  /* Active page — accent ring (not a fill), so it reads as selected without
-     fighting a solid primary. */
+  /* Current page — the only item carrying colour. */
   [data-pagination] [aria-current="page"] {
     color: var(--accent);
     border-color: color-mix(in oklch, var(--accent) 45%, var(--border));
@@ -63,28 +80,29 @@
   }
   [data-pagination] [aria-current="page"]:hover {
     color: var(--accent);
+    border-color: color-mix(in oklch, var(--accent) 45%, var(--border));
     background: color-mix(in oklch, var(--accent) 14%, transparent);
   }
 
-  /* Disabled (first/last page) — dim and inert, stays in the a11y tree. */
+  /* Elided range — punctuation, not a target. */
+  [data-pagination] span {
+    cursor: default;
+  }
+
+  /* Disabled end — dim and pointer-inert, still focusable and announced. */
   [data-pagination] [aria-disabled="true"] {
-    opacity: 0.4;
+    color: var(--muted);
+    opacity: 0.5;
     cursor: not-allowed;
     pointer-events: none;
   }
 
-  /* Prev/next carry a chevron pointing the way; bare text is fine too. */
+  /* Prev/next hold a text label, so they size to their content instead of the
+     numbered square. */
   [data-pagination] :where(button, a):first-child,
   [data-pagination] :where(button, a):last-child {
     inline-size: auto;
     padding-inline: calc(0.6rem * var(--_density));
     gap: var(--space-1);
-  }
-
-  /* Focus — the shared accent ring from base/elements.css applies to buttons;
-     give links the same. */
-  [data-pagination] a:focus-visible {
-    outline: 2px solid var(--accent);
-    outline-offset: 2px;
   }
 }

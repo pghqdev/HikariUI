@@ -15,7 +15,32 @@ export const TEXT_PAIRS = [
   ["muted", "surface"],
 ];
 
+// The accent lock. base/high-contrast.css deliberately leaves --accent alone
+// under `prefers-contrast: more` — it is the one decisive colour, and any push
+// would have to move in opposite directions for light and dark themes while
+// staying paired with --accent-content. That is only defensible while the
+// accent is readable on the page to begin with, so this asserts it. Checked in
+// every scope, not just contrast ones: the claim is unconditional.
+/** @type {Array<[string, string]>} */
+export const ACCENT_PAIRS = [
+  ["accent", "bg"],
+  ["accent", "surface"],
+];
+
 const MIN_RATIO = 4.5;
+
+// The `prefers-contrast: more` floor. It is not checked against a separate set
+// of parsed scopes, because base/high-contrast.css is pure aliasing —
+// `--muted: var(--fg)` and `--border: var(--fg)` — so every pair it changes
+// becomes algebraically one of the fg/* pairs already listed above. Raising
+// those to AAA is therefore the same assertion as "a contrast scope clears 7:1",
+// with no at-rule-aware parser to maintain.
+// ponytail: if the contrast pass ever stops being pure aliases (a color-mix, a
+// per-theme override), this equivalence breaks and the gate needs real scope
+// derivation — segment the CSS by at-rule, emit `<scope>+contrast`, resolve the
+// var() aliases. Until then that machinery has nothing to compute.
+const CONTRAST_MIN_RATIO = 7;
+const CONTRAST_ALIASED = new Set(["fg/bg", "fg/surface"]);
 
 /** Relative luminance from OKLCH [L, C, H] with L in 0–1. */
 export function luminance([L, C, H]) {
@@ -69,8 +94,8 @@ export function parseThemeScopes(sources) {
  */
 export function checkContrastPairs(scopes, opts = {}) {
   const minRatio = opts.minRatio ?? MIN_RATIO;
-  const pairs = [...TONE_PAIRS, ...TEXT_PAIRS];
-  /** @type {Array<{ scope: string, pair: string, ok: boolean, ratio?: number, missing?: boolean }>} */
+  const pairs = [...TONE_PAIRS, ...TEXT_PAIRS, ...ACCENT_PAIRS];
+  /** @type {Array<{ scope: string, pair: string, ok: boolean, ratio?: number, missing?: boolean, min?: number }>} */
   const results = [];
   let failed = false;
 
@@ -84,10 +109,14 @@ export function checkContrastPairs(scopes, opts = {}) {
         results.push({ scope, pair, ok: false, missing: true });
         continue;
       }
+      // Under `prefers-contrast: more` these two pairs are also the muted and
+      // border pairs, so they carry the AAA floor: "more contrast" has to mean
+      // measurably more, or the media query is decoration.
+      const min = CONTRAST_ALIASED.has(pair) ? CONTRAST_MIN_RATIO : minRatio;
       const ratio = contrastRatio(left, right);
-      const ok = ratio >= minRatio;
+      const ok = ratio >= min;
       if (!ok) failed = true;
-      results.push({ scope, pair, ok, ratio });
+      results.push({ scope, pair, ok, ratio, min });
     }
   }
 

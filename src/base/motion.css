@@ -11,7 +11,15 @@
    the scale-pop animates the entrance; close keeps the fade (starts visible,
    so it reads as instant either way).
    ponytail: --dur-exit (0.11s) beats --dur (0.16s) — big surfaces feel slower
-   at the same duration; bump toward --dur if it ever reads as abrupt. */
+   at the same duration; bump toward --dur if it ever reads as abrupt.
+
+   Also here: the one scroll-driven effect, `[data-scroll-progress]` — a hairline
+   reading-progress bar pinned to the top of the viewport. It lives in motion.css
+   because it is a motion recipe, not a component: no box, no content, no API
+   beyond "put this empty element in the document".
+
+   Markup:
+     <div data-scroll-progress aria-hidden="true"></div> */
 
 @layer hikarion {
   /* Motion vocabulary, beside --dur / --ease-hikarion rather than replacing
@@ -53,5 +61,53 @@
   @starting-style {
     dialog:modal,
     [data-menu]:popover-open { scale: 0.96; }
+  }
+
+  /* Reading progress. The element has NO styling outside this block, so both
+     fallbacks are the same one: an empty, zero-height div that paints nothing.
+     That is the honest fallback — a bar that cannot track scroll must not draw
+     a bar at all, or it claims a reading position it doesn't know.
+
+     Both gates are load-bearing:
+     - @supports, because scroll() has no polyfill-free degradation: without a
+       timeline the animation would sit at its 100% keyframe, i.e. a permanently
+       full bar.
+     - @media, because reset.css's global !important killswitch does NOT reach
+       this. A scroll-driven animation ignores animation-duration entirely, so
+       clamping the duration to 0.01ms neutralises nothing. Reduced motion has
+       to remove the effect, and here it does.
+
+     Density-invariant on purpose: 3px is already the thinnest honest hairline;
+     Compact has nothing to take.
+
+     ponytail: grows from the inline start via transform-origin: 0, which is
+     physical, not logical — an RTL document would fill right-to-left-anchored
+     backwards. Nothing else in the tree is RTL-aware yet; when one thing is,
+     add the [dir="rtl"] origin flip here. */
+  @supports (animation-timeline: scroll()) {
+    @media (prefers-reduced-motion: no-preference) {
+      [data-scroll-progress] {
+        position: fixed;
+        inset-block-start: 0;
+        inset-inline: 0;
+        z-index: 100;
+        block-size: 3px;
+        background: var(--accent);
+        transform-origin: 0 50%;
+        pointer-events: none;
+        animation: hk-scroll-progress linear both;
+        animation-timeline: scroll(root block);
+      }
+
+      /* Backgrounds are dropped in forced-colors, which would erase the bar. */
+      @media (forced-colors: active) {
+        [data-scroll-progress] { background: Highlight; forced-color-adjust: none; }
+      }
+    }
+  }
+
+  @keyframes hk-scroll-progress {
+    from { scale: 0 1; }
+    to   { scale: 1 1; }
   }
 }

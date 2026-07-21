@@ -1,0 +1,81 @@
+/* Select & searchable input — no hooks. Native `<select>` already carries the
+   field chrome, the chevron and the customizable `::picker(select)` drawer in
+   base/elements.css; this file only closes the cases that rule does not cover:
+   grouped options, the list-box form (`multiple`/`size`), the disabled state,
+   and the affordance for an `input[list]` + `<datalist>`.
+
+   The searchable combobox is `<input list>` + `<datalist>`: a real native
+   combobox, typed filtering, keyboard and screen-reader behaviour owned by the
+   browser, zero JS and zero new vocabulary. A DIY listbox would need JS to be
+   usable at all, which the native path refuses to depend on. All this needed
+   was a chevron so the field admits it has suggestions.
+
+   No new hooks: `multiple`, `size`, `:disabled`, `:checked` and `list` are the
+   HTML that already carries every one of these meanings.
+
+   ponytail: the list-box rows are styled where the engine renders `<option>` as
+   a real box (Chromium, Firefox). Safari paints the list box itself and ignores
+   option padding — it stays legible, just tighter. If that matters, the upgrade
+   is a set of checkbox rows in a `<fieldset>`, not a scripted listbox.
+
+   Markup:
+     <select><optgroup label="Core"><option>…</option></optgroup></select>
+     <select multiple size="4"><option>…</option></select>
+     <input list="frameworks"><datalist id="frameworks"><option value="…"></datalist> */
+
+@layer hikarion {
+  /* Group heading: an eyebrow, not another option. The UA bolds and italicises
+     it inconsistently across engines — normalise to the label voice. */
+  optgroup {
+    font-size: var(--text-eyebrow);
+    font-weight: 600;
+    font-style: normal;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  /* List-box form. `multiple`/`size` makes the control a scrolling list, so the
+     chevron and the space reserved for it are wrong — both are dropped and the
+     field's own padding shrinks to a hairline, letting the rows carry it. */
+  select:is([multiple], [size]:not([size="1"])) {
+    padding: 0;
+    background-image: none;
+  }
+  /* Inline padding only. `size="4"` reserves height for four *unstyled* rows, so
+     any block padding here grows the rows past the box the browser already sized
+     and the last row clips mid-glyph. Row height stays the UA's; density reaches
+     the rows through --field-px. */
+  select:is([multiple], [size]:not([size="1"])) option {
+    padding-block: 0;
+    padding-inline: var(--field-px);
+    border-radius: var(--radius-xs);
+  }
+  select:is([multiple], [size]:not([size="1"])) option:checked {
+    color: var(--accent-content);
+    background: var(--accent);
+  }
+
+  /* elements.css disables `button` and `input`; `select` was left out. */
+  select:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  /* A `<datalist>`-backed input looks like any other text field, so nothing
+     tells the user suggestions exist. Same chevron and same reserved gutter as
+     a closed select — static, because the browser owns when the popup shows,
+     and painted here rather than left to the picker button because only
+     Chromium draws that button; Firefox and Safari draw nothing at all. */
+  input[list] {
+    padding-inline-end: calc(var(--field-px) + 1.4rem);
+    background-image: var(--chevron);
+    background-repeat: no-repeat;
+    background-position: right var(--field-px) center;
+  }
+  /* Chromium's picker button, restyled for date fields in elements.css, would
+     be a second chevron here. Attribute specificity beats that `:where`. */
+  input[list]::-webkit-calendar-picker-indicator {
+    display: none;
+  }
+}

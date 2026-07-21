@@ -22,8 +22,10 @@
       background: HighlightText;
     }
 
-    /* Chip — pressed is a tint, and a tint over Canvas is Canvas. */
-    button[data-chip][aria-pressed="true"] {
+    /* Chip and toggle-group member — pressed is a tint, and a tint over Canvas
+       is Canvas. Same recipe in the component CSS, so same restatement here. */
+    button[data-chip][aria-pressed="true"],
+    [data-button-group] > button[aria-pressed="true"] {
       background: Highlight;
       color: HighlightText;
     }
@@ -47,6 +49,31 @@
     [data-stepper] > li[aria-current="step"]::after {
       background: Highlight;
       color: HighlightText;
+    }
+
+    /* Dropzone — the live drop target is an accent edge over an accent tint,
+       and both flatten into the resting card. */
+    [data-dropzone][data-dragover] {
+      background: Highlight;
+      color: HighlightText;
+    }
+
+    /* The other half of the failure: chrome carried by a *fill* rather than by
+       a state. A forced palette repaints the fill as Canvas, so the surface
+       stops being a surface — these two need an edge back, not a state colour.
+
+       Tooltip — an inverted bubble with no border and a shadow that forced
+       colours drops, so the hint would float as bare text over the content it
+       covers. Matches tooltip.css's own selector list. */
+    [data-tooltip]::after,
+    [popover="hint"] {
+      border: 1px solid CanvasText;
+    }
+
+    /* Alert — a solid banner nulls its border because the fill draws the box.
+       Ties alert.css's (0,2,0) solid rule and wins on source order. */
+    :is([role="alert"], [role="status"])[data-variant~="solid"] {
+      border-color: CanvasText;
     }
   }
 }

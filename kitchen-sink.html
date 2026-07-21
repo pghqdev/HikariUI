@@ -44,13 +44,6 @@
     /* Proof that an unlayered author rule beats Hikarion with no !important. */
     button.overridden { background: rebeccapurple; color: white; border-color: rebeccapurple; }
 
-    /* Theme swap crossfades the whole page via a View Transition (see script) —
-       one smooth dissolve, no per-property snapping. */
-    ::view-transition-old(root), ::view-transition-new(root) {
-      animation-duration: 0.28s;
-      animation-timing-function: var(--ease-hikarion);
-    }
-
     /* Staggered entrance — first impression. Skipped under reduced-motion. */
     @media (prefers-reduced-motion: no-preference) {
       main > * { animation: rise .55s var(--ease-hikarion) backwards; }
@@ -66,6 +59,7 @@
   </style>
 </head>
 <body>
+  <div data-scroll-progress aria-hidden="true"></div>
   <main>
     <header class="top">
       <h1 style="margin:0">Hikarion UI</h1>
@@ -83,7 +77,10 @@
 
     <p>Bare semantic HTML, zero classes. Switch the theme above — the whole page
       re-lights from ~20 tokens, <strong>including the shadows</strong>, which
-      are tinted from <code>--accent</code>.</p>
+      are tinted from <code>--accent</code>. Where the browser supports View
+      Transitions, both the theme and the density switch cross-fade the page over
+      <code>--dur-slow</code>; under reduced motion, and everywhere else, they
+      flip instantly.</p>
 
     <h2>Typography</h2>
     <p>Body text with a <a href="#">tasteful link</a>, some <strong>strong</strong>
@@ -144,24 +141,95 @@
       <a href="#">Home</a> · <a href="#">Components</a> · <a href="#">Themes</a> · <a href="#">Docs</a>
     </nav>
 
+    <h3>Primary &amp; sidebar</h3>
+    <p><code>[data-nav]</code> is a horizontal link run; <code>[data-nav="sidebar"]</code>
+      stacks the same run into a rail. The current item is
+      <code>aria-current="page"</code> — underlined on top, edge-marked and tinted in
+      the rail, so it never reads by colour alone. Compact tightens the pill padding
+      and the gaps; the labels hold their size.</p>
+    <div class="grid">
+      <article>
+        <nav data-nav aria-label="Primary (data-nav)">
+          <a href="#" aria-current="page">Overview</a>
+          <a href="#">Components</a>
+          <a href="#">Themes</a>
+        </nav>
+        <nav data-nav="sidebar" aria-label="Sections">
+          <ul>
+            <li><a href="#" aria-current="page">Install</a></li>
+            <li><a href="#">Tokens</a></li>
+            <li><a href="#">Theming</a></li>
+          </ul>
+        </nav>
+      </article>
+      <article data-density="compact">
+        <nav data-nav aria-label="Primary (compact)">
+          <a href="#" aria-current="page">Overview</a>
+          <a href="#">Components</a>
+          <a href="#">Themes</a>
+        </nav>
+        <nav data-nav="sidebar" aria-label="Sections (compact)">
+          <ul>
+            <li><a href="#" aria-current="page">Install</a></li>
+            <li><a href="#">Tokens</a></li>
+            <li><a href="#">Theming</a></li>
+          </ul>
+        </nav>
+      </article>
+    </div>
+
     <h3>Breadcrumbs</h3>
-    <nav data-breadcrumbs aria-label="Breadcrumb">
-      <ol>
-        <li><a href="#">Home</a></li>
-        <li><a href="#">Docs</a></li>
-        <li><a href="#" aria-current="page">Tokens</a></li>
-      </ol>
-    </nav>
+    <p>Ancestors stay muted links; the <code>aria-current="page"</code> item is the
+      trail's one emphasis. Compact tightens the gaps and the chevron.</p>
+    <div class="grid">
+      <article>
+        <nav data-breadcrumbs aria-label="Breadcrumb">
+          <ol>
+            <li><a href="#">Home</a></li>
+            <li><a href="#">Docs</a></li>
+            <li><span aria-current="page">Tokens</span></li>
+          </ol>
+        </nav>
+      </article>
+      <article data-density="compact">
+        <nav data-breadcrumbs aria-label="Breadcrumb (compact)">
+          <ol>
+            <li><a href="#">Home</a></li>
+            <li><a href="#">Docs</a></li>
+            <li><span aria-current="page">Tokens</span></li>
+          </ol>
+        </nav>
+      </article>
+    </div>
 
     <h3>Pagination</h3>
-    <nav data-pagination aria-label="Pagination">
-      <button aria-disabled="true">Prev</button>
-      <a href="#">1</a>
-      <a href="#" aria-current="page">2</a>
-      <a href="#">3</a>
-      <a href="#">4</a>
-      <button>Next</button>
-    </nav>
+    <p>Three states on three channels: the current page is an accent ring, a disabled
+      end is dim and pointer-inert, an elided range is a bare <code>&lt;span&gt;</code>
+      with no pill and no pointer.</p>
+    <div class="grid">
+      <article>
+        <nav data-pagination aria-label="Pagination">
+          <button aria-disabled="true">Prev</button>
+          <a href="#">1</a>
+          <a href="#" aria-current="page">2</a>
+          <a href="#">3</a>
+          <span aria-hidden="true">…</span>
+          <a href="#">9</a>
+          <button>Next</button>
+        </nav>
+      </article>
+      <article data-density="compact">
+        <nav data-pagination aria-label="Pagination (compact)">
+          <button aria-disabled="true">Prev</button>
+          <a href="#">1</a>
+          <a href="#" aria-current="page">2</a>
+          <a href="#">3</a>
+          <span aria-hidden="true">…</span>
+          <a href="#">9</a>
+          <button>Next</button>
+        </nav>
+      </article>
+    </div>
 
     <h2>Definition list</h2>
     <dl>
@@ -250,6 +318,66 @@
         <p><small>The first and last child shed their margin, so the padding box
           stays even no matter what you nest.</small></p>
       </article>
+    </div>
+
+    <h2>Context-aware cards</h2>
+    <p>An <code>&lt;article&gt;</code> is the framework's query container, so what is
+      nested in a card adapts to the column it actually sits in — not to the viewport.
+      Wide enough and a leading <code>&lt;figure&gt;</code> floats into a media column;
+      narrow and it stacks, a <code>[data-nav]</code> run turns into a rail, and an
+      action row takes the full width. No hook, no size variant, no breakpoint: the
+      same markup twice. Compact shrinks the card's padding, so the content box is
+      wider and the media column arrives slightly sooner — the labels and copy hold
+      their size.</p>
+    <article>
+      <figure><img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 96 40'%3E%3Crect width='96' height='40' fill='%237c8cf8'/%3E%3Ccircle cx='24' cy='13' r='7' fill='%23fff' opacity='.85'/%3E%3C/svg%3E" alt=""></figure>
+      <h3>Wide column</h3>
+      <p>The card is over 26rem across, so the figure floats and the copy runs beside it.</p>
+      <footer data-form-row>
+        <button data-variant="solid">Open</button>
+        <button>Share</button>
+      </footer>
+    </article>
+    <article data-density="compact">
+      <figure><img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 96 40'%3E%3Crect width='96' height='40' fill='%237c8cf8'/%3E%3Ccircle cx='24' cy='13' r='7' fill='%23fff' opacity='.85'/%3E%3C/svg%3E" alt=""></figure>
+      <h3>Wide column (compact)</h3>
+      <p>The card is over 26rem across, so the figure floats and the copy runs beside it.</p>
+      <footer data-form-row>
+        <button data-variant="solid">Open</button>
+        <button>Share</button>
+      </footer>
+    </article>
+    <div class="row" style="align-items: start">
+      <div style="inline-size: 17rem">
+        <article>
+          <figure><img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 96 40'%3E%3Crect width='96' height='40' fill='%237c8cf8'/%3E%3Ccircle cx='24' cy='13' r='7' fill='%23fff' opacity='.85'/%3E%3C/svg%3E" alt=""></figure>
+          <h3>Narrow column</h3>
+          <p>Same markup. The media stacks, the nav becomes a rail, the actions fill the width.</p>
+          <nav data-nav aria-label="Narrow column">
+            <a href="#" aria-current="page">Overview</a>
+            <a href="#">Activity</a>
+          </nav>
+          <footer data-form-row>
+            <button data-variant="solid">Open</button>
+            <button>Share</button>
+          </footer>
+        </article>
+      </div>
+      <div style="inline-size: 17rem">
+        <article data-density="compact">
+          <figure><img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 96 40'%3E%3Crect width='96' height='40' fill='%237c8cf8'/%3E%3Ccircle cx='24' cy='13' r='7' fill='%23fff' opacity='.85'/%3E%3C/svg%3E" alt=""></figure>
+          <h3>Narrow column (compact)</h3>
+          <p>Same markup. The media stacks, the nav becomes a rail, the actions fill the width.</p>
+          <nav data-nav aria-label="Narrow column (compact)">
+            <a href="#" aria-current="page">Overview</a>
+            <a href="#">Activity</a>
+          </nav>
+          <footer data-form-row>
+            <button data-variant="solid">Open</button>
+            <button>Share</button>
+          </footer>
+        </article>
+      </div>
     </div>
 
     <h2>Accordion</h2>
@@ -381,36 +509,139 @@
       <label><input type="checkbox" role="switch" data-switch disabled> Disabled</label>
     </div>
 
-    <h2>Dropdown</h2>
+    <h2>Dropdown &amp; action menu</h2>
     <p>Native <code>popover</code> — the browser owns open, light-dismiss, and
-      focus. Pinned under its trigger with CSS anchor positioning, no JS.</p>
-    <div class="row">
-      <button popovertarget="menu-demo" data-variant="solid">Actions</button>
-      <div popover id="menu-demo" data-menu>
-        <button>Edit</button>
-        <button>Duplicate</button>
-        <a href="#">Open in new tab</a>
-        <hr>
-        <button>Delete</button>
-      </div>
+      focus. Pinned under its trigger with CSS anchor positioning, no JS. Rows are
+      plain buttons and links: a destructive row is <code>data-variant="danger"</code>,
+      an inert row is <code>aria-disabled</code> (still focusable and announced), and a
+      shortcut hint is a real <code>&lt;kbd&gt;</code>. It is a disclosure, not an APG
+      menu — <kbd>Tab</kbd> moves between rows. Compact tightens the rows and the
+      trigger; the labels hold their size.</p>
+    <div class="grid">
+      <article>
+        <button popovertarget="menu-demo" data-variant="solid">Actions</button>
+        <div popover id="menu-demo" data-menu>
+          <button>Rename <kbd>⌘R</kbd></button>
+          <button>Duplicate <kbd>⌘D</kbd></button>
+          <a href="#">Open in new tab</a>
+          <button aria-disabled="true">Move to…</button>
+          <hr>
+          <button data-variant="danger">Delete <kbd>⌫</kbd></button>
+        </div>
+      </article>
+      <article data-density="compact">
+        <button popovertarget="menu-demo-c" data-variant="solid">Actions</button>
+        <div popover id="menu-demo-c" data-menu>
+          <button>Rename <kbd>⌘R</kbd></button>
+          <button>Duplicate <kbd>⌘D</kbd></button>
+          <a href="#">Open in new tab</a>
+          <button aria-disabled="true">Move to…</button>
+          <hr>
+          <button data-variant="danger">Delete <kbd>⌫</kbd></button>
+        </div>
+      </article>
+    </div>
+
+    <h2>Button group &amp; split button</h2>
+    <p><code>[data-button-group]</code> fuses adjacent <code>&lt;button&gt;</code>s into
+      one control: one hairline per seam, outer corners only. A split button is the
+      same group with a <code>[popovertarget]</code> half, so the chevron, panel and
+      light-dismiss all come from <code>[data-menu]</code>. The group is a single row
+      and does not wrap. Compact tightens the buttons themselves; the seams and the
+      corner radius are unchanged.</p>
+    <div class="grid">
+      <article>
+        <div class="row">
+          <div data-button-group role="group" aria-label="Text style">
+            <button aria-pressed="true">Bold</button>
+            <button>Italic</button>
+            <button>Underline</button>
+          </div>
+        </div>
+        <div class="row">
+          <div data-button-group role="group" aria-label="Save">
+            <button data-variant="accent solid">Save</button>
+            <button data-variant="accent solid" popovertarget="ks-save-more" aria-label="More save options"></button>
+            <div popover id="ks-save-more" data-menu>
+              <button>Save as…</button>
+              <button>Save a copy</button>
+              <hr>
+              <button data-variant="danger">Discard changes</button>
+            </div>
+          </div>
+        </div>
+      </article>
+      <article data-density="compact">
+        <div class="row">
+          <div data-button-group role="group" aria-label="Text style (compact)">
+            <button aria-pressed="true">Bold</button>
+            <button>Italic</button>
+            <button>Underline</button>
+          </div>
+        </div>
+        <div class="row">
+          <div data-button-group role="group" aria-label="Save (compact)">
+            <button data-variant="accent solid">Save</button>
+            <button data-variant="accent solid" popovertarget="ks-save-more-c" aria-label="More save options"></button>
+            <div popover id="ks-save-more-c" data-menu>
+              <button>Save as…</button>
+              <button>Save a copy</button>
+              <hr>
+              <button data-variant="danger">Discard changes</button>
+            </div>
+          </div>
+        </div>
+      </article>
     </div>
 
     <h2>Tooltip</h2>
-    <p>CSS-only <code>[data-tooltip]</code> — hover or focus to reveal.</p>
-    <div class="row">
-      <button data-tooltip="Copied to clipboard">Hover me</button>
-      <button data-tooltip="Focus shows it too — try Tab">Or focus me</button>
-      <span data-badge data-variant="accent" data-tooltip="Works on any element">Badge</span>
+    <p>CSS-only <code>[data-tooltip]</code> — hover or focus to reveal. It waits
+      <code>--hk-tooltip-delay</code> (0.4s) before showing and lingers
+      <code>--hk-tooltip-delay-out</code> after, so the pointer can travel onto the
+      bubble without dismissing it (WCAG 2.2 1.4.13 <em>hoverable</em>). It cannot be
+      dismissed with <kbd>Esc</kbd>, nor revealed from the keyboard on a non-focusable
+      element — for that, use <code>popover="hint"</code>: a real element toggled by a
+      <code>[popovertarget]</code> button. <kbd>Esc</kbd>, light-dismiss and focus return
+      come from the browser only where <code>popover="hint"</code> is implemented (not in
+      any shipping Safari today; elsewhere it falls back to the <em>manual</em> state and
+      closes from its trigger). Compact tightens the bubble's
+      padding and text; the delays are density-invariant.</p>
+    <div class="grid">
+      <article>
+        <div class="row">
+          <button data-tooltip="Copied to clipboard">Hover me</button>
+          <button data-tooltip="Focus shows it too — try Tab">Or focus me</button>
+          <span data-badge data-variant="accent" data-tooltip="Hover only — a span is not focusable">Badge</span>
+          <button popovertarget="tip-crisp" aria-label="What is a webhook?">?</button>
+          <span popover="hint" id="tip-crisp">Toggled by its trigger — a native hint popover</span>
+        </div>
+      </article>
+      <article data-density="compact">
+        <div class="row">
+          <button data-tooltip="Copied to clipboard">Hover me</button>
+          <button data-tooltip="Focus shows it too — try Tab">Or focus me</button>
+          <span data-badge data-variant="accent" data-tooltip="Hover only — a span is not focusable">Badge</span>
+          <button popovertarget="tip-compact" aria-label="What is a webhook? (compact)">?</button>
+          <span popover="hint" id="tip-compact">Toggled by its trigger — a native hint popover</span>
+        </div>
+      </article>
     </div>
 
     <h2>Toast</h2>
-    <p>Transient feedback via <code>Hikarion.toast()</code> — auto-dismisses, or
-      close it. Stacks bottom-end.</p>
+    <p>Transient feedback via <code>Hikarion.toast()</code> — auto-dismisses (the timer
+      pauses while the toast is hovered or focused), or close it with the ✕. Stacks
+      bottom-end in the top layer, so toasts clear an open modal; the stack is capped at
+      the viewport and clips its oldest members rather than running off-screen. The
+      <code>danger</code> tone announces assertively, every other tone politely. No
+      density pair here, deliberately: the region is a fixed top-layer element on
+      <code>&lt;body&gt;</code>, so it reads <code>:root</code> density, not a
+      <code>data-density</code> container in the page.</p>
     <div class="row">
       <button data-variant="solid" onclick="Hikarion.toast('Changes saved')">Show toast</button>
       <button onclick="Hikarion.toast('Undo available — 8s', { duration: 8000 })">Longer toast</button>
       <button onclick="Hikarion.toast('Build passed', { variant: 'success' })">Success toast</button>
       <button onclick="Hikarion.toast('Couldn\'t reach the server', { variant: 'danger' })">Danger toast</button>
+      <button onclick="for (const m of ['First','Second','Third','Fourth']) Hikarion.toast(m)">Stack four</button>
     </div>
 
     <h2>Alert</h2>
@@ -546,6 +777,139 @@
       </form>
     </div>
 
+    <h2>Select &amp; searchable input</h2>
+    <p>No hook — <code>&lt;select&gt;</code>, <code>&lt;optgroup&gt;</code>,
+      <code>select multiple</code> and <code>&lt;input list&gt;</code> +
+      <code>&lt;datalist&gt;</code> carry every meaning themselves. The searchable case is
+      a real native combobox: typed filtering, keyboard and screen-reader behaviour owned
+      by the browser, zero JS. Compact tightens the field chrome and the list-box row
+      inset; row height and option text are the browser's and hold their size.</p>
+    <div class="grid">
+      <article>
+        <p>
+          <label for="ks-fw">Framework</label>
+          <select id="ks-fw">
+            <optgroup label="Core">
+              <option>Vanilla</option>
+              <option>Web Components</option>
+            </optgroup>
+            <optgroup label="Frameworks">
+              <option>Svelte</option>
+              <option>React</option>
+            </optgroup>
+          </select>
+        </p>
+        <p>
+          <label for="ks-envs">Environments</label>
+          <select id="ks-envs" multiple size="4">
+            <option selected>Production</option>
+            <option>Staging</option>
+            <option>Preview</option>
+            <option>Local</option>
+          </select>
+        </p>
+        <p>
+          <label for="ks-city">City <small>(type to search)</small></label>
+          <input id="ks-city" list="ks-cities" placeholder="Start typing…">
+          <datalist id="ks-cities">
+            <option value="Kyoto"></option>
+            <option value="Oslo"></option>
+            <option value="Lisbon"></option>
+            <option value="Taipei"></option>
+          </datalist>
+        </p>
+        <p>
+          <label for="ks-locked">Region</label>
+          <select id="ks-locked" disabled><option>ap-northeast-1</option></select>
+        </p>
+      </article>
+      <article data-density="compact">
+        <p>
+          <label for="ks-fw-c">Framework</label>
+          <select id="ks-fw-c">
+            <optgroup label="Core">
+              <option>Vanilla</option>
+              <option>Web Components</option>
+            </optgroup>
+            <optgroup label="Frameworks">
+              <option>Svelte</option>
+              <option>React</option>
+            </optgroup>
+          </select>
+        </p>
+        <p>
+          <label for="ks-envs-c">Environments</label>
+          <select id="ks-envs-c" multiple size="4">
+            <option selected>Production</option>
+            <option>Staging</option>
+            <option>Preview</option>
+            <option>Local</option>
+          </select>
+        </p>
+        <p>
+          <label for="ks-city-c">City <small>(type to search)</small></label>
+          <input id="ks-city-c" list="ks-cities" placeholder="Start typing…">
+        </p>
+        <p>
+          <label for="ks-locked-c">Region</label>
+          <select id="ks-locked-c" disabled><option>ap-northeast-1</option></select>
+        </p>
+      </article>
+    </div>
+
+    <h2>Date &amp; time fields</h2>
+    <p><code>input[type="date"]</code>, <code>time</code>, <code>datetime-local</code>,
+      <code>month</code>, <code>week</code> — the field chrome every input gets, plus the
+      picker button repainted as the same chevron <code>&lt;select&gt;</code> uses, so it
+      survives a dark theme and promises the same drawer. The platform picker is the
+      picker; Hikarion ships no calendar. Compact tightens the field padding like every
+      other field; the segment row and its digits hold their size.</p>
+    <div class="grid">
+      <article>
+        <p><label for="ks-when">Start date</label><input id="ks-when" type="date" value="2026-07-20"></p>
+        <p><label for="ks-at">Start time</label><input id="ks-at" type="time" value="09:30"></p>
+        <p><label for="ks-both">Cutover</label><input id="ks-both" type="datetime-local" value="2026-07-20T09:30"></p>
+      </article>
+      <article data-density="compact">
+        <p><label for="ks-when-c">Start date</label><input id="ks-when-c" type="date" value="2026-07-20"></p>
+        <p><label for="ks-at-c">Start time</label><input id="ks-at-c" type="time" value="09:30"></p>
+        <p><label for="ks-both-c">Cutover</label><input id="ks-both-c" type="datetime-local" value="2026-07-20T09:30"></p>
+      </article>
+    </div>
+
+    <h2>File upload previews</h2>
+    <p>A plain <code>&lt;ul&gt;</code> placed <em>after</em> a
+      <code>[data-dropzone]</code> label — not inside it, because the invisible file
+      input covers the card and would swallow the clicks. Each <code>&lt;li&gt;</code> is
+      a preview slot holding an optional thumbnail and its filename.
+      <code>aria-live="polite"</code> on the filename slot announces the selection; no
+      <code>role="status"</code>, that hook renders an alert box. Compact tightens the
+      card, gaps and slot width; filenames hold their size.</p>
+    <div class="grid">
+      <article>
+        <label data-dropzone>
+          <input type="file" multiple aria-label="Upload files">
+          <span data-dropzone-filename aria-live="polite">Drop files here or click to browse</span>
+        </label>
+        <ul>
+          <li><img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%237c8cf8'/%3E%3Ccircle cx='22' cy='22' r='9' fill='%23fff' opacity='.85'/%3E%3Cpath d='M4 60 26 34l14 16 10-9 12 19z' fill='%23fff' opacity='.6'/%3E%3C/svg%3E" alt="">poster.png</li>
+          <li><img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%2334c98a'/%3E%3Cpath d='M0 46h64v18H0z' fill='%23fff' opacity='.55'/%3E%3C/svg%3E" alt="">field.jpg</li>
+          <li>notes.pdf</li>
+        </ul>
+      </article>
+      <article data-density="compact">
+        <label data-dropzone>
+          <input type="file" multiple aria-label="Upload files (compact)">
+          <span data-dropzone-filename aria-live="polite">Drop files here or click to browse</span>
+        </label>
+        <ul>
+          <li><img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%237c8cf8'/%3E%3Ccircle cx='22' cy='22' r='9' fill='%23fff' opacity='.85'/%3E%3Cpath d='M4 60 26 34l14 16 10-9 12 19z' fill='%23fff' opacity='.6'/%3E%3C/svg%3E" alt="">poster.png</li>
+          <li><img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%2334c98a'/%3E%3Cpath d='M0 46h64v18H0z' fill='%23fff' opacity='.55'/%3E%3C/svg%3E" alt="">field.jpg</li>
+          <li>notes.pdf</li>
+        </ul>
+      </article>
+    </div>
+
     <h2>Progress &amp; meter</h2>
     <p>Native <code>&lt;progress&gt;</code> and <code>&lt;meter&gt;</code> — bars in the accent; <code>&lt;output&gt;</code> shows a computed value.</p>
     <label for="upload">Upload <output for="upload">62%</output></label>
@@ -575,6 +939,51 @@
       <span data-spinner></span>
     </div>
 
+    <h3>Meter thresholds &amp; range</h3>
+    <p>A meter's empty track is the same hairline as <code>&lt;progress&gt;</code>, so a
+      gauge at 0 reads as empty; the <code>low</code> / <code>high</code> /
+      <code>optimum</code> regions carry all the colour. Compact thins the meter bar and
+      the range groove and leaves the drag handle alone: the slider row stays 24&nbsp;px
+      tall in both densities, so the target never shrinks below the WCAG 2.2 floor.</p>
+    <div class="grid">
+      <article>
+        <p>
+          <label for="ks-disk">Disk usage</label>
+          <meter id="ks-disk" value="0.4" min="0" max="1" low="0.66" high="0.85" optimum="0.1"></meter>
+        </p>
+        <p>
+          <label for="ks-batt">Battery</label>
+          <meter id="ks-batt" value="0.72" min="0" max="1" low="0.2" high="0.6" optimum="1"></meter>
+        </p>
+        <p>
+          <label for="ks-heat">Heat</label>
+          <meter id="ks-heat" value="0.95" min="0" max="1" low="0.3" high="0.8" optimum="0.1"></meter>
+        </p>
+        <p>
+          <label for="ks-vol">Volume <output for="ks-vol">40</output></label>
+          <input id="ks-vol" type="range" min="0" max="100" value="40">
+        </p>
+      </article>
+      <article data-density="compact">
+        <p>
+          <label for="ks-disk-c">Disk usage</label>
+          <meter id="ks-disk-c" value="0.4" min="0" max="1" low="0.66" high="0.85" optimum="0.1"></meter>
+        </p>
+        <p>
+          <label for="ks-batt-c">Battery</label>
+          <meter id="ks-batt-c" value="0.72" min="0" max="1" low="0.2" high="0.6" optimum="1"></meter>
+        </p>
+        <p>
+          <label for="ks-heat-c">Heat</label>
+          <meter id="ks-heat-c" value="0.95" min="0" max="1" low="0.3" high="0.8" optimum="0.1"></meter>
+        </p>
+        <p>
+          <label for="ks-vol-c">Volume <output for="ks-vol-c">40</output></label>
+          <input id="ks-vol-c" type="range" min="0" max="100" value="40">
+        </p>
+      </article>
+    </div>
+
     <h2>Table</h2>
     <table>
       <thead>
@@ -587,6 +996,47 @@
         <tr><td><code>--ease-hikarion</code></td><td>1</td><td>The one easing curve</td></tr>
       </tbody>
     </table>
+
+    <h3>Data table</h3>
+    <p><code>[data-table]</code> — a scroll frame around a plain
+      <code>&lt;table&gt;</code>. The header sticks inside the frame once the frame's
+      height is constrained, and a row is selected by its own checkbox
+      (<code>:has(:checked)</code>) rather than by ARIA. Compact tightens cell padding
+      and the header band; the checkboxes hold their 24px hit target.</p>
+    <div class="grid">
+      <article>
+        <div data-table style="max-block-size: 11rem">
+          <table>
+            <thead>
+              <tr><th>Select</th><th>Name</th><th>Role</th><th>Commits</th></tr>
+            </thead>
+            <tbody>
+              <tr><td><input type="checkbox" checked aria-label="Select Ada Lovelace"></td><td>Ada Lovelace</td><td>Maintainer</td><td>1 842</td></tr>
+              <tr><td><input type="checkbox" aria-label="Select Grace Hopper"></td><td>Grace Hopper</td><td>Reviewer</td><td>1 190</td></tr>
+              <tr><td><input type="checkbox" aria-label="Select Alan Turing"></td><td>Alan Turing</td><td>Reviewer</td><td>964</td></tr>
+              <tr><td><input type="checkbox" aria-label="Select Katherine Johnson"></td><td>Katherine Johnson</td><td>Contributor</td><td>512</td></tr>
+              <tr><td><input type="checkbox" aria-label="Select Radia Perlman"></td><td>Radia Perlman</td><td>Contributor</td><td>318</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </article>
+      <article data-density="compact">
+        <div data-table style="max-block-size: 11rem">
+          <table>
+            <thead>
+              <tr><th>Select</th><th>Name</th><th>Role</th><th>Commits</th></tr>
+            </thead>
+            <tbody>
+              <tr><td><input type="checkbox" checked aria-label="Select Ada Lovelace (compact)"></td><td>Ada Lovelace</td><td>Maintainer</td><td>1 842</td></tr>
+              <tr><td><input type="checkbox" aria-label="Select Grace Hopper (compact)"></td><td>Grace Hopper</td><td>Reviewer</td><td>1 190</td></tr>
+              <tr><td><input type="checkbox" aria-label="Select Alan Turing (compact)"></td><td>Alan Turing</td><td>Reviewer</td><td>964</td></tr>
+              <tr><td><input type="checkbox" aria-label="Select Katherine Johnson (compact)"></td><td>Katherine Johnson</td><td>Contributor</td><td>512</td></tr>
+              <tr><td><input type="checkbox" aria-label="Select Radia Perlman (compact)"></td><td>Radia Perlman</td><td>Contributor</td><td>318</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </article>
+    </div>
 
     <h2>Density</h2>
     <p><code>data-density="crisp|compact"</code> retunes spacing and control
@@ -611,6 +1061,20 @@
         </tbody>
       </table>
     </article>
+
+    <h2>Scroll progress</h2>
+    <p><code>[data-scroll-progress]</code> — an empty element that becomes a hairline
+      reading-progress bar across the top of the viewport, driven by
+      <code>animation-timeline: scroll(root block)</code>. It is live on this page
+      right now: scroll and watch the top edge. Purely presentational, so it carries
+      <code>aria-hidden</code> and never takes pointer events. Density does not touch
+      it — 3px is the thinnest honest hairline — and there is no per-instance variant,
+      because a document has exactly one reading position.</p>
+    <p>Where <code>scroll()</code> is unsupported, and whenever
+      <code>prefers-reduced-motion: reduce</code> is set, the element paints nothing at
+      all: no bar, not a slower bar. A progress bar that cannot follow the scroll must
+      not draw a position it does not know.</p>
+    <pre><code>&lt;div data-scroll-progress aria-hidden="true"&gt;&lt;/div&gt;</code></pre>
 
     <h2>Code</h2>
     <p>Hover a code block for the copy button (from <code>hikarion.js</code>).</p>
@@ -647,15 +1111,23 @@
     moveThumb(activeBtn());
 
     // Density is pure CSS — an attribute on any container. Hikarion ships no JS
-    // for it; this is just the demo toggle.
+    // for it; this is just the demo toggle. The View Transition is optional
+    // sugar: delete that line, or run this without the API, and the flip is
+    // instant. Core only retunes the cross-fade's timing (base/view-transitions.css).
     document.getElementById("density").addEventListener("click", (e) => {
       const btn = e.target.closest("button[value]");
       if (!btn) return;
-      document.documentElement.dataset.density = btn.value;
-      for (const b of btn.parentElement.children) {
-        b.setAttribute("aria-pressed", String(b === btn));
-      }
-      moveThumb(activeBtn());
+      const apply = () => {
+        document.documentElement.dataset.density = btn.value;
+        for (const b of btn.parentElement.children) {
+          b.setAttribute("aria-pressed", String(b === btn));
+        }
+        moveThumb(activeBtn());
+      };
+      // A rapid re-switch skips a transition and rejects its promises; swallow.
+      if (document.startViewTransition) {
+        document.startViewTransition(apply).finished.catch(() => {});
+      } else apply();
     });
   </script>
 </body>

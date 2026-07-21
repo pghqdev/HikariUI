@@ -1,7 +1,10 @@
 # Accessibility & progressive-enhancement contract
 
 What Hikarion guarantees for keyboard, assistive tech, user preferences, and a
-page whose JavaScript never runs. Audited 2026-07-19 against `kitchen-sink.html`.
+page whose JavaScript never runs. Audited 2026-07-19 against `kitchen-sink.html`;
+the rows added on 2026-07-21 (nav, data table, button group, select, date/time)
+are reasoned from native element behaviour and covered by the axe gate, **not**
+yet driven by hand.
 
 Automated gates: `bun run check:a11y` (axe-core over the kitchen sink in both
 densities, `target-size` explicitly enabled) and `bun test`
@@ -32,9 +35,9 @@ densities, `target-size` explicitly enabled) and `bun test`
 
 | Preference | Where | Behaviour |
 |-----------|-------|-----------|
-| `prefers-reduced-motion` | `base/reset.css` | One global killswitch clamps every duration/animation with `!important`, so no component has to remember. `Hikarion.setTheme` also skips its View Transition. |
-| `prefers-contrast: more` | `base/elevation.css`, `components/skeleton.css` | The elevation ladder re-inks (same geometry, denser shadow); the skeleton tint deepens. The focus ring is already a solid 2px accent and needs no variant. |
-| `forced-colors: active` | `base/forced-colors.css`, `components/progress.css`, `components/skeleton.css` | Selected/on states become `Highlight`/`HighlightText`; the determinate spinner falls back from a conic gradient to an outlined circle; skeletons gain an outline so the shape survives. |
+| `prefers-reduced-motion` | `base/reset.css`, `base/motion.css`, `base/view-transitions.css` | One global killswitch clamps every duration/animation with `!important`, so no component has to remember. Two things it structurally cannot reach, each restated where it lives: a **scroll-driven** animation ignores `animation-duration`, so `[data-scroll-progress]` is authored inside `@media (prefers-reduced-motion: no-preference)` and is absent — not slowed — under `reduce`; and the `::view-transition-*` pseudo tree is not matched by `*`, so the root cross-fade is nulled with `animation: none !important`, which makes the transition finish on its first frame (a hard cut). `Hikarion.setTheme` also skips its View Transition. |
+| `prefers-contrast: more` | `base/high-contrast.css`, `base/elevation.css`, `components/skeleton.css` | Automatic, no hook. `--muted` collapses into `--fg` and `--border` becomes a full-strength line (`--line` stays lighter, so inner rules still read as inner rules); soft tone edges go solid; the focus ring goes 2px → 3px and the field's inset edge 1px → 2px. `--accent` is unchanged and gated at 4.5:1 on `--bg`/`--surface`. The elevation ladder re-inks (same geometry, denser shadow); the skeleton tint deepens. |
+| `forced-colors: active` | `base/forced-colors.css`, `base/elements.css`, `components/progress.css`, `components/skeleton.css`, `components/table.css` | Selected/on states become `Highlight`/`HighlightText`; the determinate spinner falls back from a conic gradient to an outlined circle; skeletons gain an outline so the shape survives. A live dropzone, a selected table row and the range thumb become `Highlight`; the tooltip bubble and solid alerts regain a `CanvasText` edge, since their box was drawn by a fill the forced palette removes. |
 
 `base/forced-colors.css` is one file rather than a block per component on
 purpose: the failure has a single cause (accent-as-state), so the audit for it
@@ -59,14 +62,18 @@ Everything here is the browser's native behaviour — Hikarion adds no trap.
 
 | Surface | Markup | Why |
 |---------|--------|-----|
-| Toasts | `[data-toast-region]` with `aria-live="polite"` | Transient and non-blocking. Focus is deliberately **not** moved to a toast. The region is created on first use and appended to before the toast is inserted **on the next task** — a live region must already be in the DOM when its content changes, or the insertion is never announced. |
+| Toasts | `[data-toast-region]` with `aria-live` — `assertive` for `variant: "danger"`, `polite` otherwise, set immediately before the deferred append | Transient and non-blocking. Focus is deliberately **not** moved to a toast. The region is created on first use and appended to before the toast is inserted **on the next task** — a live region must already be in the DOM when its content changes, or the insertion is never announced. |
 | Alerts | `role="alert"` / `role="status"` on the author's own element | Hikarion styles the roles rather than inventing a hook, so the author picks assertive vs polite where they know the urgency. |
 | Determinate spinner | `role="progressbar"` + `aria-valuenow` | The value reaches AT through ARIA even when the conic-gradient ring is stripped by forced colours. |
 | Loading regions | `aria-busy="true"` on the container | Skeletons are presentational; the container announces the state. |
 
-Toasts stay `polite` even at `variant: "danger"`. Interrupting a screen-reader
-mid-sentence for feedback the user did not request is its own accessibility
-harm; use `role="alert"` on a real alert when the message must interrupt.
+Severity picks the politeness. An error toast is feedback on an action the user
+just performed, and waiting for a pause can leave them acting on a failed
+operation, so `variant: "danger"` announces `assertive`; a confirmation or
+progress note is not worth interrupting a sentence for, so everything else stays
+`polite`. Do **not** put `role="alert"` on a toast — `alert.css` styles that role
+at the same specificity and imports later, so it would repaint the toast as a
+callout. Politeness lives on the region; the toast element stays role-less.
 
 ## Manual keyboard audit
 
@@ -78,9 +85,14 @@ Every interactive pattern in `kitchen-sink.html`, driven from the keyboard.
 | Dialog | `Enter` on invoker, `Tab`, `Esc` | ✅ See the focus-order table above. |
 | Tabs | `Tab` to the tablist, `←` `→` `↑` `↓` `Home` `End`, `Tab` into the panel | ✅ APG tablist: roving `tabindex` (one stop for the whole list), automatic activation, panel is `tabindex="0"` so its content is reachable. |
 | Accordion | `Tab`, `Enter`/`Space` | ✅ Native `<summary>`; inset focus ring so it stays inside the rounded box. |
-| Dropdown | `Enter` on trigger, `Tab`, `Esc` | ✅ Native popover: `Tab` moves into the popover from the invoker, `Esc` light-dismisses and returns focus to the trigger. **Not** an APG menu — see limitations. |
-| Tooltip | `Tab` to the trigger | ✅ on focusable triggers. ⚠️ see limitations. |
-| Toast | `Tab` to the ✕ | ✅ Reachable while shown; `aria-live` announces without stealing focus. |
+| Dropdown / action menu | `Enter` on trigger, `Tab`, `Esc` | ✅ Native popover: `Tab` moves into the popover from the invoker, `Esc` light-dismisses and returns focus to the trigger. Inert rows use `aria-disabled`, so they keep their tab stop and stay announced. **Not** an APG menu — see limitations. |
+| Button group / split button | `Tab`, `Enter`/`Space` | ✅ Plain tab order — every child is a real `<button>`, nothing roving, nothing trapped. The focused button is raised above its overlapping neighbour so the ring is never clipped. The chevron-only menu half renders with no text and **must** carry its own `aria-label`. |
+| Nav | `Tab`, `Enter` | ✅ Native links only. The current item is `aria-current="page"` and is marked by geometry (underline / inline-start edge) as well as colour. |
+| Data table | `Tab`, `Space` | ✅ Selection is a native checkbox per row, so it is keyboard-operable, submittable and announced as a real checked state. Each needs an author-supplied `aria-label` naming its row — documented, not enforceable in CSS. |
+| Select / combobox | `Tab`, arrows, type-ahead | ✅ Entirely native: `<select>`, `select[multiple]` and `input[list]` + `<datalist>` keep the browser's own combobox/listbox roles and keyboard model. |
+| Date & time fields | `Tab`, arrows, digits | ✅ Native segment editing and the platform picker; Hikarion restyles the picker button only. |
+| Tooltip | `Tab` to the trigger | ✅ on focusable triggers. The `popover="hint"` shape adds a real button trigger that toggles the bubble; `Esc` only where `popover="hint"` is implemented — see limitations. |
+| Toast | `Tab` to the ✕ | ✅ Reachable while shown, including over a modal `<dialog>`: the top layer does *not* escape inertness, so while a modal is open the region is parked inside that dialog (and handed back to `<body>` on close) — otherwise a toast over a modal would paint but be unfocusable and unclickable; `aria-live` announces without stealing focus. The timer pauses while the toast is hovered or holds focus, and the ✕ is 24px in both densities. |
 | Switch | `Tab`, `Space` | ✅ Native checkbox + `role="switch"`. Track is pinned at 24px in both densities (WCAG 2.2 §2.5.8) — Compact has no room to shrink it. |
 | Chips | `Tab`, `Enter`/`Space` | ✅ Filter chips are `<button aria-pressed>`; the remove ✕ is its own button with an `aria-label`. |
 | Dropzone | `Tab`, `Enter`/`Space` | ✅ The file input is a real focusable control stretched invisibly over the whole card, so the focus target and the click target are the card. |
@@ -94,12 +106,19 @@ Every interactive pattern in `kitchen-sink.html`, driven from the keyboard.
 
 Real, deliberate, and not fixed:
 
-- **CSS tooltips are supplementary, never labels.** `[data-tooltip]` renders
-  through `::after`; it is not reliably announced, it cannot be dismissed with
-  `Esc` (WCAG 1.4.13), and on a non-focusable element such as `<span data-badge
-  data-tooltip>` a keyboard user cannot reveal it at all. Give the trigger a
-  real accessible name and treat the tooltip as a hint. If you need a
-  conforming tooltip, promote it to `popover="hint"`.
+- **CSS tooltips cannot be Esc-dismissed.** `[data-tooltip]` renders through
+  `::after`, and CSS cannot observe a keypress — there is no selector for it. It
+  *is* persistent and hoverable (WCAG 2.2 1.4.13 — the bubble is hit-testable
+  while shown and a hide delay keeps it alive while the pointer crosses to it),
+  and it is revealed by `:focus-visible` on any focusable trigger, but on a
+  non-focusable element such as `<span data-badge data-tooltip>` a keyboard user
+  still cannot reveal it. Use `popover="hint"` with a `[popovertarget]` button
+  when the trigger must be keyboard-reachable: the button toggles the bubble, so
+  it is dismissible without moving focus. Esc and light-dismiss are the browser's
+  only where `popover="hint"` is implemented — no shipping Safari has it today,
+  and the invalid-value default is the **manual** state, not `auto` (see
+  docs/browser-support.md). Neither shape is reliably announced — give the
+  trigger a real accessible name.
 - **`[data-menu]` is a disclosure, not an APG menu.** It is a native popover
   containing ordinary buttons and links: `Tab` navigates it, not `↑`/`↓`, and
   there is no `role="menu"`. This is the honest description of what the markup
@@ -111,8 +130,21 @@ Real, deliberate, and not fixed:
 - **`aria-disabled` links stay activatable by keyboard.** `pointer-events: none`
   stops the mouse only. Use `<button aria-disabled>` for pagination ends, as the
   markup contract shows, not `<a aria-disabled href>`.
-- **Toasts sit below an open modal `<dialog>`.** The region is a high `z-index`
-  layer, not the top layer.
+- **A `<dialog>` opened after the toast region still covers it.** The region is
+  a `popover="manual"`, so it is in the top layer and clears a modal opened
+  before it — but top-layer order is insertion order, so a dialog opened later
+  wins. Fixing it means re-`showPopover()`ing on every toast, which would also
+  restack the region above any popover-based menu.
+- **`prefers-contrast: more` is gated at the token level only.** The contrast
+  check verifies the palette (see below), but neither `check:a11y` nor
+  `check:visual` sets the media feature, so the *rendered* high-contrast result
+  is unverified by CI. Playwright supports `contrast: "more"` as a context
+  option; a third axe pass is the cheap fix when someone wants it.
+- **Disabled states stay opacity-based** (`0.4`–`0.5` across button, range,
+  pagination, menu), and stay dim under `prefers-contrast: more`. WCAG 1.4.3
+  exempts disabled controls, so raising them would mean a cross-component
+  selector list in a base file for no conformance gain. A decision, not an
+  oversight.
 
 ## What actually degrades without JavaScript
 
@@ -122,8 +154,11 @@ Verified in Chromium with `javaScriptEnabled: false`, and again with only
 
 **Works unchanged** — all styling and theming; `<dialog>` open/close (native
 `command` invokers); `[data-menu]` open, light-dismiss and `Esc` (native
-popover); `<details>` disclosure; the dropzone's picker and keyboard access;
+popover); `popover="hint"` open and toggle-to-close; the split button; `<select>`, `select[multiple]` and the
+`input[list]` + `<datalist>` combobox; date/time fields and their platform
+picker; `<details>` disclosure; the dropzone's picker, preview slots and keyboard access;
 form validation (`:user-invalid`); tooltips; spinners; progress and meter;
+the `[data-scroll-progress]` reading bar (CSS scroll-driven, no script);
 switch, badge, chip,
 avatar, stepper, breadcrumbs, pagination, skeleton, empty state — every one of
 these is presentational or native.

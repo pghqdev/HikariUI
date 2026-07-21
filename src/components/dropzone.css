@@ -13,11 +13,24 @@
    (toggling `[data-dragover]` on the label) and writes the selected filename
    into a `[data-dropzone-filename]` slot if present.
 
+   Previews are a plain list placed straight *after* the label — not inside it,
+   because the invisible input covers the whole card and would swallow clicks on
+   anything under it. No hook: `[data-dropzone] + ul` is enough to identify it,
+   and each slot is an <li> holding an optional <img> and its filename.
+
+   Accessible feedback needs no CSS either: put `aria-live="polite"` on the
+   filename slot and the chosen file is announced. Deliberately not
+   `role="status"` — that hook already renders an alert box.
+
    Markup:
      <label data-dropzone>
-       <input type="file">
-       <span data-dropzone-filename>Drop files here or click to browse</span>
-     </label> */
+       <input type="file" multiple>
+       <span data-dropzone-filename aria-live="polite">Drop files here or click to browse</span>
+     </label>
+     <ul>
+       <li><img src="…" alt="">poster.png</li>
+       <li>notes.pdf</li>
+     </ul> */
 
 @layer hikarion {
   [data-dropzone] {
@@ -85,5 +98,39 @@
   [data-dropzone][data-chosen] [data-dropzone-filename] {
     color: var(--accent);
     font-weight: 550;
+  }
+
+  /* Preview slots — the list that follows the dropzone. Slots are sized by the
+     grid, so one row of thumbnails and a row of filename-only cards line up. */
+  [data-dropzone] + :is(ul, ol) {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(calc(6rem * var(--_density)), 1fr));
+    gap: var(--space-2);
+    margin-block-start: var(--space-2);
+    padding: 0;
+    list-style: none;
+  }
+
+  [data-dropzone] + :is(ul, ol) > li {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-1);
+    padding: var(--space-2);
+    font-size: var(--control-fz-sm);
+    line-height: 1.3;
+    color: var(--muted);
+    text-align: center;
+    overflow-wrap: anywhere;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-sm);
+  }
+
+  [data-dropzone] + :is(ul, ol) img {
+    inline-size: 100%;
+    aspect-ratio: 1;
+    object-fit: cover;
+    border-radius: var(--radius-xs);
   }
 }

@@ -1,4 +1,5 @@
 import { describe, expect, test } from "bun:test";
+import { readFileSync } from "node:fs";
 import {
   contrastRatio,
   parseThemeScopes,
@@ -67,5 +68,16 @@ describe("checkContrastPairs", () => {
     const scopes = parseThemeScopes([{ name: "tokens.css", css }]);
     expect(scopes.light.fg[0]).toBeCloseTo(0.24, 2);
     expect(scopes.light.bg[0]).toBeCloseTo(0.99, 2);
+  });
+});
+
+describe("prefers-contrast retune", () => {
+  // Layered, it loses to the unlayered theme docs/overrides.md tells authors to
+  // write — unlayered beats layered at any specificity. Guard the exception.
+  test("the token pass is unlayered", () => {
+    const css = readFileSync(new URL("../src/base/high-contrast.css", import.meta.url), "utf8");
+    const beforeLayer = css.slice(0, css.indexOf("@layer"));
+    expect(beforeLayer).toContain("--muted: var(--fg)");
+    expect(beforeLayer).toContain("--border: var(--fg)");
   });
 });

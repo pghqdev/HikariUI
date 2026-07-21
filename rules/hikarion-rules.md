@@ -55,6 +55,31 @@ Reserve the one solid primary for a view's single main action.
   <p>A quiet raised surface with a hairline. No classes.</p>
 </article>
 ```
+Every `<article>` is also a **query container**. Anything nested in a card adapts
+to the card's own width instead of the viewport, so the same markup is a media
+card in a wide column and a stacked card in a narrow one. There is no size
+variant and nothing to set — put the card in the layout you want and it reads it.
+
+A leading `<figure>` is the card's media slot: stacked and full width by default,
+floated into a leading column once the card is at least 26rem wide. Under 20rem,
+buttons in a `<footer>` take the full column instead of splitting into slivers.
+```html
+<article>
+  <figure><img src="cover.jpg" alt=""></figure>
+  <h3>Title</h3>
+  <p>Body copy.</p>
+  <footer data-form-row>
+    <button data-variant="solid">Open</button>
+    <button>Share</button>
+  </footer>
+</article>
+```
+The wide layout is the enhancement, not the baseline: a browser without container
+queries gets the stacked card, which is usable at any width. Density needs no
+thought — Compact shrinks the card's padding, so the content box is wider and the
+media column arrives a little sooner. Caveat: containment means a card used as an
+*auto-sized flex item* no longer contributes its content's width. Give such a card
+a width, or put it in a grid track.
 
 ### Nav
 Bare `<nav>` — links inside are muted, underline-free until hover.
@@ -63,35 +88,78 @@ Bare `<nav>` — links inside are muted, underline-free until hover.
   <a href="/">Home</a> · <a href="/docs">Docs</a> · <a href="/themes">Themes</a>
 </nav>
 ```
+`<nav data-nav>` is the primary link run: horizontal by default, a vertical
+rail with `data-nav="sidebar"`. Those are the only two values (`top` is the
+spelled-out default, for markup that would rather be explicit; it carries no
+styling of its own and does not undo a `sidebar` ancestor). Items may be direct `<a>` children or wrapped in a `<ul>`/`<ol>` —
+prefer the list, since assistive tech announces the item count. Mark the active
+destination with `aria-current="page"`; there is no Hikarion attribute for it.
+A `<button>` in the nav keeps normal button chrome, so a header CTA still looks
+like a CTA. For a labelled group inside a rail, nest a second `<nav>` with its
+own `aria-label` rather than reaching for a heading — a heading here jumps the
+document's heading order in almost every page that isn't already six deep.
+```html
+<nav data-nav aria-label="Primary">
+  <a href="/" aria-current="page">Overview</a>
+  <a href="/components">Components</a>
+</nav>
+
+<nav data-nav="sidebar" aria-label="Sections">
+  <ul>
+    <li><a href="/install" aria-current="page">Install</a></li>
+    <li><a href="/tokens">Tokens</a></li>
+  </ul>
+</nav>
+```
+The current item is marked with geometry as well as colour — a 2px underline on
+top, an inline-start edge in the rail. There is no collapse-to-drawer: a top nav
+wraps on a narrow viewport. Build an off-canvas menu from `<dialog>` + `command`
+if you need one.
+
+A `[data-nav]` run stacks itself into a column when the nearest query container —
+a card, today — is narrower than 22rem. That is context, not viewport: the same
+nav is a bar in a page header and a rail inside a narrow card. With no container
+ancestor, or in a browser without container queries, it stays the wrapping
+horizontal bar.
 
 ### Breadcrumbs
-A trail to the current page — `<nav data-breadcrumbs>` of a list. The last
-item is the current page (`aria-current="page"`, muted, not a link).
+A trail to the current page — `<nav data-breadcrumbs>` wrapping an `<ol>`.
+Ancestors are muted links; the last item carries `aria-current="page"` and is
+the trail's one emphasis (full `--fg`, label weight, no underline, no pointer).
 ```html
-<nav data-breadcrumbs>
+<nav data-breadcrumbs aria-label="Breadcrumb">
   <ol>
     <li><a href="/">Home</a></li>
     <li><a href="/docs">Docs</a></li>
-    <li><a href="/docs/tokens" aria-current="page">Tokens</a></li>
+    <li><span aria-current="page">Tokens</span></li>
   </ol>
 </nav>
 ```
-Items separated by the shared chevron, rotated to point inline.
+The current item may stay an `<a href>` if it must remain linkable — the styling
+is keyed off `aria-current`, not off the tag. Items are separated by the shared
+chevron, rotated to point inline and mirrored under `:dir(rtl)`.
 
 ### Pagination
-Page navigation — `<nav data-pagination>` of buttons/links. The active page
-carries `aria-current="page"` (accent ring); first/last use `aria-disabled`.
+Page navigation — `<nav data-pagination>` of links and buttons. Three states,
+three channels: the current page carries `aria-current="page"` (accent ring,
+never a fill); the ends of the range carry `aria-disabled="true"` (dim,
+pointer-inert); an elided range is a bare `<span aria-hidden="true">…</span>`
+that keeps the slot but takes no pill, no hover and no pointer.
 ```html
-<nav data-pagination>
+<nav data-pagination aria-label="Pagination">
   <button aria-disabled="true">Prev</button>
   <a href="?p=1">1</a>
   <a href="?p=2" aria-current="page">2</a>
-  <a href="?p=3">3</a>
+  <span aria-hidden="true">…</span>
+  <a href="?p=9">9</a>
   <button>Next</button>
 </nav>
 ```
-Disabled pages use `aria-disabled="true"` (not the native `disabled`) so they
-stay in the tab order and the a11y tree.
+Use `aria-disabled="true"`, not the native `disabled`, so the ends stay in the
+tab order and the a11y tree — that is a presentational inertness only, so a
+disabled `<button>` must still no-op its own handler. The first and last items
+size to their text label; every other item is a square pill, above the WCAG 2.2
+§2.5.8 target-size floor in both densities.
 
 ### Definition list
 Bare `<dl>` — terms are muted, small-capped; definitions indent under their term.
@@ -161,6 +229,18 @@ Hikarion.toast("Changes saved");
 Hikarion.toast("Couldn't reach the server", { variant: "danger" });
 Hikarion.toast("Undo available", { duration: 8000, closable: true });
 ```
+Returns a `dismiss()` that closes the toast early. Toasts stack bottom-end,
+newest last; the stack is capped at the viewport and clips its oldest members.
+The region is a `popover="manual"`, so toasts render in the top layer and stay
+visible over an open modal `<dialog>` — but top-layer order is insertion order,
+so a dialog opened *after* the region still covers it.
+
+The auto-dismiss timer pauses while a toast is hovered or holds focus, and
+restarts when the pointer or focus leaves (WCAG 2.2.1). `duration: 0` keeps the
+toast until it is dismissed. `variant: "danger"` sets the region to
+`aria-live="assertive"`; every other tone is `polite`. Do not put `role="alert"`
+on a toast — the alert component styles that role and would repaint it as a
+callout.
 
 ### Tabs
 Minimal markup; `hikarion.js` wires ARIA roles, roving arrow-key nav, and panel
@@ -212,12 +292,97 @@ light-dismiss, and focus.
 A `[popovertarget]` button placed immediately before its `[data-menu]` gets a
 chevron that flips on open.
 
+Rows inside a `[data-menu]` are plain `<button>`/`<a>`. Three states are free,
+all reusing vocabulary you already know:
+```html
+<div id="file-menu" popover data-menu>
+  <button>Rename <kbd>⌘R</kbd></button>
+  <button aria-disabled="true">Move to…</button>
+  <hr>
+  <button data-variant="danger">Delete</button>
+</div>
+```
+- `data-variant="danger"` (or any tone) inks the row and tints its hover. Do
+  **not** add `solid` inside a menu — a filled row is a button, not a menu item.
+- `aria-disabled="true"` dims the row and blocks pointer input while keeping it
+  focusable and in the accessibility tree. Do not use the native `disabled`.
+- A trailing `<kbd>` is pushed to the end of the row as a shortcut hint. It is
+  decoration: bind the real shortcut yourself.
+
+This is a **disclosure**, not an APG menu — `Tab` moves between rows, not
+`↑`/`↓`, and there is no `role="menu"`.
+
+Placement is CSS anchor positioning against the popover's implicit anchor (its
+invoker), so there is no `anchor-name` wiring per instance. Two fallbacks, both
+usable: without anchor positioning the panel takes the browser's own centred
+popover placement — detached from the trigger, but rows, `Esc`, light-dismiss
+and focus return all keep working, and no JavaScript positions anything. Where
+the Popover API is missing entirely, the panel drops into flow as an inline
+panel under its trigger.
+
+### Button group / split button
+`[data-button-group]` fuses adjacent `<button>`s into one control — squared
+seams, rounded outer corners, one hairline where two borders meet. Children must
+be `<button>`; links are not styled as group members. The group is a single row
+and does not wrap: more actions than fit means more groups, not a taller group.
+The hook carries appearance only — add `role="group"` and an `aria-label`
+yourself, and keep each button's own label. A toggle group marks state with
+`aria-pressed`.
+
+A split button is the same group with a `[popovertarget]` half. Everything
+menu-shaped — the chevron, the panel, open/close, light-dismiss, focus return —
+comes from `[data-menu]` and the native Popover API. The panel must be the
+toggle button's immediate next sibling (that adjacency is what draws the
+chevron), so it lives inside the group; being a top-layer popover it takes no
+part in the row's layout.
+```html
+<div data-button-group role="group" aria-label="Text style">
+  <button aria-pressed="true">Bold</button>
+  <button>Italic</button>
+</div>
+
+<div data-button-group role="group" aria-label="Save">
+  <button data-variant="accent solid">Save</button>
+  <button data-variant="accent solid" popovertarget="save-more"
+          aria-label="More save options"></button>
+  <div popover id="save-more" data-menu>
+    <button>Save as…</button>
+  </div>
+</div>
+```
+The menu half renders as a bare chevron, so its `aria-label` is mandatory.
+
 ### Tooltip
-CSS-only supplementary hint. **Not** an accessible name — the element still
-needs real visible text or `aria-label`.
+Two shapes. `[data-tooltip]` is the CSS hint: the attribute text appears on
+hover or keyboard focus. It shows after `--hk-tooltip-delay` (0.4s) and hides
+after `--hk-tooltip-delay-out` (`--dur-slow`); both are read with fallbacks and
+never declared, so set either on any ancestor or on one trigger. The hide delay
+is load-bearing — it keeps the bubble alive while the pointer crosses the gap
+onto it, which is what makes it *hoverable* under WCAG 2.2 1.4.13. It is **not**
+Esc-dismissible, and it cannot be revealed from the keyboard on a non-focusable
+element such as a `<span>`.
 ```html
 <button data-tooltip="Copied to clipboard" aria-label="Copy">Copy</button>
 ```
+When the trigger must be keyboard-reachable, use a native hint popover instead.
+The trigger is a real button that toggles the bubble, so it is dismissible
+without moving focus. No JS. Esc, light-dismiss and focus return are the
+browser's only where `popover="hint"` is implemented — no shipping Safari has it
+today, and the invalid-value default is the **manual** state (see
+docs/browser-support.md).
+```html
+<button popovertarget="tip-webhook" aria-label="What is a webhook?">?</button>
+<span popover="hint" id="tip-webhook">A URL we POST to when the event fires</span>
+```
+The hint sits above its trigger through anchor positioning; without it the
+browser's centred popover placement takes over — detached, but readable and
+still toggled by its trigger. `[data-tooltip]` uses plain absolute positioning and is
+unaffected: a pseudo-element is not in the top layer, so anchor positioning
+would not fix the clipping it is actually prone to. Near a scroll-container or
+viewport edge, use the popover shape.
+Neither shape is reliably announced on its own — always give the trigger a real
+accessible name (visible text or `aria-label`) and treat the tooltip as
+supplementary, **never** as the accessible name.
 
 ### Forms
 Bare fields. Wire `<label for>` to the field's `id`.
@@ -247,8 +412,52 @@ Native gauge and computed-value elements are styled too:
 `<progress>` fill (a bar fill is always the flat tone, so the `solid` word is
 accepted and ignored). `<meter>` regions tint via the status tones
 (optimum→success, low/high→warning, suboptimum→danger). `<output>` reads as a
-small monospaced value. Track height follows density. All ride the same focus
-and reduced-motion rules as the other fields.
+small monospaced value. All ride the same focus and reduced-motion rules as the
+other fields.
+
+A `<meter>` at 0 reads as empty: the empty track is the same hairline as
+`<progress>`, and `low`/`high`/`optimum` carry all the colour. Density thins the
+meter bar and the range groove only — the slider row and its thumb are pinned,
+so the drag target clears the WCAG 2.2 §2.5.8 24px floor in Compact exactly as
+it does in Crisp. Do not set a `height` on a range: it is the hit target.
+
+**Select and searchable input.** No hook. A `<select>` is already the styled
+field. `<optgroup>` renders as an eyebrow heading. Adding `multiple` (or `size`
+greater than 1) turns it into a list box: the chevron and its gutter are
+dropped, the rows carry the padding, and the checked row fills in the accent.
+The **searchable** case is `<input list>` + `<datalist>` — a native combobox.
+Typed filtering, popup, keyboard model and screen-reader semantics all belong to
+the browser, so it works with JavaScript off; the field gets the same chevron as
+a closed select so the suggestions are discoverable. Do not build a scripted
+listbox.
+```html
+<select>
+  <optgroup label="Core"><option>Vanilla</option></optgroup>
+</select>
+
+<select multiple size="4">
+  <option selected>Production</option>
+  <option>Staging</option>
+</select>
+
+<input list="cities" id="city">
+<datalist id="cities"><option value="Kyoto"></option></datalist>
+```
+List-box rows keep the browser's own height — `size="4"` reserves space for four
+unstyled rows, so padding them would clip the last one. Density reaches the rows
+through their inline inset only. Safari paints the list box itself and ignores
+`<option>` padding entirely; if per-row control matters, use checkboxes in a
+`<fieldset>`.
+
+**Date and time.** `input[type="date"]`, `time`, `datetime-local`, `month` and
+`week` take the standard field chrome; the browser's picker button is repainted
+as the same chevron `<select>` uses, so it stays visible in every theme.
+Hikarion ships no calendar widget — the platform picker is the picker, and
+keyboard handling over the segments is the browser's.
+```html
+<label for="when">Start date</label>
+<input id="when" type="date" value="2026-07-20">
+```
 
 ### Form layout
 Vertical rhythm is hook-free. A `<p>` is the field group — label, control and an
@@ -303,6 +512,53 @@ tree, and the dropzone becomes mouse-only. Hikarion stretches the input over the
 card and makes it invisible instead, so it stays focusable. Usable without JS:
 click and keyboard both go to the native input; the JS is purely the drag-over
 highlight and filename display.
+
+**Preview slots.** Put a plain `<ul>` (or `<ol>`) immediately after the label
+and each `<li>` becomes a preview slot: an optional square thumbnail plus its
+filename. The list must be a *sibling*, never a child — the file input is
+stretched invisibly over the whole card and would swallow clicks on anything
+inside it.
+```html
+<label data-dropzone>
+  <input type="file" multiple>
+  <span data-dropzone-filename aria-live="polite">Drop files here or click to browse</span>
+</label>
+<ul>
+  <li><img src="thumb.jpg" alt="">poster.png</li>
+  <li>notes.pdf</li>
+</ul>
+```
+Use `aria-live="polite"` on the filename slot so the selection is announced. Do
+not use `role="status"` for this — that hook renders an alert box. Thumbnails
+need `alt=""`: the filename beside them is the accessible name, so alt text
+would double it. Slots are authored markup, so previews of already-uploaded
+files render server-side with no JS.
+
+### Data table
+`[data-table]` wraps a plain `<table>` in a scroll frame. The table itself needs
+no attributes — a bare `<table>` is already styled. The wrapper adds two things
+a layout table does not want: a scroll viewport and a header that stays put
+inside it. Constrain the frame's height (inline `max-block-size`, or your own
+layout CSS) to make the header stick; unconstrained it is a horizontal scroller
+only.
+
+Selection is a real checkbox in the row. Do **not** put `aria-selected` on a
+`<tr>` in an ordinary table: it is only valid under grid/treegrid semantics.
+```html
+<div data-table style="max-block-size: 18rem">
+  <table>
+    <thead>
+      <tr><th>Select</th><th>Name</th><th>Commits</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><input type="checkbox" aria-label="Select Ada Lovelace"></td>
+          <td>Ada Lovelace</td><td>1 842</td></tr>
+    </tbody>
+  </table>
+</div>
+```
+Give every selection checkbox an `aria-label` naming its row — the column header
+alone does not identify it.
 
 ### Switch
 A binary on/off toggle — distinct from a checkbox. `<input type="checkbox"
@@ -434,8 +690,8 @@ it leaves the switch at its WCAG 2.2 target-size floor.
 
 ## Design foundations
 
-No markup contract here — these are bare tags and framework-internal tokens.
-Nothing in this section adds an attribute to learn.
+Mostly bare tags and framework-internal tokens. The one attribute here is
+`[data-scroll-progress]`, and it is optional.
 
 ### Type
 
@@ -478,6 +734,74 @@ remain as aliases for rungs 1, 2 and 4.
 `--dur-slow` (0.24s) for travel far enough that instant would read as a
 teleport. All motion is neutralised globally under `prefers-reduced-motion`.
 
+### Scroll progress
+
+`[data-scroll-progress]` is an empty, presentational element that paints a 3px
+reading-progress bar pinned to the top of the viewport, filled by the document's
+scroll position. One per document, as an early child of `<body>`, with
+`aria-hidden="true"` — it has no accessible meaning and no pointer events. It has
+no content, no size API and no variants; the only thing you can change is
+`--accent`, which colours it.
+```html
+<div data-scroll-progress aria-hidden="true"></div>
+```
+Density-invariant by design: 3px is already the thinnest honest hairline. The bar
+is entirely **absent** under `prefers-reduced-motion: reduce` and in browsers
+without `animation-timeline: scroll()` — it collapses to nothing rather than
+showing a stuck or full bar. Forced colours repaint it as `Highlight`. Do not
+place it inside an ancestor with `transform`, `filter` or `contain: paint`; that
+would trap the fixed positioning.
+
+### View transitions
+
+Theme and density changes cross-fade through the View Transitions API where the
+browser has it. Enhancement only: `Hikarion.setTheme()` and a plain
+`root.dataset.density = "compact"` both work with the API absent, and no style
+depends on it. Core retunes only the timing of the root cross-fade — `--dur-slow`
+on `--ease-hikarion` — and nulls it under `prefers-reduced-motion`.
+
+`Hikarion.setTheme()` already wraps its own apply. For density, wrap it yourself
+or don't — both are correct:
+```html
+<button onclick="setDensity('compact')">Compact</button>
+<script>
+  function setDensity(value) {
+    const apply = () => (document.documentElement.dataset.density = value);
+    if (document.startViewTransition) document.startViewTransition(apply);
+    else apply();
+  }
+</script>
+```
+Core names no `view-transition-name`. Naming an element opts it out of the root
+snapshot into its own morph — a page composition decision. Set it on your own
+selectors when you want one.
+
+### High contrast & forced colours
+
+Both are automatic. There is no hook and no opt-in.
+
+Under `prefers-contrast: more` Hikarion retunes two Tier-1 tokens for you:
+`--muted` collapses into `--fg` (secondary text stops carrying hierarchy in hue
+alone) and `--border` becomes a full-strength line, so surfaces, cards and
+fields keep their edges. `--line` derives from `--border`, so inner rules stay
+lighter than outer edges. Soft tone edges go solid, the tint background holds,
+and both focus indicators thicken. `--accent` is deliberately unchanged: it is
+the decisive colour and it is already gated at 4.5:1 on `--bg` and `--surface`.
+
+If you author a theme, you get this for free — the contrast pass is written in
+terms of your `--fg`, and it ships unlayered (the one block in Hikarion that
+does) so it still applies over your own unlayered theme, at a specificity above
+your `[data-theme="…"]` scope. If
+you want a permanently high-contrast look regardless of the OS setting, ship it
+as a theme; that is what themes are for.
+
+Under `forced-colors: active` every author colour is replaced by the user's
+palette, which flattens the accent-carried states. Hikarion restates each one in
+system colours. Your own markup only has to hold up one end of this: never
+signal state with colour alone. Every selected/current/on state in the contracts
+above also carries an ARIA attribute or `:checked`, which is exactly what these
+rules key off.
+
 ## Tier-1 tokens
 
 These ~20 tokens **are** a theme. Set them on `:root` or a `[data-theme]`
@@ -507,6 +831,24 @@ write unlayered; it always wins over Hikarion with no `!important`. The rule
 against freestyling is about **restyling Hikarion's components** with utility
 classes, not about you owning your page's layout.
 
+Everything Hikarion ships is inside `@layer hikarion`, and unlayered CSS beats
+layered CSS regardless of specificity or source order. So a one-word selector is
+enough, and `!important` is never needed:
+
+```css
+button { border-radius: 0; }              /* wins over @layer hikarion */
+.report article { box-shadow: var(--elevation-0); }
+```
+
+Read Hikarion's tokens in your own rules (`var(--space-4)`, `var(--elevation-3)`)
+instead of magic numbers, and your CSS follows the theme and the density too.
+If your own CSS uses layers, put `@layer hikarion, app;` at the top of your entry
+stylesheet so the order can't depend on load order.
+
+Escalate in this order and stop at the first rung that works: change a Tier-1
+token → ship a theme → write a plain unlayered rule → stop using the hook and own
+the element outright.
+
 ## Install
 
 ```html
@@ -517,3 +859,12 @@ classes, not about you owning your page's layout.
 chip toggle, copy buttons). Every helper is documented as paste-it-yourself
 vanilla, so the JS stays optional. Call `Hikarion.init(root)` after injecting
 markup to wire it — it's idempotent.
+
+Targets evergreen browsers: the floor is Chrome 111 / Safari 16.2 / Firefox 113
+(`@layer`, OKLCH, `color-mix()`). Newer features — container queries, anchor
+positioning, View Transitions, invoker commands, scroll-driven animations — are
+enhancements with designed fallbacks, never polyfills, and every fallback leaves
+the markup readable and operable. Details:
+[browser support](https://github.com/pghqdev/HikarionUI/blob/main/docs/browser-support.md),
+[tokens](https://github.com/pghqdev/HikarionUI/blob/main/docs/tokens.md),
+[accessibility](https://github.com/pghqdev/HikarionUI/blob/main/docs/accessibility.md).

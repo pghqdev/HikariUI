@@ -1,26 +1,49 @@
-/* Tooltip — CSS-only [data-tooltip]. The attribute text shows on hover/focus as
-   an inverted, monochrome bubble. No JS. prefers-reduced-motion is the global
-   killswitch.
+/* Tooltip — two shapes, one skin.
 
-   a11y: a CSS tooltip is decorative — it is not announced to assistive tech on
-   its own. Give the trigger a real accessible name (visible text or aria-label);
-   use [data-tooltip] for a supplementary hint, not the only label.
+   `[data-tooltip]` is the CSS hint: the attribute text on hover/focus through
+   ::after. It satisfies two of WCAG 2.2 1.4.13's three clauses — *persistent*
+   (nothing times out) and *hoverable* (the bubble is hit-testable while shown,
+   and a hide delay keeps it alive while the pointer crosses the gap to it). It
+   cannot satisfy *dismissible*: CSS cannot observe Esc, so there is no
+   selector to write. That clause is why the second shape exists.
 
-   ponytail: bubble is top-anchored and centred, no viewport edge-flip — a
-   pseudo-element can't be a popover/anchor target. If a tooltip near a screen
-   edge clips, promote it to a [popover="hint"] with anchor positioning. */
+   `[popover="hint"]` is the reachable one: a real element opened by a
+   [popovertarget] button, so the trigger is a button a keyboard user can reach,
+   where `<span data-badge data-tooltip>` was unreachable. Where `hint` is
+   supported the browser also owns Esc, light-dismiss and focus return, and it
+   doesn't close open `auto` popovers. Where it is not (see
+   docs/browser-support.md — no Safari today), `popover`'s invalid-value default
+   is the **manual** state: no Esc, no light-dismiss. It still toggles from its
+   invoker, so it is dismissible without moving focus, but only from the
+   trigger.
+
+   Delay: `--hk-tooltip-delay` (show, 0.4s) and `--hk-tooltip-delay-out` (hide,
+   --dur-slow) are read with fallbacks and never declared, so they inherit —
+   set either on any ancestor or on one trigger. The out delay is not
+   decoration: it holds `pointer-events` as well as opacity — hence the
+   allow-discrete transition, without which the bubble stops being pointable
+   the instant the pointer leaves the trigger for the 0.5rem gap, and fades out
+   under the cursor. Shrink it to 0 and *hoverable* breaks again.
+
+   a11y: neither shape is announced on its own. Give the trigger a real
+   accessible name; a tooltip is supplementary.
+
+   ponytail: the hint popover gets no enter/exit pop — motion.css's recipe is
+   scoped to :is(dialog, [data-menu]) and a tooltip is too small to read as
+   sluggish without it. Extend that selector list if it ever wants one.
+   ponytail: the ::after bubble stays plain absolute positioning. Anchor
+   positioning would buy it position-try-fallbacks, but a pseudo-element is not
+   in the top layer, so it would still clip inside a scroll container — the
+   clause that actually hurts. Use the popover shape near an edge.
+   ponytail: a click on the ::after bubble hits its originating element, so
+   clicking a tooltip clicks its trigger. Use the popover shape if the bubble
+   needs its own interactive content. */
 
 @layer hikarion {
-  [data-tooltip] {
-    position: relative;
-  }
-  [data-tooltip]::after {
-    content: attr(data-tooltip);
-    position: absolute;
-    inset-block-end: calc(100% + 0.5rem);
-    inset-inline-start: 50%;
-    translate: -50% 0;
-    z-index: 50;
+  /* The shared bubble skin. Inverted surface — near-fg fill, so it flips with
+     the theme and stays off the accent. */
+  [data-tooltip]::after,
+  [popover="hint"] {
     inline-size: max-content;
     max-inline-size: 16rem;
     padding: calc(0.35rem * var(--_density)) calc(0.6rem * var(--_density));
@@ -28,21 +51,70 @@
     font-weight: 500;
     line-height: 1.3;
     color: var(--bg);
-    /* Inverted surface — near-fg fill, so it flips with the theme and stays off
-       the accent. */
     background: color-mix(in oklch, var(--fg) 92%, var(--bg));
+    border: none;
     border-radius: var(--radius-xs);
     box-shadow: var(--shadow);
+  }
+
+  [data-tooltip] {
+    position: relative;
+  }
+  /* Base = the hidden/exit state, so the delay here is the hide grace period. */
+  [data-tooltip]::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    inset-block-end: calc(100% + 0.5rem);
+    inset-inline-start: 50%;
+    translate: -50% 0;
+    z-index: 50;
     pointer-events: none;
     opacity: 0;
     scale: 0.96;
     transform-origin: bottom center;
     transition: opacity var(--dur) var(--ease-hikarion),
-                scale var(--dur) var(--ease-hikarion);
+                scale var(--dur) var(--ease-hikarion),
+                pointer-events var(--dur) allow-discrete;
+    transition-delay: var(--hk-tooltip-delay-out, var(--dur-slow));
   }
   [data-tooltip]:hover::after,
   [data-tooltip]:focus-visible::after {
+    /* Hit-testable while shown: hovering generated content hovers its
+       originating element, so the tooltip survives being pointed at. */
+    pointer-events: auto;
     opacity: 1;
     scale: 1;
+    transition-delay: var(--hk-tooltip-delay, 0.4s);
+  }
+
+  /* Top-layer hint. Fixed so the implicit anchor (its invoker) drives
+     position-area, exactly as [data-menu] does. */
+  [popover="hint"] {
+    position: fixed;
+  }
+
+  /* Same gate as [data-menu]: `position-area` degrades silently, `margin: 0`
+     does not — it would cancel the UA sheet's `inset: 0; margin: auto` and
+     strand the bubble in the viewport corner. Gated, the fallback is the
+     browser's centred placement: detached from its trigger, but readable and
+     still toggled by it. */
+  @supports (anchor-name: --x) {
+    [popover="hint"] {
+      margin: 0;
+      position-area: block-start;
+      margin-block-end: 0.4rem;
+      position-try-fallbacks: flip-block;
+    }
+  }
+
+  /* Same fallback as [data-menu]: with no Popover API, `popover` is an unknown
+     attribute, nothing hides the element, and `position: fixed` would strand a
+     permanently visible bubble over the page. Back into flow as an inline note
+     beside its trigger — supplementary text, which is all a tooltip ever was. */
+  @supports not selector(:popover-open) {
+    [popover="hint"] {
+      position: static;
+      display: inline-block;
+    }
   }
 }

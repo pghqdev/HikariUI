@@ -1,0 +1,131 @@
+/* Navigation — `<nav data-nav>`, the site's primary link run. Bare (or spelled
+   `data-nav="top"`) it is a horizontal bar; `data-nav="sidebar"` stacks it into
+   a column. Those are the only two values, mirroring `data-density`: the
+   default is spelled out for markup that would rather say it. `top` carries no
+   rule of its own — the sidebar rules are descendant selectors, so a nested
+   `top` run inside a rail does not opt back to a row, and the un-nesting reset
+   that would buy it is bytes for a case nobody has asked for.
+
+   Direct `<a>` children and a wrapping `<ul>`/`<ol>` both work — the list is
+   the a11y-preferred markup (item count is announced), the bare run is the
+   lazy one. Items are links; a real `<button>` in a nav keeps its button
+   chrome on purpose, because a CTA in a header should look like one.
+
+   The current item is `aria-current="page"` — a native hook, no data-* for it.
+   It is never colour alone and never needs a forced-colours restatement: top
+   marks it with a 2px underline, sidebar with an inline-start edge, and in
+   both cases no sibling reserves that geometry, so a forced palette paints the
+   marker on the current item and nothing on the rest.
+
+   No group-label rule. An <h6> eyebrow inside a rail was the obvious styling,
+   and it is wrong: a nav group label is not a document section heading, and
+   using one jumps the page's heading order (axe `heading-order`) in every page
+   that is not already five levels deep. A labelled group is a nested <nav>
+   with its own aria-label, which needs no CSS from us.
+
+   A top run stacks itself when the column it is in is too narrow to hold it —
+   read from the nearest query container (an <article> is one; see
+   components/card.css), never from the viewport, so a nav in a card sidebar
+   behaves like a rail while the same markup in the page header stays a bar.
+   No hook, no breakpoint attribute: the context already carries the fact. The
+   horizontal run is the default, so a browser without container queries — or a
+   nav with no container ancestor — keeps today's wrapping bar, which is usable
+   at any width. That is the fallback, so there is no @supports block.
+
+   ponytail: no drawer/sheet and no collapse-to-hamburger. A top nav simply
+   wraps on a narrow viewport, which is what native does. If a real off-canvas
+   drawer is wanted, it is a `<dialog>` + `command`, post-1.0.
+
+   Markup:
+     <nav data-nav aria-label="Primary">
+       <a href="/" aria-current="page">Overview</a>
+       <a href="/docs">Docs</a>
+     </nav>
+
+     <nav data-nav="sidebar" aria-label="Sections">
+       <h6>Getting started</h6>
+       <ul>
+         <li><a href="/install" aria-current="page">Install</a></li>
+         <li><a href="/tokens">Tokens</a></li>
+       </ul>
+     </nav> */
+
+@layer hikarion {
+  [data-nav],
+  [data-nav] :where(ul, ol) {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2);
+  }
+  [data-nav] :where(ul, ol) {
+    list-style: none;
+    padding-inline-start: 0;
+    margin: 0;
+  }
+
+  /* Items — quiet pills. `nav a` in base/elements.css already supplies the
+     muted colour, the hover-to-fg and the transition; this only boxes them and
+     kills the hover underline the pill doesn't want — except on the current
+     item, whose 2px underline is the non-colour marker and would otherwise
+     lose the cascade to this reset. */
+  [data-nav] a {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-3) var(--space-4);
+    border-radius: var(--radius-sm);
+    font-size: var(--control-fz);
+    font-weight: 500;
+    text-decoration: none;
+    transition: color var(--dur) var(--ease-hikarion),
+                background var(--dur) var(--ease-hikarion);
+  }
+  [data-nav] a:hover {
+    background: var(--hover);
+  }
+  [data-nav] a:not([aria-current]):hover {
+    text-decoration-thickness: 0;
+  }
+
+  /* Current page — accent, heavier, and underlined. The underline is the
+     non-colour signal, and it costs no reserved space, so nothing has to be
+     blanked out under forced colours. */
+  [data-nav] [aria-current="page"] {
+    color: var(--accent);
+    font-weight: 600;
+    text-decoration: underline;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 0.35em;
+  }
+
+  /* Sidebar — the same run turned on its side and stretched to the rail. */
+  [data-nav="sidebar"],
+  [data-nav="sidebar"] :where(ul, ol) {
+    flex-direction: column;
+    flex-wrap: nowrap;
+    align-items: stretch;
+    gap: var(--space-1);
+  }
+
+  /* Current page in a rail reads as a filled row with a leading edge, not an
+     underline. The 2px edge is taken back out of the padding so the label
+     stays on the same optical line as its siblings. */
+  [data-nav="sidebar"] [aria-current="page"] {
+    background: color-mix(in oklch, var(--accent) 10%, transparent);
+    border-inline-start: 2px solid var(--accent);
+    padding-inline-start: calc(var(--space-4) - 2px);
+    text-decoration: none;
+  }
+
+  /* Too narrow for a bar. Ties the base rule's specificity and wins on source
+     order; the sidebar rail is already a column, so it is left in the selector
+     rather than excluded — the declarations are the ones it already has. */
+  @container (inline-size < 22rem) {
+    [data-nav],
+    [data-nav] :where(ul, ol) {
+      flex-direction: column;
+      align-items: stretch;
+    }
+  }
+}

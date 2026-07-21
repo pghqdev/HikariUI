@@ -29,7 +29,7 @@ jobs:
         # project Pages means BASE_PATH=/HikarionUI/ and SITE_URL to match.
         env:
           BASE_PATH: /
-          SITE_URL: https://hikarion.dev
+          SITE_URL: https://www.hikarion.dev
         run: bun install && bun run sync-assets.mjs && bun run build
       - uses: actions/upload-pages-artifact@v3
         with:

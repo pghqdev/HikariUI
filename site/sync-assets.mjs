@@ -26,7 +26,8 @@ cpSync(from("dist/hikarion-rules.md"), to("hikarion-rules.md"));
 cpSync(from("skills.sh"), to("skills.sh"));
 // GitHub Pages reads the custom domain from a CNAME file in the artifact.
 // Generated rather than committed because public/ is entirely generated.
-writeFileSync(to("CNAME"), "hikarion.dev\n");
+// www, not the apex: the apex 301s to www, so www is the host that serves.
+writeFileSync(to("CNAME"), "www.hikarion.dev\n");
 
 // Live demos are served as standalone documents inside an iframe, so they keep
 // their own <head> and the site chrome stays out of the way.

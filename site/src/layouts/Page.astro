@@ -1,5 +1,6 @@
 ---
 import { TABS } from "../nav.mjs";
+import { ASSET_V } from "../assets.mjs";
 
 const { title, description, wide = false } = Astro.props;
 const BASE = import.meta.env.BASE_URL; // ends with "/"
@@ -36,11 +37,11 @@ const full = `${title} — Hikarion UI`;
     <script is:inline>
       try { var t = localStorage.getItem("hikarion-theme"); if (t) document.documentElement.dataset.theme = t; } catch (e) {}
     </script>
-    <link rel="stylesheet" href={`${BASE}hikarion.min.css`} />
-    <link rel="stylesheet" href={`${BASE}themes/nord.css`} />
-    <link rel="stylesheet" href={`${BASE}themes/dracula.css`} />
-    <link rel="stylesheet" href={`${BASE}themes/catppuccin.css`} />
-    <script src={`${BASE}hikarion.js`} defer></script>
+    <link rel="stylesheet" href={`${BASE}hikarion.min.css?v=${ASSET_V}`} />
+    <link rel="stylesheet" href={`${BASE}themes/nord.css?v=${ASSET_V}`} />
+    <link rel="stylesheet" href={`${BASE}themes/dracula.css?v=${ASSET_V}`} />
+    <link rel="stylesheet" href={`${BASE}themes/catppuccin.css?v=${ASSET_V}`} />
+    <script src={`${BASE}hikarion.js?v=${ASSET_V}`} defer></script>
 
     <style is:global>
       body { max-width: 72rem; margin-inline: auto; }

@@ -8,3 +8,4 @@ site/public/
 site/src/pages/docs/
 site/src/pages/components.md
 tests/visual/*.actual.png
+site/src/assets.mjs

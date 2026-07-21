@@ -24,6 +24,7 @@ cpSync(from("dist/themes"), to("themes"), { recursive: true });
 cpSync(from("dist/llms.txt"), to("llms.txt"));
 cpSync(from("dist/hikarion-rules.md"), to("hikarion-rules.md"));
 cpSync(from("skills.sh"), to("skills.sh"));
+cpSync(from("site/og.png"), to("og.png"));
 // GitHub Pages reads the custom domain from a CNAME file in the artifact.
 // Generated rather than committed because public/ is entirely generated.
 // www, not the apex: the apex 301s to www, so www is the host that serves.

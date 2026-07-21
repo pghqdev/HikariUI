@@ -1,7 +1,11 @@
-// Social / AEO card → site/public/og.png. Built, not drawn: the card is a Hikarion
+// Social / AEO card → site/og.png. Built, not drawn: the card is a Hikarion
 // page rendered with the built stylesheet, so it re-lights with the framework
 // instead of drifting into a stale export from a design tool.
-// Run after build: bun run build:og  (the site's prebuild does it)
+// Run by hand after a brand change: bun run build:og
+//
+// Committed, not generated at deploy time: the card changes when the wordmark
+// or the headline does, which is roughly never, and making every site deploy
+// download a browser to redraw the same PNG is not a trade worth making.
 import { existsSync, writeFileSync, unlinkSync } from "node:fs";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -63,8 +67,8 @@ const browser = await chromium.launch({ headless: true });
 try {
   const page = await browser.newPage({ viewport: { width: W, height: H }, deviceScaleFactor: 1 });
   await page.goto(`${server.origin}/.og-card.html`, { waitUntil: "networkidle" });
-  await page.screenshot({ path: join(root, "site/public/og.png") });
-  console.log(`✓ og.png ${W}×${H} → site/public/`);
+  await page.screenshot({ path: join(root, "site/og.png") });
+  console.log(`✓ og.png ${W}×${H} → site/  (commit it)`);
 } finally {
   await browser.close();
   server.close();

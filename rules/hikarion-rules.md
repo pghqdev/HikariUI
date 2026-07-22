@@ -684,14 +684,15 @@ composes inside whatever already frames it; wrap it in `<article>` for the card
 frame.
 ```html
 <div data-empty>
-  <span aria-hidden="true">📭</span>
+  <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 13h5l2 3h4l2-3h5M5 6h14l2 7v5H3v-5z"/></svg>
   <h3>No projects yet</h3>
   <p>Create your first project and it will show up here.</p>
   <button data-variant="accent solid">New project</button>
 </div>
 ```
-No child hooks — children are styled by tag. The glyph and the padding tighten
-under Compact; the heading and copy do not.
+No child hooks — children are styled by tag. Use an inline SVG in
+`currentColor` for the glyph, not an emoji: an emoji ignores the theme's ink.
+The glyph and the padding tighten under Compact; the heading and copy do not.
 
 ### Skeleton
 A pure-CSS loading placeholder — `[data-skeleton]` on the element that will hold
@@ -815,7 +816,7 @@ Five rungs, `--elevation-0` … `--elevation-4`, each meaning a material state:
 <article style="box-shadow: var(--elevation-3)">Floating</article>
 ```
 Shadows are crisp, not diffuse: a tight contact layer plus one ambient layer,
-inked from the theme's accent so a theme swap re-lights them. Don't author your
+inked from the theme's accent so a theme swap recolours them. Don't author your
 own `box-shadow` — pick a rung. `--shadow-sm`, `--shadow` and `--shadow-lg`
 remain as aliases for rungs 1, 2 and 4.
 
@@ -915,7 +916,7 @@ pairs with a readable `-content` token, gated at 4.5:1 contrast for solid fills.
 ```
 
 Colors are OKLCH. Depth and tints are mixed from `--accent`, so switching the
-accent re-lights shadows for free. You never set Tier-2 tokens (spacing scale,
+accent recolours shadows for free. You never set Tier-2 tokens (spacing scale,
 radius scale, shadows, tint recipe) — Hikarion derives them.
 
 ## Your own CSS

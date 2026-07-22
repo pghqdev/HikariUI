@@ -36,7 +36,7 @@ Stop at the first rung that works.
 
 1. **Change a Tier-1 token.** Covers most of what people call "customising a
    framework": colour, radius, spacing rhythm, type stack, motion feel. One
-   declaration re-lights the whole page, shadows included.
+   declaration restyles the whole page, shadows included.
 2. **Ship a theme.** A named palette you can switch to and nest.
 3. **Write a plain unlayered rule.** For a component whose *shape* you want
    different, not just its colour.

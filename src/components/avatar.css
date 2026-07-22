@@ -71,15 +71,16 @@
     border-color: transparent;
   }
 
-  /* Stack — avatars overlap by a third of their own diameter, so the overlap
-     retunes with density for free. The ring is --bg, not a border, so it cuts
-     the avatar behind without growing the circle. */
+  /* Stack — avatars overlap by a fifth of their own diameter, so the overlap
+     retunes with density for free and initials stay readable behind the ring.
+     The ring is --bg, not a border, so it cuts the avatar behind without
+     growing the circle. */
   [data-avatar-group] {
     display: flex;
     align-items: center;
   }
   [data-avatar-group] > [data-avatar] + [data-avatar] {
-    margin-inline-start: calc(var(--_size) * -0.35);
+    margin-inline-start: calc(var(--_size) * -0.2);
     box-shadow: 0 0 0 2px var(--bg);
   }
 }

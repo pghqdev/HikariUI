@@ -4,7 +4,9 @@ import { ASSET_V } from "../assets.mjs";
 
 const { title, description } = Astro.props;
 const BASE = import.meta.env.BASE_URL; // ends with "/"
-const themes = ["auto", "light", "dark", "nord", "dracula", "catppuccin"];
+const modes = ["auto", "light", "dark"];
+const palettes = ["nord", "dracula", "catppuccin"];
+const label = (t) => t[0].toUpperCase() + t.slice(1);
 const canonical = Astro.site ? new URL(Astro.url.pathname, Astro.site).href : Astro.url.pathname;
 // Crawlers do not resolve relative og:image, so this one has to be absolute.
 const ogImage = Astro.site ? new URL(`${BASE}og.png`, Astro.site).href : `${BASE}og.png`;
@@ -29,7 +31,7 @@ const full = `${title} — Hikarion UI`;
     <meta property="og:image" content={ogImage} />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
-    <meta property="og:image:alt" content="Hikarion UI — bare HTML, quietly tasteful." />
+    <meta property="og:image:alt" content="Hikarion UI — bare HTML, already styled." />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="color-scheme" content="light dark" />
     <link rel="alternate" type="text/plain" href={`${BASE}llms.txt`} title="llms.txt" />
@@ -49,6 +51,8 @@ const full = `${title} — Hikarion UI`;
       html { scrollbar-gutter: stable; }
       body { max-width: 72rem; margin-inline: auto; }
       .bar { display: flex; align-items: center; justify-content: space-between; gap: var(--space-5); flex-wrap: wrap; }
+      /* The theme picker is header chrome, not a form field — don't fill the bar. */
+      .bar select { width: auto; }
       .switch { display: inline-flex; gap: var(--space-1); flex-wrap: wrap; }
       .switch button[aria-pressed="true"] { color: var(--accent); border-color: color-mix(in oklch, var(--accent) 45%, var(--border)); }
       .tabs { display: flex; gap: var(--space-4); flex-wrap: wrap; border-block-end: 1px solid var(--line); margin-block: var(--space-4) var(--space-6); }
@@ -87,6 +91,8 @@ const full = `${title} — Hikarion UI`;
       [data-preview] > :first-child { margin-block-start: 0; }
       [data-preview] > :last-child { margin-block-end: 0; }
       .prose table { display: block; overflow-x: auto; }
+      /* Long lines (CDN URLs) wrap instead of clipping at the card edge. */
+      pre { white-space: pre-wrap; overflow-wrap: anywhere; }
       @media (max-width: 64rem) {
         .doc, .doc[data-cols="2"] { grid-template-columns: 1fr; }
         .doc .side, .doc .toc { position: static; max-block-size: none; }
@@ -101,9 +107,17 @@ const full = `${title} — Hikarion UI`;
       <a href={BASE} style="text-decoration:none"
         ><strong style="font-size:1.1rem">Hikarion<span style="color:var(--accent)">UI</span></strong></a
       >
-      <nav class="switch" aria-label="Theme">
-        {themes.map((t) => <button data-set-theme={t}>{t[0].toUpperCase() + t.slice(1)}</button>)}
-      </nav>
+      <select id="theme-pick" aria-label="Theme" onchange="Hikarion.setTheme(this.value)">
+        <optgroup label="Mode">
+          {modes.map((t) => <option value={t}>{label(t)}</option>)}
+        </optgroup>
+        <optgroup label="Palette">
+          {palettes.map((t) => <option value={t}>{label(t)}</option>)}
+        </optgroup>
+      </select>
+      <script is:inline>
+        document.getElementById("theme-pick").value = document.documentElement.dataset.theme || "auto";
+      </script>
     </header>
 
     <nav class="tabs" aria-label="Sections">
@@ -118,10 +132,7 @@ const full = `${title} — Hikarion UI`;
 
     <footer>
       <p>
-        Hikarion UI — <a href="https://github.com/pghqdev/HikarionUI">source</a> ·
-        <a href={`${BASE}llms.txt`}>llms.txt</a> ·
-        <a href={`${BASE}hikarion-rules.md`}>agent rules</a>.
-        Minimalistic. Tasteful. Snappy.
+        Hikarion UI — <a href="https://github.com/pghqdev/HikarionUI">source</a>{" · "}<a href={`${BASE}llms.txt`}>llms.txt</a>{" · "}<a href={`${BASE}hikarion-rules.md`}>agent rules</a>.
       </p>
     </footer>
   </body>

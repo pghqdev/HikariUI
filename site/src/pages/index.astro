@@ -6,7 +6,7 @@ const install = `<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hikar
 <script src="https://cdn.jsdelivr.net/npm/hikarion-ui/dist/hikarion.js" defer></${"script"}>`;
 
 const description =
-  "A class-light CSS framework for semantic HTML. Bare tags look great; ~20 tokens are a theme; a data-* vocabulary adds variants.";
+  "A class-light CSS framework for semantic HTML. Bare tags are styled by default, and a theme is about 20 CSS variables.";
 
 // Marked up for search and answer engines: what the thing is, what it costs,
 // what it runs on. Same facts as the copy below, in a form a crawler can read.
@@ -25,19 +25,18 @@ const jsonLd = {
 };
 ---
 
-<Page title="Tasteful CSS for semantic HTML" description={description}>
+<Page title="Class-light CSS for semantic HTML" description={description}>
   <Fragment slot="head">
     <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
   </Fragment>
 
   <section class="hero">
     <span data-badge data-variant="accent">v0.1 · class-light CSS</span>
-    <h1>Bare HTML, quietly tasteful.</h1>
+    <h1>Bare HTML, already styled.</h1>
     <p class="lede">
-      A class-light CSS framework for semantic HTML. Bare tags look great with
-      no classes; a small <code>data-*</code> vocabulary adds variants; a
-      <code>data-theme</code> container re-lights the whole page — shadows and
-      all — from ~20 tokens.
+      A class-light CSS framework for semantic HTML. Write plain tags and they
+      come out styled. A small set of data attributes adds variants, and a
+      theme is about 20 CSS variables.
     </p>
     <div class="row" style="margin-block-start:var(--space-6)">
       <a href={`${BASE}docs/installation`} data-button data-variant="solid">Get started</a>
@@ -48,7 +47,7 @@ const jsonLd = {
   </section>
 
   <h2>Components</h2>
-  <p>Every element below is bare semantic HTML — the only attributes are Hikarion's <code>data-*</code> hooks. Switch the theme above; it all re-lights. The <a href={`${BASE}components`}>full reference</a> has the rest.</p>
+  <p>Everything below is bare semantic HTML plus Hikarion's <code>data-*</code> hooks. The <a href={`${BASE}components`}>full reference</a> has the rest.</p>
 
   <div class="grid">
     <article>
@@ -90,18 +89,17 @@ const jsonLd = {
         <hr />
         <button>Delete</button>
       </div>
+      <p><small>Native <code>popover</code>: the browser owns open, dismiss and focus.</small></p>
     </article>
   </div>
 
-  <div role="status" data-variant="success" style="margin-block-start:var(--space-6)"><strong>Saved</strong> — every status colour is Tier-1 and passes 4.5:1 contrast in every theme.</div>
-
   <details style="margin-block-start:var(--space-6)">
-    <summary>What does Hikarion deliberately not do?</summary>
-    <p>No utility classes, no JS framework, no build step for you. It styles pages you own; it yields to any pre-existing site CSS by design.</p>
+    <summary>What does Hikarion not do?</summary>
+    <p>It has no utility classes and no build step, and it is not a JS framework. It styles pages you own and yields to any pre-existing site CSS.</p>
   </details>
 
   <h2>Start here</h2>
-  <div class="grid">
+  <div class="grid start">
     <article>
       <h3><a href={`${BASE}docs/installation`}>Installation</a></h3>
       <p>One <code>&lt;link&gt;</code>, or one <code>bun add</code>. No build step, no config.</p>
@@ -131,5 +129,7 @@ const jsonLd = {
   <style>
     .hero h1 { font-size: clamp(2.5rem, 6vw, 4rem); margin-block: var(--space-6) var(--space-4); }
     .hero p.lede { font-size: 1.25rem; color: var(--muted); max-width: 44ch; }
+    /* Six cards land 3 + 3 instead of 4 + 2. */
+    .grid.start { grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr)); }
   </style>
 </Page>

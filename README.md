@@ -2,13 +2,11 @@
 
 # Hikarion UI
 
-**Bare HTML, quietly tasteful.**
+**Bare HTML, already styled.**
 
-A class-light CSS framework for semantic HTML. Bare tags look great with no
-classes; a small `data-*` vocabulary adds variants; a `data-theme` container
-re-lights the whole page — shadows and all — from ~20 tokens.
-
-*Minimalistic. Tasteful. Snappy.*
+A class-light CSS framework for semantic HTML. Write plain tags and they come
+out styled. A small `data-*` vocabulary adds variants, and a `data-theme`
+container restyles the whole page from ~20 tokens.
 
 [Docs & live playground](https://pghqdev.github.io/HikarionUI/) · [Agent rules](rules/hikarion-rules.md) · [npm](https://www.npmjs.com/package/hikarion-ui)
 
@@ -24,10 +22,9 @@ inconsistent utility classes, and every result looks like the same AI slop.
 Classless frameworks (Pico, Water) are too minimal to build real UIs;
 class-heavy ones (Bootstrap, DaisyUI) trade away the semantic-HTML identity.
 
-Hikarion makes **bare semantic HTML** genuinely tasteful by default, themes
-beautifully from a tiny token set, and ships an [agent-adoption
-layer](#for-coding-agents) so an agent told to "use Hikarion" inherits taste
-instead of freestyling.
+Hikarion styles **bare semantic HTML** by default, themes from a small token
+set, and ships an [agent-adoption layer](#for-coding-agents) so an agent told
+to "use Hikarion" writes documented vocabulary instead of freestyling.
 
 ## Quick start
 
@@ -116,8 +113,8 @@ readable `-content` token, gated at 4.5:1 contrast by `bun run check`.
 
 ## For coding agents
 
-Point your agent at the canonical rules and it writes tasteful Hikarion markup
-instead of utility-class slop. Install the Claude Code Skill:
+Point your agent at the canonical rules and it writes on-vocabulary Hikarion
+markup instead of utility-class slop. Install the Claude Code Skill:
 
 ```sh
 curl -fsSL https://raw.githubusercontent.com/pghqdev/HikarionUI/main/skills.sh | sh

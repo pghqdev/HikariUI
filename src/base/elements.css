@@ -366,9 +366,14 @@
     select:open::picker-icon {
       transform: rotate(180deg);
     }
+    select:open::picker(select) {
+      display: flex;
+    }
     ::picker(select) {
       position-area: block-end span-inline-end;
-      display: flex;
+      /* No `display` here: the UA hides the closed picker with `display: none`,
+         and an author `display` beats a UA rule, so setting one would paint the
+         drawer on every closed select. */
       flex-direction: column;
       gap: 0.125rem;
       border: 1px solid var(--line);
@@ -717,8 +722,11 @@
     ::picker(datalist) {
       appearance: base-select;
     }
-    ::picker(datalist) {
+    /* No unconditional `display` (see ::picker(select) above). */
+    input:open::picker(datalist) {
       display: flex;
+    }
+    ::picker(datalist) {
       flex-direction: column;
       gap: 0.125rem;
       border: 1px solid var(--line);

@@ -12,7 +12,7 @@ tokens listed there are frozen surface. Everything else on this page is
 ## Tier-1 — the theme
 
 Nineteen tokens. Set them on `:root` or any `[data-theme]` container and the
-whole framework re-lights. A theme sets all of them and nothing else.
+whole framework restyles. A theme sets all of them and nothing else.
 Declared in `src/base/tokens.css`.
 
 | Token | Role | Light default |
@@ -73,7 +73,7 @@ steps.
 | `--surface-2` | `--surface` mixed with 5% `--fg` |
 | `--hover` | same recipe as `--surface-2` |
 | `--line` | `--border` at 65% alpha — the inner hairline, lighter than an outer edge |
-| `--shadow-color` | 30% `--accent` in `oklch(18% 0.01 260)` — why a theme swap re-lights shadows |
+| `--shadow-color` | 30% `--accent` in `oklch(18% 0.01 260)` — why a theme swap recolours shadows |
 | `--ease-out` | `cubic-bezier(0, 0, 0.2, 1)` — entrances |
 | `--dur-enter` / `--dur-exit` | `0.13s` / `0.11s` — the overlay pop recipe |
 | `--chevron` | The one chevron SVG: select arrow, dropdown trigger, accordion marker |

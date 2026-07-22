@@ -10,9 +10,11 @@
   [data-theme="light"] {
     color-scheme: light;
 
-    --bg: oklch(99% 0.004 250);
+    /* The page sits a step below the cards, so surfaces read as raised
+       instead of ghosting into the background. */
+    --bg: oklch(96.5% 0.005 250);
     --fg: oklch(24% 0.02 260);
-    --surface: oklch(97% 0.006 250);
+    --surface: oklch(99.4% 0.003 250);
     /* Deepened so muted text clears 4.5:1 on --bg, --surface, and surface-2. */
     --muted: oklch(44% 0.02 260);
     --border: oklch(90% 0.008 260);
@@ -49,7 +51,7 @@
 
       --bg: oklch(20% 0.015 260);
       --fg: oklch(93% 0.01 260);
-      --surface: oklch(24% 0.018 260);
+      --surface: oklch(26.5% 0.02 260);
       /* Lifted so muted (and muted code) clears 4.5:1 on surface-2 tints. */
       --muted: oklch(72% 0.018 260);
       --border: oklch(32% 0.02 260);
@@ -71,7 +73,7 @@
 
     --bg: oklch(20% 0.015 260);
     --fg: oklch(93% 0.01 260);
-    --surface: oklch(24% 0.018 260);
+    --surface: oklch(26.5% 0.02 260);
     --muted: oklch(72% 0.018 260);
     --border: oklch(32% 0.02 260);
 

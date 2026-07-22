@@ -12,7 +12,7 @@
 
    Markup:
      <div data-empty>
-       <span aria-hidden="true">📭</span>
+       <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 13h5l2 3h4l2-3h5M5 6h14l2 7v5H3v-5z"/></svg>
        <h3>No projects yet</h3>
        <p>Create your first project to get started.</p>
        <button data-variant="accent solid">New project</button>
@@ -30,7 +30,8 @@
     text-align: center;
   }
 
-  /* A leading glyph — emoji, <svg>, or a small <img>. Sized off density
+  /* A leading glyph — an inline <svg> in currentColor, or a small <img>;
+     not an emoji, which ignores the theme's ink. Sized off density
      because it is chrome, not copy; it dims to --muted so the heading, not the
      ornament, is the loudest thing here. */
   [data-empty] > :where(span, svg, img):first-child {

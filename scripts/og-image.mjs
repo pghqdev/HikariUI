@@ -53,7 +53,7 @@ const card = `<!doctype html>
       <strong class="mark">Hikarion<span>UI</span></strong>
       <span data-badge data-variant="accent">Class-light CSS</span>
     </div>
-    <h1>Bare HTML,<br>quietly tasteful.</h1>
+    <h1>Bare HTML,<br>already styled.</h1>
     <p>Semantic tags look right with no classes. Nineteen tokens are a theme.</p>
     <code>&lt;link rel="stylesheet" href="…/hikarion.min.css"&gt;</code>
   </main>

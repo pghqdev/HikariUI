@@ -203,6 +203,23 @@ describe("keyboard contract", () => {
       expect(state.hidden).toEqual([true, false, true]);
     });
   });
+
+  test("th[aria-sort] sorts rows, numeric-aware across group separators", async () => {
+    // "1 842" must sort as a count, not a string — the space-grouped numbers
+    // in the kitchen-sink are the regression this guards.
+    await withPage({}, async (page) => {
+      const commits = () => page.$$eval("[data-table] tbody tr", (rows) =>
+        rows.map((r) => r.cells[3].textContent.trim()));
+      const sortBtn = "[data-table] th[aria-sort] > button >> nth=1"; // Commits
+      await page.click(sortBtn);
+      expect((await commits())[0]).toBe("187");
+      const state = await page.$$eval("[data-table] th[aria-sort]", (ths) =>
+        ths.map((t) => t.getAttribute("aria-sort")));
+      expect(state).toEqual(["none", "ascending"]);
+      await page.click(sortBtn);
+      expect((await commits())[0]).toBe("1 842");
+    });
+  });
 });
 
 describe("forced colours keep state legible", () => {

@@ -2,7 +2,7 @@
 // Helpers: copy buttons on <pre>, tabs wiring, APG menu keys on [data-menu],
 // Esc/light-dismiss for hint tooltips where `popover="hint"` is unimplemented,
 // a command-invoker fallback for <dialog> and popovers, theme switch +
-// persistence, toast, chip toggle/remove.
+// persistence, toast, chip toggle/remove, column sort on th[aria-sort].
 // Hikarion.init(root) re-wires injected markup; it is idempotent. Every helper
 // is also documented as paste-it-yourself vanilla, so the file stays optional.
 //
@@ -414,6 +414,42 @@
     });
   }
 
+  // --- Table sort: delegated, like chips. A sortable column is a
+  // th[aria-sort] holding a <button>; clicking it cycles ascending/descending
+  // (siblings reset to "none") and reorders every <tbody> by that column's
+  // text. A cell that reads as one number — group separators (space, NBSP,
+  // comma) allowed — compares as that number; the collator's numeric mode
+  // can't do this alone, because a separator ends its digit run and "1 842"
+  // would sort before "964". Everything else falls back to the collator. ---
+  function tableSort() {
+    const collator = new Intl.Collator(undefined, { numeric: true, sensitivity: "base" });
+    const num = (s) => {
+      const n = Number(s.replace(/[\s,]/g, "")); // \s already covers NBSP and narrow NBSP
+      return s && !Number.isNaN(n) ? n : null;
+    };
+    document.addEventListener("click", (e) => {
+      const btn = e.target.closest("[data-table] th[aria-sort] > button");
+      if (!btn) return;
+      const th = btn.closest("th");
+      const table = th.closest("table");
+      const dir = th.getAttribute("aria-sort") === "ascending" ? "descending" : "ascending";
+      for (const h of table.querySelectorAll("th[aria-sort]"))
+        h.setAttribute("aria-sort", h === th ? dir : "none");
+      const col = th.cellIndex;
+      const sign = dir === "ascending" ? 1 : -1;
+      for (const tbody of table.tBodies) {
+        [...tbody.rows]
+          .sort((a, b) => {
+            const ta = a.cells[col]?.textContent.trim() ?? "";
+            const tb = b.cells[col]?.textContent.trim() ?? "";
+            const na = num(ta), nb = num(tb);
+            return sign * (na !== null && nb !== null ? na - nb : collator.compare(ta, tb));
+          })
+          .forEach((r) => tbody.append(r));
+      }
+    });
+  }
+
   // --- Dropzones: delegated drag/drop + filename display for
   // `label[data-dropzone]` wrapping a hidden `input[type=file]`. Toggles
   // [data-dragover] for the highlight and writes the chosen filename into a
@@ -612,6 +648,7 @@
     invokerFallback();
     hints();
     chips();
+    tableSort();
     dropzones();
     init();
   }

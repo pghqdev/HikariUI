@@ -12,6 +12,22 @@ Public surface and deprecation rules: [`docs/versioning.md`](docs/versioning.md)
 
 ### Added
 
+- **`data-input-group`** — fuses adornments onto one field: a muted text prefix
+  or suffix (`<span>`, `<kbd>`) or a `<button>` sharing the field's frame. The
+  wrapper takes over the field chrome and re-draws focus and invalid edges with
+  `:has()`, so a grouped field signals exactly like a bare one. No JS
+- **Sortable table columns** — a `<th aria-sort>` holding a `<button>` is the
+  whole contract; no new hook. `hikarion.js` cycles the attribute and reorders
+  the rows (numeric-aware, including space/comma-grouped numbers); without it,
+  server-rendered order plus a hand-set `aria-sort` shows the same indicator
+
+### Fixed
+
+- The base field selector's `:not()` chain no longer inflates its specificity
+  to (0,8,1) — the exclusions now sit in `:where()`. Components that restyle an
+  inner field at honest specificity actually win now; the command palette's
+  search input was shipping with the field border and radius it declared away
+
 - **`data-button`** — `<a data-button>` gives a link the button's shape, for a
   main action that navigates. `data-variant` composes exactly as it does on a
   `<button>`. Added because the alternative people reach for — a `<button>`

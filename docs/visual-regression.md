@@ -54,9 +54,18 @@ all move pixels. Rather than fight that with a large tolerance, the capture is p
   and pulling ~2 GB in the middle of `bun run ci` is worse than skipping. A contributor
   without the image therefore gets no visual coverage locally — CI is the backstop. Opt
   in with `docker pull --platform linux/amd64 mcr.microsoft.com/playwright:v1.61.1-noble`.
-- **Arm hosts emulate.** The run is pinned to `--platform linux/amd64` because CI is
-  amd64. On an Apple-silicon machine that means Rosetta/QEMU emulation: correct pixels,
-  but a slow first run (the image is ~2 GB and the capture takes minutes).
+- **Arm hosts emulate — and the emulation is not pixel-faithful.** The run is pinned to
+  `--platform linux/amd64` because CI is amd64. On an Apple-silicon machine that means
+  Rosetta/QEMU emulation, which is slow (the image is ~2 GB and the capture takes
+  minutes) and, measured 2026-07, **mis-parses bare fractional CSS numbers to 0**:
+  `opacity: 0.45` computes to `0`, `oklch(44% .015 75)` loses its chroma. An inline
+  `style="opacity:0.45"` probe reproduces it, so it is the emulated browser, not this
+  CSS. Consequences: baselines re-captured on an Arm host are internally consistent
+  (baseline and check mangle alike) but are **not the pixels CI or any real browser
+  renders** — treat a native-CI capture as the source of truth when the two disagree.
+  Where a fade must survive the local gate, write it as an integer percentage inside
+  `color-mix()` (the house style anyway); a bare `opacity: 45%` does not help, because
+  lightningcss normalises it back to `.45` at build time.
 - **The threshold still hides very small changes.** A one-pixel shift on a single control
   inside a ~1280×9000 full-page screenshot can fall under 0.02%. This gate catches layout
   and colour regressions, not sub-pixel ones; the contrast and a11y gates cover what it cannot see.

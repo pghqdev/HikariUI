@@ -20,6 +20,9 @@
    elements.css already owns (optgroup, option, select:disabled, input[list]),
    so it sits with form-layout rather than among the real components. */
 @import "components/select.css";
+/* After the two retune files: it strips the chrome elements.css gives an inner
+   field and re-draws it on the wrapper, so it must see the base rules first. */
+@import "components/input-group.css";
 
 @import "components/dialog.css";
 @import "components/tabs.css";

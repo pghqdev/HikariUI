@@ -514,6 +514,23 @@
           <input id="vol" type="range" min="0" max="100" value="50" oninput="document.querySelector('output[for=vol]').textContent=this.value">
         </p>
         <p>
+          <label for="site">Site</label>
+          <span data-input-group>
+            <span>https://</span>
+            <input id="site" type="text" placeholder="example">
+            <span>.dev</span>
+          </span>
+          <small><code>data-input-group</code> fuses muted adornments or a
+            button onto one field; focus and invalid land on the whole frame.</small>
+        </p>
+        <p>
+          <label for="apikey">API key</label>
+          <span data-input-group>
+            <input id="apikey" type="text" value="hk_live_4f2a" readonly>
+            <button type="button" onclick="navigator.clipboard?.writeText(this.parentElement.querySelector('input').value); Hikarion.toast('Copied', {variant:'success'})">Copy</button>
+          </span>
+        </p>
+        <p>
           <label for="avatar">Avatar</label>
           <input id="avatar" type="file">
         </p>
@@ -726,11 +743,17 @@
       <code>&lt;table&gt;</code>. The header sticks inside the frame once its
       height is constrained, and a row is selected by its own checkbox
       (<code>:has(:checked)</code>) rather than by ARIA. Scroll the frame to
-      see the header hold.</p>
+      see the header hold. Name and Commits are sortable: the <code>&lt;th&gt;</code>
+      carries <code>aria-sort</code> and a <code>&lt;button&gt;</code>, and
+      <code>hikarion.js</code> cycles the attribute and reorders the rows —
+      numeric-aware, so Commits sorts as counts, not strings.</p>
     <div data-table style="max-block-size: 16rem">
       <table>
         <thead>
-          <tr><th>Select</th><th>Name</th><th>Role</th><th>Commits</th></tr>
+          <tr><th>Select</th>
+              <th aria-sort="none"><button>Name</button></th>
+              <th>Role</th>
+              <th aria-sort="none"><button>Commits</button></th></tr>
         </thead>
         <tbody>
           <tr><td><input type="checkbox" checked aria-label="Select Ada Lovelace"></td><td>Ada Lovelace</td><td>Maintainer</td><td>1 842</td></tr>

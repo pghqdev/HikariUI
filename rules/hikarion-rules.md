@@ -581,6 +581,35 @@ narrower than it is legible.
 Do not wrap a group in a `<div>` to get spacing, and do not add a hook for the
 column stack — `<form>` and `<fieldset>` already are the stack.
 
+### Input group
+`[data-input-group]` fuses adornments onto one field: a muted text prefix or
+suffix (`<span>` or `<kbd>`), or a `<button>` sharing the field's frame. The
+wrapper takes over the field chrome — border, radius, focus and invalid edges —
+and the field inside gives up its own, so the group reads as a single control.
+No JS.
+```html
+<p>
+  <label for="site">Site</label>
+  <span data-input-group>
+    <span>https://</span>
+    <input id="site" type="text" placeholder="example">
+    <span>.dev</span>
+  </span>
+</p>
+
+<p>
+  <label for="key">API key</label>
+  <span data-input-group>
+    <input id="key" type="text" value="hk_live_4f2a" readonly>
+    <button type="button">Copy</button>
+  </span>
+</p>
+```
+The `<label>` still targets the field's `id`, never the wrapper. Adornment text
+is not part of the submitted value — if the user must be able to edit it, it
+belongs in the field. Focus and invalid states appear on the whole frame
+(`:has()`), exactly as they would on a bare field.
+
 ### File dropzone
 A drag-and-drop upload surface — `label[data-dropzone]` wrapping an
 `input[type="file"]`. `hikarion.js` adds drag-over highlight and writes the
@@ -643,6 +672,17 @@ Selection is a real checkbox in the row. Do **not** put `aria-selected` on a
 ```
 Give every selection checkbox an `aria-label` naming its row — the column header
 alone does not identify it.
+
+**Sorting.** A sortable column is ARIA, not a hook: the `<th>` carries
+`aria-sort` (start at `"none"`) and wraps its label in a `<button>`.
+```html
+<th aria-sort="none"><button>Commits</button></th>
+```
+With `hikarion.js`, clicking the button cycles ascending/descending, resets the
+other columns to `"none"`, and reorders the rows by that column's text
+(numeric-aware). Without it, render the rows sorted server-side and set
+`aria-sort` on the sorted column yourself — the indicator is CSS reading the
+attribute either way. Do not put `aria-sort` on a column that cannot be sorted.
 
 ### Switch
 A binary on/off toggle — distinct from a checkbox. `<input type="checkbox"

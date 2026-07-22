@@ -102,6 +102,7 @@ grammar, not a separate attribute.
 | `data-empty` | Empty / zero state |
 | `data-skeleton` | Loading placeholder |
 | `data-form-row` | Side-by-side form field / action row |
+| `data-input-group` | Adornments (text prefix/suffix, a fused button) sharing one field's frame |
 | `data-stepper` | Multi-step flow on `<ol>` |
 | `data-breadcrumbs` | Breadcrumb nav |
 | `data-pagination` | Pagination nav |

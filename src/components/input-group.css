@@ -1,0 +1,103 @@
+/* Input group — [data-input-group] fuses adornments onto one field: a text
+   prefix or suffix (<span>, <kbd>), or a <button>, sharing the field's frame.
+   The wrapper takes over the field chrome — border, radius, background, the
+   focus and invalid edges — and the field inside gives up its own, so the
+   group reads as a single control. State is re-drawn on the wrapper with
+   :has(), so nothing is lost, only relocated.
+
+   No JS and no new behaviour: the input is still the input, the button is
+   still a button. Label the field itself (`for` → the input's id), never the
+   wrapper.
+
+   Markup:
+     <p>
+       <label for="site">Site</label>
+       <span data-input-group>
+         <span>https://</span>
+         <input id="site" type="text">
+         <button type="button">Copy</button>
+       </span>
+     </p> */
+
+@layer hikarion {
+  [data-input-group] {
+    display: flex;
+    align-items: stretch;
+    width: 100%;
+    max-width: 100%;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    transition: border-color var(--dur) var(--ease-hikarion);
+
+    & > :is(input, select, textarea) {
+      flex: 1 1 auto;
+      width: auto;
+      background: none;
+      border: none;
+      border-radius: 0;
+    }
+    /* The wrapper draws the ring below; a second edge inside it reads as a
+       field within a field. */
+    & > :is(input, select, textarea):focus-visible {
+      border: none;
+      box-shadow: none;
+      outline: none;
+    }
+    & > :is(input, select, textarea):is(:user-invalid, [aria-invalid="true"]) {
+      border: none;
+      box-shadow: none;
+    }
+
+    /* Text adornments. Muted like a label: they qualify the value, they are
+       not part of it. Padding only on the outer edge — the field's own inline
+       padding is the gap on the inner side. */
+    & > :is(span, kbd) {
+      align-self: center;
+      color: var(--muted);
+      font-size: calc(0.875rem * var(--_density-type));
+    }
+    & > :is(span, kbd):first-child {
+      padding-inline-start: var(--field-px);
+    }
+    & > :is(span, kbd):last-child {
+      padding-inline-end: var(--field-px);
+    }
+
+    /* An action fused onto the field: flush, square where it meets the input,
+       a hairline where they touch. The outer corners keep the group's radius
+       so the fusion is seamless. */
+    & > button {
+      flex: 0 0 auto;
+      border: none;
+      border-radius: 0;
+      box-shadow: none;
+    }
+    & > button:first-child {
+      border-inline-end: 1px solid var(--line);
+      border-start-start-radius: calc(var(--radius-sm) - 1px);
+      border-end-start-radius: calc(var(--radius-sm) - 1px);
+    }
+    & > button:last-child {
+      border-inline-start: 1px solid var(--line);
+      border-start-end-radius: calc(var(--radius-sm) - 1px);
+      border-end-end-radius: calc(var(--radius-sm) - 1px);
+    }
+  }
+
+  /* Focus and invalid, one level up — the same edges elements.css draws on a
+     bare field, so a grouped field signals exactly like an ungrouped one.
+     Invalid is later, so it wins when an invalid field is focused. */
+  /* Scoped to the field: a focused inner <button> draws its own ring, and
+     lighting the whole frame for it would signal "the field" twice over. */
+  [data-input-group]:has(> :is(input, select, textarea):focus-visible) {
+    border-color: var(--accent);
+    box-shadow: inset 0 0 0 1px var(--accent);
+    outline: 2px solid transparent; /* keeps a focus indicator under forced-colors */
+    outline-offset: 0;
+  }
+  [data-input-group]:has(> :is(input, select, textarea):is(:user-invalid, [aria-invalid="true"])) {
+    border-color: var(--danger);
+    box-shadow: inset 0 0 0 1px var(--danger);
+  }
+}

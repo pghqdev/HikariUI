@@ -70,11 +70,11 @@ const full = `${title} — Hikarion UI`;
       .doc { display: grid; grid-template-columns: 13rem minmax(0, 1fr) 11rem; gap: var(--space-6); align-items: start; }
       .doc[data-cols="2"] { grid-template-columns: 15rem minmax(0, 1fr); }
       .doc .side, .doc .toc { position: sticky; top: var(--space-5); font-size: 0.9rem; max-block-size: calc(100dvh - var(--space-7)); overflow-y: auto; }
-      .doc nav ul { list-style: none; padding: 0; margin: 0 0 var(--space-5); display: grid; gap: var(--space-1); }
-      .doc nav h6 { color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; font-size: 0.72rem; margin-block: var(--space-4) var(--space-2); }
-      .doc nav a { text-decoration: none; color: var(--muted); display: block; padding-block: 2px; }
-      .doc nav a:hover { color: var(--fg); }
-      .doc nav a[aria-current="page"] { color: var(--accent); }
+      .doc :is(nav.side, nav.toc) ul { list-style: none; padding: 0; margin: 0 0 var(--space-5); display: grid; gap: var(--space-1); }
+      .doc :is(nav.side, nav.toc) h6 { color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; font-size: 0.72rem; margin-block: var(--space-4) var(--space-2); }
+      .doc :is(nav.side, nav.toc) a { text-decoration: none; color: var(--muted); display: block; padding-block: 2px; }
+      .doc :is(nav.side, nav.toc) a:hover { color: var(--fg); }
+      .doc :is(nav.side, nav.toc) a[aria-current="page"] { color: var(--accent); }
       .prose { max-width: 44rem; }
       /* Live example above its snippet. Contained, because the examples include
          overlays and sticky things that would otherwise escape into the page. */

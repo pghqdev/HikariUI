@@ -11,13 +11,14 @@
     color-scheme: light;
 
     /* The page sits a step below the cards, so surfaces read as raised
-       instead of ghosting into the background. */
-    --bg: oklch(96.5% 0.005 250);
-    --fg: oklch(24% 0.02 260);
-    --surface: oklch(99.4% 0.003 250);
+       instead of ghosting into the background. Neutrals lean warm (paper),
+       not the cool blue-gray every default theme ships. */
+    --bg: oklch(96.6% 0.006 85);
+    --fg: oklch(25% 0.012 75);
+    --surface: oklch(99.3% 0.004 85);
     /* Deepened so muted text clears 4.5:1 on --bg, --surface, and surface-2. */
-    --muted: oklch(44% 0.02 260);
-    --border: oklch(90% 0.008 260);
+    --muted: oklch(44% 0.015 75);
+    --border: oklch(89.5% 0.01 85);
 
     /* Deepened so accent-as-link and solid accent fills clear axe AA in sRGB. */
     --accent: oklch(48% 0.2 258);

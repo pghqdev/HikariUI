@@ -16,6 +16,7 @@ export const DOC_NAV = [
     group: "Getting started",
     items: [
       { slug: "installation", label: "Installation" },
+      { slug: "compared", label: "Compared to alternatives" },
       { slug: "cdn", label: "CDN & pinning" },
     ],
   },
